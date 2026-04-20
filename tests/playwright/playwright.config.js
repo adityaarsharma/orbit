@@ -1,21 +1,29 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
+const path = require('path');
 
-const BASE_URL = process.env.WP_TEST_URL || 'http://localhost:8881';
+const BASE_URL  = process.env.WP_TEST_URL || 'http://localhost:8881';
+const AUTH_FILE = path.join(__dirname, '../../.auth/wp-admin.json');
 
+// HTML report: reports/playwright-html/index.html
+// View after any run: npx playwright show-report reports/playwright-html
 module.exports = defineConfig({
   testDir: './',
   timeout: 120_000,
-  expect: { timeout: 30_000 },
-  // wp-env has no port conflicts within a single site — run tests in parallel
+  expect: {
+    timeout: 30_000,
+    toHaveScreenshot: { maxDiffPixelRatio: 0.02, threshold: 0.2 },
+  },
   fullyParallel: true,
-  // Scale to half the CPU cores by default; override with PLAYWRIGHT_WORKERS=4
   workers: process.env.PLAYWRIGHT_WORKERS || (process.env.CI ? 1 : '50%'),
   retries: process.env.CI ? 2 : 0,
 
   reporter: [
+    // HTML report — always generated, never auto-opened (open manually)
     ['html', { outputFolder: '../../reports/playwright-html', open: 'never' }],
+    // JSON for gauntlet.sh pass/fail parsing
     ['json', { outputFile: '../../reports/playwright-results.json' }],
+    // Terminal output during run
     ['line'],
   ],
 
@@ -24,36 +32,56 @@ module.exports = defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'on-first-retry',
-    // WordPress admin credentials
-    storageState: process.env.WP_AUTH_FILE || undefined,
   },
 
   projects: [
-    // Auth setup — runs once, saves cookies
+    // ── Auth setup — runs once, saves admin cookies ──
     {
       name: 'setup',
       testMatch: '**/auth.setup.js',
+      use: { storageState: undefined },
     },
 
-    // Desktop Chrome — main test run
+    // ── Desktop Chrome — main test run (admin-authenticated) ──
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: AUTH_FILE,
+      },
       dependencies: ['setup'],
     },
 
-    // Mobile viewport — responsive checks
+    // ── Visual snapshots — full-page screenshots + UI audit ──
+    {
+      name: 'visual',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: AUTH_FILE,
+        screenshot: 'on',
+      },
+      testMatch: '**/visual/**/*.spec.js',
+      dependencies: ['setup'],
+    },
+
+    // ── Mobile viewport — responsive checks ──
     {
       name: 'mobile-chrome',
-      use: { ...devices['Pixel 5'] },
+      use: {
+        ...devices['Pixel 5'],
+        storageState: AUTH_FILE,
+      },
       dependencies: ['setup'],
       testMatch: '**/responsive.spec.js',
     },
 
-    // Tablet viewport
+    // ── Tablet viewport ──
     {
       name: 'tablet',
-      use: { ...devices['iPad Pro'] },
+      use: {
+        ...devices['iPad Pro'],
+        storageState: AUTH_FILE,
+      },
       dependencies: ['setup'],
       testMatch: '**/responsive.spec.js',
     },

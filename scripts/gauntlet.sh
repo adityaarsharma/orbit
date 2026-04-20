@@ -14,7 +14,7 @@ REPORT_DIR="reports"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 REPORT_FILE="$REPORT_DIR/qa-report-$TIMESTAMP.md"
 
-GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; BOLD='\033[1m'; NC='\033[0m'
+GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
 ok()     { echo -e "${GREEN}✓ $1${NC}"; }
 warn()   { echo -e "${YELLOW}⚠ $1${NC}"; }
@@ -187,28 +187,45 @@ else
   ((WARN++))
 fi
 
-# ── STEP 6: PLAYWRIGHT FUNCTIONAL TESTS ──────────────────────────────────────
-header "Step 6: Playwright Functional + Visual Tests"
+# ── STEP 6: PLAYWRIGHT FUNCTIONAL + VISUAL TESTS ─────────────────────────────
+header "Step 6: Playwright Functional + Visual + UI Audit Tests"
 log "## Step 6: Playwright"
 
-if command -v npx &>/dev/null && [ -f "playwright.config.js" -o -f "tests/playwright/playwright.config.js" ]; then
-  PLAYWRIGHT_OUT=$(npx playwright test tests/playwright/ \
+PW_CONFIG="tests/playwright/playwright.config.js"
+
+if command -v npx &>/dev/null && [ -f "$PW_CONFIG" ]; then
+  # Ensure auth file exists — run setup project first if not
+  if [ ! -f ".auth/wp-admin.json" ]; then
+    echo "  Running auth setup (one-time)..."
+    WP_TEST_URL="${WP_TEST_URL:-http://localhost:8881}" \
+      npx playwright test --config="$PW_CONFIG" --project=setup 2>/dev/null || true
+  fi
+
+  # Run all tests: functional (chromium) + visual snapshots + UI audit
+  PLAYWRIGHT_OUT=$(WP_TEST_URL="${WP_TEST_URL:-http://localhost:8881}" \
+    npx playwright test --config="$PW_CONFIG" \
+    --project=chromium --project=visual \
     --reporter=line 2>&1 || true)
 
   PASSED=$(echo "$PLAYWRIGHT_OUT" | grep -oE '[0-9]+ passed' | grep -oE '[0-9]+' | head -1 || echo "0")
   FAILED=$(echo "$PLAYWRIGHT_OUT" | grep -oE '[0-9]+ failed' | grep -oE '[0-9]+' | head -1 || echo "0")
 
+  # Always generate HTML report
+  HTML_REPORT="reports/playwright-html/index.html"
   if [ "$FAILED" -eq 0 ]; then
     ok "Playwright — $PASSED tests passed"
     log "- ✓ Playwright: $PASSED passed, 0 failed"
     ((PASS++))
   else
-    fail "Playwright — $FAILED failed (out of $((PASSED+FAILED)))"
+    fail "Playwright — $FAILED failed, $PASSED passed"
     log "- ✗ Playwright: $FAILED failed, $PASSED passed"
     ((FAIL++))
   fi
+  log "- HTML report: $HTML_REPORT"
+  echo -e "  ${CYAN}HTML report:${NC} $(pwd)/$HTML_REPORT"
+  echo -e "  ${CYAN}View with:${NC} npx playwright show-report reports/playwright-html"
 else
-  warn "Playwright tests not configured — skipping"
+  warn "Playwright not configured — skipping. Run: npm install && npx playwright install"
   log "- ⚠ Playwright: skipped (not configured)"
   ((WARN++))
 fi
@@ -331,7 +348,13 @@ log "- ✗ Failed: $FAIL"
 echo ""
 echo "================================="
 echo -e "${BOLD}Results${NC}: ${GREEN}$PASS passed${NC} | ${YELLOW}$WARN warnings${NC} | ${RED}$FAIL failed${NC}"
-echo "Report: $REPORT_FILE"
+echo ""
+echo -e "${BOLD}Reports generated:${NC}"
+echo "  MD report:   $(pwd)/$REPORT_FILE"
+echo "  HTML report: $(pwd)/reports/playwright-html/index.html"
+echo "  Screenshots: $(pwd)/reports/screenshots/"
+echo ""
+echo -e "${CYAN}Open HTML report:${NC} npx playwright show-report reports/playwright-html"
 echo ""
 
 if [ "$FAIL" -gt 0 ]; then

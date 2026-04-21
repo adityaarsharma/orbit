@@ -14,3 +14,4 @@ plugins/free/*/
 .env.local
 .env.test
 qa.config.json
+rankready/

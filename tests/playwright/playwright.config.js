@@ -112,6 +112,73 @@ module.exports = defineConfig({
       testMatch: '**/elementor/**/*.spec.js',
       dependencies: ['setup'],
     },
+
+    // ── RTL (Arabic/Hebrew/Farsi) layout test ──
+    {
+      name: 'rtl',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: AUTH_FILE,
+        locale: 'ar',
+        screenshot: 'on',
+      },
+      testMatch: '**/flows/rtl-layout.spec.js',
+      dependencies: ['setup'],
+    },
+
+    // ── Multisite activation test ──
+    {
+      name: 'multisite',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: AUTH_FILE,
+      },
+      testMatch: '**/flows/multisite-activation.spec.js',
+      dependencies: ['setup'],
+    },
+
+    // ── Admin color scheme compatibility (8 built-in schemes) ──
+    {
+      name: 'admin-colors',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: AUTH_FILE,
+      },
+      testMatch: '**/flows/admin-color-schemes.spec.js',
+      dependencies: ['setup'],
+    },
+
+    // ── Keyboard navigation / focus trap detection ──
+    {
+      name: 'keyboard',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: AUTH_FILE,
+      },
+      testMatch: '**/flows/keyboard-nav.spec.js',
+      dependencies: ['setup'],
+    },
+
+    // ── Uninstall cleanup + update path + block deprecation ──
+    {
+      name: 'lifecycle',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: AUTH_FILE,
+      },
+      testMatch: ['**/flows/uninstall-cleanup.spec.js', '**/flows/update-path.spec.js', '**/flows/block-deprecation.spec.js'],
+      dependencies: ['setup'],
+    },
+
+    // ── REST API — Application Passwords ──
+    {
+      name: 'rest-apppass',
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+      testMatch: '**/flows/app-passwords.spec.js',
+      dependencies: ['setup'],
+    },
   ],
 
   // WP Playground server for CI

@@ -1,0 +1,20 @@
+{
+  "core": "WordPress/WordPress#master",
+  "phpVersion": "8.1",
+  "plugins": [
+    "https://downloads.wordpress.org/plugin/redis-cache.latest-stable.zip"
+  ],
+  "config": {
+    "WP_DEBUG": true,
+    "WP_DEBUG_LOG": true,
+    "WP_DEBUG_DISPLAY": false,
+    "WP_REDIS_HOST": "host.docker.internal",
+    "WP_REDIS_PORT": 6379,
+    "WP_CACHE": true
+  },
+  "port": 8881,
+  "testsPort": 8889,
+  "lifecycleScripts": {
+    "afterStart": "npx wp-env run cli wp plugin activate redis-cache; npx wp-env run cli wp redis enable; true"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "core": "WordPress/WordPress#master",
+  "phpVersion": "8.1",
+  "config": {
+    "WP_DEBUG": true,
+    "WP_DEBUG_LOG": true,
+    "WP_DEBUG_DISPLAY": false,
+    "SCRIPT_DEBUG": true,
+    "WP_ALLOW_MULTISITE": true,
+    "MULTISITE": true,
+    "SUBDOMAIN_INSTALL": false,
+    "DOMAIN_CURRENT_SITE": "localhost",
+    "PATH_CURRENT_SITE": "/",
+    "SITE_ID_CURRENT_SITE": 1,
+    "BLOG_ID_CURRENT_SITE": 1
+  },
+  "port": 8881,
+  "testsPort": 8889,
+  "mappings": {
+    "wp-content/mu-plugins": "./mu-plugins"
+  },
+  "lifecycleScripts": {
+    "afterStart": "npx wp-env run cli wp core multisite-convert --title='Orbit Multisite' 2>/dev/null; npx wp-env run cli wp site create --slug=sub2 --title='Second Site' 2>/dev/null; true"
+  }
+}

@@ -488,6 +488,156 @@ if [ "$MODE" = "full" ] && [ "$ENV" = "local" ]; then
   fi
 fi
 
+# ── STEP 8d: GDPR / WordPress Privacy API Check ───────────────────────────────
+# WP 4.9.6+ requires plugins storing user data to register privacy hooks.
+# WordPress.org plugin review will reject plugins missing these hooks.
+if [ "$MODE" = "full" ]; then
+  header "Step 8d: GDPR / Privacy API"
+  log "## Step 8d: GDPR"
+  if bash scripts/check-gdpr-hooks.sh "$PLUGIN_PATH" 2>&1; then
+    log "- ✓ GDPR hooks: present or not required"
+    ((PASS++))
+  else
+    log "- ⚠ GDPR: required Privacy API hooks missing"
+    ((WARN++))
+  fi
+fi
+
+# ── STEP 8e: Login Page Asset Leak Check ──────────────────────────────────────
+# Many plugins accidentally enqueue scripts on wp-login.php. Slows login,
+# leaks plugin info to unauthenticated visitors.
+if [ "$MODE" = "full" ] && [ "$ENV" = "local" ]; then
+  header "Step 8e: Login Page Asset Check"
+  log "## Step 8e: Login Assets"
+  PLUGIN_SLUG=$(basename "$PLUGIN_PATH")
+  if bash scripts/check-login-assets.sh "$PLUGIN_SLUG" "${WP_TEST_URL:-http://localhost:8881}" 2>&1; then
+    log "- ✓ Login assets: no leakage"
+    ((PASS++))
+  else
+    log "- ⚠ Login assets: plugin leaking on wp-login.php"
+    ((WARN++))
+  fi
+fi
+
+# ── STEP 8f: Translation / i18n Runtime Test ──────────────────────────────────
+# Tests the plugin with an actual loaded .mo file. Catches mistranslated
+# format strings (sprintf with wrong arg count) that crash PHP at runtime.
+if [ "$MODE" = "full" ] && [ "$ENV" = "local" ]; then
+  header "Step 8f: Translation Runtime Test"
+  log "## Step 8f: Translation"
+  if bash scripts/check-translation.sh "$PLUGIN_PATH" 2>&1; then
+    log "- ✓ Translation: passes under pseudo-locale load"
+    ((PASS++))
+  else
+    log "- ⚠ Translation: PHP errors under translation"
+    ((WARN++))
+  fi
+fi
+
+# ── STEP 8g: Lifecycle Tests (uninstall / update / block deprecation) ─────────
+# Playwright specs that verify:
+#   - Plugin cleans up options/tables/cron on delete (WP.org compliance)
+#   - v1 → v2 upgrade preserves user settings
+#   - Existing Gutenberg block content doesn't break after update
+if [ "$MODE" = "full" ] && [ "$ENV" = "local" ] && command -v npx &>/dev/null; then
+  PLUGIN_SLUG=$(basename "$PLUGIN_PATH")
+  PLUGIN_PREFIX=$(python3 -c "import json; print(json.load(open('qa.config.json')).get('plugin',{}).get('prefix',''))" 2>/dev/null || echo "${PLUGIN_SLUG//-/_}")
+
+  header "Step 8g: Lifecycle Tests (uninstall / update / blocks)"
+  log "## Step 8g: Lifecycle"
+
+  LIFECYCLE_OUT=$(PLUGIN_SLUG="$PLUGIN_SLUG" PLUGIN_PREFIX="$PLUGIN_PREFIX" \
+    WP_TEST_URL="${WP_TEST_URL:-http://localhost:8881}" \
+    npx playwright test --config="$PW_CONFIG" --project=lifecycle --reporter=line 2>&1 || true)
+
+  LC_PASSED=$(echo "$LIFECYCLE_OUT" | grep -oE '[0-9]+ passed' | grep -oE '[0-9]+' | head -1 || echo "0")
+  LC_FAILED=$(echo "$LIFECYCLE_OUT" | grep -oE '[0-9]+ failed' | grep -oE '[0-9]+' | head -1 || echo "0")
+
+  if [ "$LC_FAILED" -eq 0 ] && [ "$LC_PASSED" -gt 0 ]; then
+    ok "Lifecycle tests: $LC_PASSED passed"
+    log "- ✓ Lifecycle: $LC_PASSED passed"
+    ((PASS++))
+  elif [ "$LC_FAILED" -gt 0 ]; then
+    fail "Lifecycle tests: $LC_FAILED failed"
+    log "- ✗ Lifecycle: $LC_FAILED failed"
+    ((FAIL++))
+  else
+    warn "Lifecycle tests: skipped (configure PLUGIN_SLUG / PLUGIN_V1_ZIP / BLOCK_POST_ID in qa.config.json)"
+    log "- ⚠ Lifecycle: tests skipped (env vars not configured)"
+    ((WARN++))
+  fi
+fi
+
+# ── STEP 8h: Keyboard Navigation + Admin Color Schemes (if admin UI) ─────────
+# Catches focus traps and color-scheme incompatibility — both invisible to axe-core.
+if [ "$MODE" = "full" ] && [ "$ENV" = "local" ] && command -v npx &>/dev/null; then
+  if [ -n "$(python3 -c "import json; c=json.load(open('qa.config.json')); print(c.get('plugin',{}).get('admin_slug',''))" 2>/dev/null)" ]; then
+    header "Step 8h: Keyboard Navigation + Admin Color Schemes"
+    log "## Step 8h: A11y Extras"
+
+    ADMIN_SLUG=$(python3 -c "import json; print(json.load(open('qa.config.json'))['plugin'].get('admin_slug',''))" 2>/dev/null)
+
+    # Keyboard nav
+    KB_OUT=$(PLUGIN_ADMIN_SLUG="$ADMIN_SLUG" WP_TEST_URL="${WP_TEST_URL:-http://localhost:8881}" \
+      npx playwright test --config="$PW_CONFIG" --project=keyboard --reporter=line 2>&1 || true)
+    KB_FAIL=$(echo "$KB_OUT" | grep -oE '[0-9]+ failed' | grep -oE '[0-9]+' | head -1 || echo "0")
+    if [ "$KB_FAIL" -eq 0 ]; then
+      ok "Keyboard navigation: no focus traps"
+      ((PASS++))
+    else
+      warn "Keyboard navigation: $KB_FAIL failures (focus trap?)"
+      ((WARN++))
+    fi
+
+    # Admin color schemes
+    AC_OUT=$(PLUGIN_ADMIN_SLUG="$ADMIN_SLUG" WP_TEST_URL="${WP_TEST_URL:-http://localhost:8881}" \
+      npx playwright test --config="$PW_CONFIG" --project=admin-colors --reporter=line 2>&1 || true)
+    AC_PASS=$(echo "$AC_OUT" | grep -oE '[0-9]+ passed' | grep -oE '[0-9]+' | head -1 || echo "0")
+    AC_FAIL=$(echo "$AC_OUT" | grep -oE '[0-9]+ failed' | grep -oE '[0-9]+' | head -1 || echo "0")
+    if [ "$AC_FAIL" -eq 0 ]; then
+      ok "Admin color schemes: $AC_PASS/9 compatible"
+      log "- ✓ Admin colors: $AC_PASS schemes pass"
+      ((PASS++))
+    else
+      warn "Admin color schemes: $AC_FAIL schemes break the UI"
+      log "- ⚠ Admin colors: $AC_FAIL schemes fail"
+      ((WARN++))
+    fi
+
+    # RTL layout
+    RTL_OUT=$(PLUGIN_ADMIN_SLUG="$ADMIN_SLUG" WP_TEST_URL="${WP_TEST_URL:-http://localhost:8881}" \
+      npx playwright test --config="$PW_CONFIG" --project=rtl --reporter=line 2>&1 || true)
+    RTL_FAIL=$(echo "$RTL_OUT" | grep -oE '[0-9]+ failed' | grep -oE '[0-9]+' | head -1 || echo "0")
+    if [ "$RTL_FAIL" -eq 0 ]; then
+      ok "RTL layout: compatible"
+      ((PASS++))
+    else
+      warn "RTL layout: breaks in Arabic/Hebrew"
+      ((WARN++))
+    fi
+  fi
+fi
+
+# ── STEP 8i: REST API Application Password Auth ───────────────────────────────
+if [ "$MODE" = "full" ] && [ "$ENV" = "local" ] && command -v npx &>/dev/null; then
+  REST_ENDPOINT=$(python3 -c "import json; print(json.load(open('qa.config.json'))['plugin'].get('rest_admin_endpoint',''))" 2>/dev/null || echo "")
+  if [ -n "$REST_ENDPOINT" ]; then
+    header "Step 8i: REST API — Application Passwords"
+    log "## Step 8i: App Passwords"
+
+    AP_OUT=$(PLUGIN_REST_ADMIN_ENDPOINT="$REST_ENDPOINT" WP_TEST_URL="${WP_TEST_URL:-http://localhost:8881}" \
+      npx playwright test --config="$PW_CONFIG" --project=rest-apppass --reporter=line 2>&1 || true)
+    AP_FAIL=$(echo "$AP_OUT" | grep -oE '[0-9]+ failed' | grep -oE '[0-9]+' | head -1 || echo "0")
+    if [ "$AP_FAIL" -eq 0 ]; then
+      ok "Application Passwords: permission checks hold"
+      ((PASS++))
+    else
+      fail "Application Passwords: $AP_FAIL failures — IDOR or permission_callback bug"
+      ((FAIL++))
+    fi
+  fi
+fi
+
 # ── STEP 9: COMPETITOR COMPARISON (auto from qa.config.json) ──────────────────
 if [ -f "qa.config.json" ]; then
   COMPETITORS_JSON=$(python3 -c "import json; c=json.load(open('qa.config.json')).get('competitors',[]); print(','.join(c))" 2>/dev/null || echo "")

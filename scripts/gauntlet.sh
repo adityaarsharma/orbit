@@ -1176,6 +1176,41 @@ elif [ "$MODE" = "full" ] && [ -n "$PLUGIN_PATH" ]; then
   echo -e "  ${YELLOW}Re-run gauntlet after install for all 6 automated skill audits.${NC}"
 fi
 
+# ── STEP 12: PM UX AUDIT (spell-check + guided UX + label audit) ──────────────
+# Runs in full mode only. Never hard-blocks a release — everything is WARN.
+# PM reads reports/pm-ux/pm-ux-report-*.html and decides.
+if [ "$MODE" = "full" ] && [ "$ENV" = "local" ] && command -v npx &>/dev/null; then
+  header "Step 12: PM UX Audit"
+  log "## Step 12: PM UX Audit"
+
+  ADMIN_SLUG=$(python3 -c "import json; print(json.load(open('qa.config.json'))['plugin'].get('admin_slug',''))" 2>/dev/null || echo "")
+
+  PM_UX_OUT=$(WP_TEST_URL="${WP_TEST_URL:-http://localhost:8881}" \
+    PLUGIN_ADMIN_SLUG="$ADMIN_SLUG" \
+    bash scripts/pm-ux-audit.sh 2>&1 || true)
+  echo "$PM_UX_OUT" | tail -20
+
+  PM_UX_REPORT=$(ls reports/pm-ux/pm-ux-report-*.html 2>/dev/null | sort | tail -1 || echo "")
+
+  # Read scores from JSON
+  TYPOS=$(python3 -c "import json; d=json.load(open('reports/pm-ux/spell-check-findings.json')); print(len(d.get('findings',[])))" 2>/dev/null || echo "?")
+  GUIDED=$(python3 -c "import json; print(json.load(open('reports/pm-ux/guided-ux-score.json'))['score'])" 2>/dev/null || echo "?")
+  LABELS=$(python3 -c "import json; print(json.load(open('reports/pm-ux/label-audit-findings.json'))['summary']['total'])" 2>/dev/null || echo "?")
+
+  PM_ISSUES=0
+  [ "$TYPOS" != "?" ] && [ "$TYPOS" -gt 0 ] && { warn "Spell-check: $TYPOS typo(s) in UI text"; log "- ⚠ Spell-check: $TYPOS typos"; ((WARN++)); PM_ISSUES=$((PM_ISSUES+1)); } || ok "Spell-check: clean"
+  [ "$GUIDED" != "?" ] && [ "$GUIDED" -lt 6 ]  && { warn "Guided UX score: $GUIDED/10 — below competitor avg"; log "- ⚠ Guided UX: $GUIDED/10"; ((WARN++)); PM_ISSUES=$((PM_ISSUES+1)); } || ok "Guided UX: $GUIDED/10"
+  [ "$LABELS" != "?" ] && [ "$LABELS" -gt 0 ]  && { warn "Label audit: $LABELS issue(s) vs industry standards"; log "- ⚠ Labels: $LABELS issues"; ((WARN++)); PM_ISSUES=$((PM_ISSUES+1)); } || ok "Labels: industry standard"
+
+  if [ -n "$PM_UX_REPORT" ]; then
+    ok "PM UX report: $PM_UX_REPORT"
+    log "- ✓ PM UX report: $PM_UX_REPORT"
+    echo -e "  ${CYAN}Open:${NC} open $(pwd)/$PM_UX_REPORT"
+  fi
+
+  [ "$PM_ISSUES" -eq 0 ] && { ok "PM UX Audit — all clear"; log "- ✓ PM UX: all clear"; ((PASS++)); }
+fi
+
 # ── FINAL REPORT ──────────────────────────────────────────────────────────────
 header "Results"
 log "---"
@@ -1207,6 +1242,7 @@ echo "  Screenshots:    $(pwd)/reports/screenshots/"
 echo "  Videos:         $(pwd)/reports/videos/"
 [ -f "reports/skill-audits/index.html" ] && echo "  Skill audits:   $(pwd)/reports/skill-audits/index.html"
 for f in reports/uat-report-*.html; do [ -f "$f" ] && echo "  UAT report:     $(pwd)/$f"; done
+for f in reports/pm-ux/pm-ux-report-*.html; do [ -f "$f" ] && echo "  PM UX report:   $(pwd)/$f"; done
 echo ""
 echo -e "${CYAN}View Playwright:${NC}   npx playwright show-report reports/playwright-html"
 echo -e "${CYAN}View skill audits:${NC} open reports/skill-audits/index.html"

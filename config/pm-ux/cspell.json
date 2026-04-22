@@ -1,0 +1,43 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "wordpress", "elementor", "gutenberg", "woocommerce", "nonce", "wpdb",
+    "shortcode", "metabox", "transient", "multisite", "enqueue", "permalink",
+    "dashicon", "dashicons", "widget", "sidebar", "lightbox", "tooltip",
+    "cron", "pingback", "trackback", "wpautop", "sanitize", "unserialize",
+    "ajax", "cdn", "cms", "seo", "utm", "ga4", "smtp", "oauth", "jwt",
+    "yoast", "rankmath", "jetpack", "akismet", "wpforms", "gravityforms",
+    "monsterinsights", "wpseo", "aioseo", "seopress", "rankready",
+    "llm", "aeo", "geo", "serp", "esc", "wp", "cpt", "acf",
+    "autoload", "dbdelta", "wpdb", "esc_html", "esc_attr", "esc_url",
+    "theplusaddons", "nexterwp", "uichemy", "wdesignkit", "posimyth",
+    "uncategorized", "metakey", "postmeta", "usermeta", "blogid",
+    "multisite", "wpmu", "networkadmin", "superadmin",
+    "customizer", "widgets", "templating", "templated",
+    "frontend", "backend", "stylesheet", "stylesheets",
+    "dropdown", "checkbox", "checkboxes", "radiobutton",
+    "onclick", "onchange", "onsubmit", "onload",
+    "iframe", "srcset", "async", "defer", "crossorigin",
+    "favicon", "webp", "avif", "lazyload", "preload",
+    "minify", "minified", "concat", "bundled",
+    "noop", "sprintf", "printf", "sscanf",
+    "php", "html", "css", "js", "ts", "json", "xml", "yaml", "rss",
+    "url", "uri", "api", "rest", "ssl", "ftp", "ssh", "http", "https",
+    "sha", "md5", "hmac", "base64", "utf8", "iso"
+  ],
+  "flagWords": [],
+  "ignorePaths": [
+    "node_modules/**",
+    "vendor/**",
+    "*.min.js",
+    "*.min.css",
+    "package-lock.json"
+  ],
+  "overrides": [
+    {
+      "filename": "**/*.txt",
+      "maxNumberOfProblems": 100
+    }
+  ]
+}

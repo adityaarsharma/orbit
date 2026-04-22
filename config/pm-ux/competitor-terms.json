@@ -1,0 +1,197 @@
+{
+  "_meta": {
+    "description": "Industry-standard UI terminology from top WordPress plugins. When Orbit flags a label, it compares against these patterns and names which competitor does it better.",
+    "competitors": ["Yoast SEO", "RankMath", "Elementor", "WooCommerce", "WPForms", "Gravity Forms", "MonsterInsights", "Jetpack", "ContactForm7", "AIOSEO"],
+    "updated": "April 2026"
+  },
+
+  "nav_labels": {
+    "settings": {
+      "standard": "Settings",
+      "used_by": ["Yoast SEO", "RankMath", "WooCommerce", "WPForms", "WordPress Core"],
+      "avoid": ["Config", "Configs", "Configuration", "Prefs", "Preferences", "Opts", "Options Panel", "Setup"]
+    },
+    "dashboard": {
+      "standard": "Dashboard",
+      "used_by": ["RankMath", "MonsterInsights", "Jetpack", "WooCommerce"],
+      "avoid": ["Overview", "Home", "Main", "Panel", "Control Panel", "Hub", "Index"]
+    },
+    "general": {
+      "standard": "General",
+      "used_by": ["Yoast SEO", "WooCommerce", "WPForms", "WordPress Core"],
+      "avoid": ["Basic", "Common", "Misc", "Miscellaneous", "Other", "Generic", "Main Settings"]
+    },
+    "advanced": {
+      "standard": "Advanced",
+      "used_by": ["Yoast SEO", "WooCommerce", "Elementor", "WPForms"],
+      "avoid": ["Expert", "Pro Settings", "Power User", "Dev Options", "Developer", "Extra", "More"]
+    },
+    "tools": {
+      "standard": "Tools",
+      "used_by": ["Yoast SEO", "WooCommerce", "RankMath", "WordPress Core"],
+      "avoid": ["Utilities", "Utils", "Admin Tools", "Misc Tools", "Extra Tools", "Other"]
+    },
+    "analytics": {
+      "standard": "Analytics",
+      "used_by": ["MonsterInsights", "RankMath", "Jetpack", "WooCommerce"],
+      "avoid": ["Stats", "Statistics", "Data", "Reporting", "Numbers", "Tracking"]
+    },
+    "import_export": {
+      "standard": "Import / Export",
+      "used_by": ["Yoast SEO", "RankMath", "WooCommerce", "WPForms"],
+      "avoid": ["Backup", "Backup & Restore", "Transfer", "Migrate", "Data Transfer", "Sync"]
+    },
+    "license": {
+      "standard": "License",
+      "used_by": ["Yoast Premium", "RankMath Pro", "WPForms Pro", "Gravity Forms"],
+      "avoid": ["Activation", "Activate Plugin", "Serial Key", "Registration", "Unlock", "Auth"]
+    },
+    "notifications": {
+      "standard": "Notifications",
+      "used_by": ["WPForms", "Gravity Forms", "WooCommerce"],
+      "avoid": ["Alerts", "Emails", "Email Alerts", "Messages", "Notify Me", "Pings"]
+    },
+    "integrations": {
+      "standard": "Integrations",
+      "used_by": ["WPForms", "Gravity Forms", "WooCommerce", "Jetpack"],
+      "avoid": ["Addons", "Add-ons", "Extensions", "Connections", "Plugins", "Connect", "APIs"]
+    },
+    "help": {
+      "standard": "Help",
+      "used_by": ["WooCommerce", "WPForms", "WordPress Core"],
+      "avoid": ["Support Docs", "Documentation", "Docs", "FAQ", "Info", "Knowledge Base", "KB"]
+    }
+  },
+
+  "button_labels": {
+    "save": {
+      "standard": "Save Settings",
+      "used_by": ["Yoast SEO", "WooCommerce", "RankMath", "WPForms", "WordPress Core"],
+      "avoid": ["Submit", "Apply", "Confirm", "OK", "Update Settings", "Go", "Done", "Save Changes", "Apply Changes"]
+    },
+    "reset": {
+      "standard": "Reset to Defaults",
+      "used_by": ["WooCommerce", "Elementor", "WPForms"],
+      "avoid": ["Clear All", "Restore Defaults", "Undo All", "Revert", "Reset All", "Default Settings", "Factory Reset"]
+    },
+    "add_new": {
+      "standard": "Add New",
+      "used_by": ["WordPress Core", "WooCommerce", "WPForms", "Gravity Forms"],
+      "avoid": ["Create New", "New Item", "+ New", "Add Item", "Create", "Make New"]
+    },
+    "delete": {
+      "standard": "Delete",
+      "used_by": ["WordPress Core", "WooCommerce", "WPForms"],
+      "avoid": ["Remove", "Erase", "Wipe", "Destroy", "Drop", "Trash This"]
+    },
+    "preview": {
+      "standard": "Preview",
+      "used_by": ["WordPress Core", "Elementor", "WooCommerce"],
+      "avoid": ["View", "See It", "Show Preview", "Check", "Look"]
+    },
+    "enable": {
+      "standard": "Enable",
+      "used_by": ["Yoast SEO", "Jetpack", "WooCommerce", "RankMath"],
+      "avoid": ["Turn On", "Activate", "Switch On", "Make Active", "Start"]
+    },
+    "disable": {
+      "standard": "Disable",
+      "used_by": ["Yoast SEO", "Jetpack", "WooCommerce", "RankMath"],
+      "avoid": ["Turn Off", "Deactivate", "Switch Off", "Stop", "Make Inactive"]
+    },
+    "publish": {
+      "standard": "Publish",
+      "used_by": ["WordPress Core", "WooCommerce"],
+      "avoid": ["Post", "Submit", "Go Live", "Activate", "Launch", "Push"]
+    },
+    "update": {
+      "standard": "Update",
+      "used_by": ["WordPress Core", "WooCommerce"],
+      "avoid": ["Refresh", "Sync", "Upgrade", "Modify", "Change"]
+    }
+  },
+
+  "field_labels": {
+    "api_key": {
+      "standard": "API Key",
+      "used_by": ["MonsterInsights", "Yoast Premium", "RankMath", "WooCommerce"],
+      "avoid": ["Key", "Secret Key", "Token", "Access Key", "Auth Key", "Security Key", "Account Key"]
+    },
+    "post_types": {
+      "standard": "Post Types",
+      "used_by": ["Yoast SEO", "RankMath", "AIOSEO", "Schema Pro"],
+      "avoid": ["Content Types", "CPT", "Types", "Supported Types", "Post Kinds"]
+    },
+    "custom_css": {
+      "standard": "Custom CSS",
+      "used_by": ["WordPress Core Customizer", "Elementor", "WooCommerce"],
+      "avoid": ["Additional CSS", "Extra CSS", "My CSS", "CSS Code", "Stylesheet Code"]
+    },
+    "enable_feature": {
+      "standard": "Enable [Feature Name]",
+      "note": "Always pair 'Enable' with the specific feature name — never just 'Enable'",
+      "used_by": ["Yoast SEO", "Jetpack", "WooCommerce"],
+      "avoid": ["Turn on [Feature]", "Activate [Feature]", "Use [Feature]", "Toggle [Feature]"]
+    },
+    "per_page": {
+      "standard": "Items per page",
+      "used_by": ["WordPress Core", "WooCommerce"],
+      "avoid": ["Rows per page", "Records per page", "Results per page", "Per page count"]
+    },
+    "redirect_url": {
+      "standard": "Redirect URL",
+      "used_by": ["WPForms", "Gravity Forms", "WooCommerce"],
+      "avoid": ["Redirect Link", "After Submit URL", "Success URL", "Landing URL", "Goto URL"]
+    },
+    "email_address": {
+      "standard": "Email Address",
+      "used_by": ["WordPress Core", "WPForms", "Gravity Forms"],
+      "avoid": ["Email", "E-mail", "Mail", "Your Email", "Email ID", "Email Addr"]
+    }
+  },
+
+  "error_messages": {
+    "required_field": {
+      "standard": "This field is required.",
+      "used_by": ["WordPress Core", "WPForms", "Gravity Forms", "WooCommerce"],
+      "avoid": ["Field required", "Required!", "Can't be empty", "Fill this in", "Mandatory field", "This is required"]
+    },
+    "invalid_email": {
+      "standard": "Please enter a valid email address.",
+      "used_by": ["WordPress Core", "WPForms", "WooCommerce"],
+      "avoid": ["Invalid email", "Bad email", "Wrong email format", "Email error", "Enter correct email"]
+    },
+    "save_success": {
+      "standard": "Settings saved.",
+      "used_by": ["WordPress Core convention", "WooCommerce", "Yoast SEO"],
+      "avoid": ["Saved!", "Done!", "Success!", "Changes applied", "Updated!", "All good!", "Boom, saved!"]
+    },
+    "no_permission": {
+      "standard": "Sorry, you are not allowed to do that.",
+      "used_by": ["WordPress Core"],
+      "avoid": ["Access denied", "Not permitted", "Error 403", "Forbidden", "No access"]
+    }
+  },
+
+  "toggle_labels": {
+    "on_off": {
+      "standard_on": "Enabled",
+      "standard_off": "Disabled",
+      "used_by": ["Jetpack", "WooCommerce", "Elementor"],
+      "avoid": ["On/Off", "Yes/No", "Active/Inactive", "1/0", "True/False", "Toggle"]
+    }
+  },
+
+  "section_headings": {
+    "general_section": {
+      "standard": "General Settings",
+      "used_by": ["WooCommerce", "WPForms", "Yoast SEO"],
+      "avoid": ["Main Config", "Basic Setup", "General Stuff", "Common Options", "Global"]
+    },
+    "advanced_section": {
+      "standard": "Advanced Settings",
+      "used_by": ["WooCommerce", "Yoast SEO", "Elementor"],
+      "avoid": ["Dev Options", "Expert Mode", "Power Settings", "Extra Options"]
+    }
+  }
+}

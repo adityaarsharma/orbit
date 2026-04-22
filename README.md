@@ -169,7 +169,7 @@ No commands to memorize — read `reports/qa-report-{timestamp}.md` after every 
 | **Guided Experience Score** | Does product guide new users or drop them cold? Wizard steps, hints, inline help detection | 0–10 guidance score | FTUE report |
 | **Label + Option Ordering** | Confusing labels, illogically ordered select/radio/checkbox options | Flagged list per form | Admin audit |
 
-**PM workflow**: before every release, open the latest gauntlet report + competitor report → check score deltas → sign off on the pre-release checklist. No terminal needed.
+**PM workflow**: before every release, open the latest gauntlet report + `reports/pm-ux/pm-ux-report-*.html` → check score deltas → sign off on the pre-release checklist. No terminal needed.
 
 ### For End Users (via Real Browser Testing)
 

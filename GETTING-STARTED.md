@@ -1,10 +1,29 @@
 # Orbit — WordPress Plugin QA Framework
 
 > The fastest way to go from "I think this plugin is ready" to "I know it is."
-> Orbit runs static analysis, browser tests, performance benchmarks, security scans,
-> and AI skill audits — all from one command.
+> Orbit is a **Claude Code plugin** — 45 specialised `/orbit-*` skills that cover
+> every angle of WordPress plugin QA: code, browser, performance, security, UX,
+> release. One command to install, one wizard to configure, one slash command per
+> task.
 
-If you've never used Orbit before, think of it like a car pre-trip checklist — except instead of 10 manual items you tick off yourself, Orbit runs 11 automated checks in sequence and hands you a complete report at the end. You point it at your plugin folder and let it do the work.
+If you've never used Orbit before, think of it like a car pre-trip checklist — except instead of 10 manual items you tick off yourself, Orbit runs **45 specialised checks** (organised into one master pipeline + 44 deep-dives) and hands you a complete report at the end. You point it at your plugin folder and let it do the work.
+
+---
+
+## Install in 60 seconds
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/adityaarsharma/orbit/main/install.sh | bash
+```
+
+Then in Claude Code:
+1. Fully quit Claude Code (`Cmd+Q` on macOS) and reopen — needed once for the slash commands to register.
+2. Type `/orbit-setup` — guided wizard that configures your first plugin.
+3. Done.
+
+To update later: `/orbit-update` (zero questions, ~20 seconds).
+
+For the full 45-skill list with trigger phrases: [SKILLS.md](SKILLS.md).
 
 ---
 

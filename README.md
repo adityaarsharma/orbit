@@ -4,27 +4,27 @@
 
 ### **Complete UAT for WordPress Plugins**
 
-*Every perspective. Every release. Dev → QA → PM → Designer → End User.*
+*A Claude Code plugin · 45 specialised `/orbit-*` skills · Dev → QA → PM → Designer → End User*
 
-**👉 [Start Here: Getting Started Guide](GETTING-STARTED.md) — 15 min to first run**
+**👉 [Get started in 60 seconds](#install-in-60-seconds) — one curl command + a wizard**
 
 <br />
 
-![PHP](https://img.shields.io/badge/PHP-7.4%20→%208.3-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-7.4%20→%208.5-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![WordPress](https://img.shields.io/badge/WordPress-6.3%20→%20Latest-21759B?style=for-the-badge&logo=wordpress&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)
 ![Lighthouse](https://img.shields.io/badge/Lighthouse-Performance-F44B21?style=for-the-badge&logo=lighthouse&logoColor=white)
-![Claude Code](https://img.shields.io/badge/Claude%20Code-Skills-CC785C?style=for-the-badge)
+![Claude Code](https://img.shields.io/badge/Claude%20Code-45%20Skills-CC785C?style=for-the-badge)
 
 <br />
 
 **👨‍💻 Dev** → zero-regression releases &nbsp;·&nbsp; **🧪 QA** → structured test coverage &nbsp;·&nbsp; **📊 PM** → flow maps + complexity scores &nbsp;·&nbsp; **📈 PA** → analytics events verified &nbsp;·&nbsp; **🎨 Designer** → visual diffs + UI audits &nbsp;·&nbsp; **👤 End User** → real browser, real flows
 
-📖 **[VISION.md](VISION.md)** &nbsp;·&nbsp; 🚀 **[What Orbit Does (v2.0)](docs/22-what-orbit-does.md)** &nbsp;·&nbsp; 🛡️ **[Evergreen Security Log](docs/21-evergreen-security.md)**
+📖 **[VISION.md](VISION.md)** &nbsp;·&nbsp; 🚀 **[Skills Reference (45 skills)](SKILLS.md)** &nbsp;·&nbsp; 🛣 **[Roadmap (60+ more)](SKILL-ROADMAP.md)** &nbsp;·&nbsp; 🛡️ **[Evergreen Security](docs/21-evergreen-security.md)**
 
 ---
 
-**v2.4.0 · April 2026 · Unique Layer** — 22 security patterns · 20+ Playwright specs · 5 custom Claude skills · auto-scaffolder reading your plugin code · **plugin ownership-transfer detection** (April 2026 attack defense, first in the WP ecosystem) · **live CVE correlation** (free, via NVD + WPScan public feeds — no API keys) · **PM UX Audit** (spell-check + guided experience score + label benchmarking vs 10 top WP plugins). Covers WP.org plugin-check rules, Patchstack 2025 top-5 vulns, WP 6.5→7.0 features, PHP 8.0→8.5.
+**v2.5.0 · April 2026 · Claude Code-native** — **45 specialised `/orbit-*` skills**: 11 audits, 4 Playwright suites, 4 perf deep-dives, 4 comparison flows, 5 release gates, 7 WP-specific edge-case probes (multisite, uninstall, REST/AJAX fuzzers, GDPR, cron, cache, plugin-check), and a meta-skill (`/orbit-skill-add`) so the suite keeps growing. Covers WP.org plugin-check rules, Patchstack 2025 top-5 vulns, WP 6.5→7.0 features, PHP 8.0→8.5.
 
 🎯 **[Use Cases](docs/24-use-cases.md)** (25 real scenarios · Dev/QA/PM/PA/Designer/Release-Ops) &nbsp;·&nbsp; 🧩 **[Extending Orbit](docs/23-extending-orbit.md)** (how to add checks, write specs, create skills)
 
@@ -32,9 +32,79 @@ Covers **Elementor Addons · Gutenberg Blocks · SEO Plugins · WooCommerce Exte
 
 <br />
 
-[Quick Start](#quick-start) · [What It Checks](#what-it-checks) · [**Role Guide**](docs/onboarding-by-role.md) · [Skills Reference](SKILLS.md) · [Auto-Generate Tests](docs/20-auto-test-generation.md) · [Business Logic Guide](docs/19-business-logic-guide.md) · [GitHub](https://github.com/adityaarsharma/orbit) · [Common WP Mistakes](docs/common-wp-mistakes.md)
+[Install in 60s](#install-in-60-seconds) · [Skills (45)](#the-45-orbit-skills) · [What It Checks](#what-it-checks) · [**Role Guide**](docs/onboarding-by-role.md) · [Skills Reference](SKILLS.md) · [Roadmap](SKILL-ROADMAP.md) · [GitHub](https://github.com/adityaarsharma/orbit)
 
 </div>
+
+---
+
+## Install in 60 seconds
+
+Orbit is a **Claude Code plugin** — 45 `/orbit-*` slash commands you can invoke from any Claude Code session.
+
+### One-line install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/adityaarsharma/orbit/main/install.sh | bash
+```
+
+That's it. The installer:
+1. Clones Orbit to `~/Claude/orbit`
+2. Symlinks 45 skills into `~/.claude/skills/orbit-*` (so `/orbit-*` autocompletes in Claude Code)
+3. Runs `setup/install.sh` — installs PHPCS, WPCS, PHPStan, Playwright + browsers, Lighthouse, axe-core, WP-CLI, wp-env, wp-now, source-map-explorer, PurgeCSS
+4. Prints what's next
+
+**After install:** fully quit Claude Code (`Cmd+Q` on macOS), reopen, type `/orbit` — the master menu appears.
+
+### Update later
+
+```bash
+# In Claude Code:
+/orbit-update
+
+# Or via shell:
+bash ~/Claude/orbit/update.sh
+```
+
+Pulls the latest from GitHub, refreshes every skill in place, removes deprecated entries. Zero questions, ~20 seconds.
+
+### From a clone (offline-capable)
+
+```bash
+git clone https://github.com/adityaarsharma/orbit ~/Claude/orbit
+cd ~/Claude/orbit && bash install.sh
+```
+
+### Configure your first plugin
+
+Once installed, fire up the wizard:
+
+```
+/orbit-setup
+```
+
+It walks you through plugin path, type (Elementor / Gutenberg / SEO / WooCommerce / Theme), competitors, visual baseline URLs, default mode — then spins up a wp-env Docker site and runs your first audit. ~10 minutes end-to-end.
+
+---
+
+## The 45 Orbit skills
+
+| Category | Skills |
+|---|---|
+| **Master + Setup** (5) | `/orbit` `/orbit-setup` `/orbit-install` `/orbit-update` `/orbit-docker-site` |
+| **Pipeline** (3) | `/orbit-gauntlet` `/orbit-release-gate` `/orbit-multi-plugin` |
+| **Code Audits** (11) | `/orbit-wp-standards` `/orbit-wp-security` `/orbit-wp-performance` `/orbit-wp-database` `/orbit-scaffold-tests` `/orbit-code-quality` `/orbit-accessibility` `/orbit-i18n` `/orbit-pm-ux-audit` `/orbit-compat-matrix` `/orbit-cve-check` |
+| **Browser Testing** (4) | `/orbit-playwright` `/orbit-visual-regression` `/orbit-user-flow` `/orbit-conflict-matrix` |
+| **Performance** (4) | `/orbit-lighthouse` `/orbit-editor-perf` `/orbit-db-profile` `/orbit-bundle-analysis` |
+| **Comparison** (4) | `/orbit-uat-compare` `/orbit-version-compare` `/orbit-competitor-compare` `/orbit-changelog-test` |
+| **Release** (5) | `/orbit-release-meta` `/orbit-zip-hygiene` `/orbit-plugin-check` `/orbit-block-json-validate` `/orbit-reports` |
+| **WP-specific edge cases** (7) | `/orbit-multisite` `/orbit-uninstall-test` `/orbit-rest-fuzzer` `/orbit-ajax-fuzzer` `/orbit-gdpr` `/orbit-cron-audit` `/orbit-cache-compat` |
+| **Other** (2) | `/orbit-pre-commit` `/orbit-skill-add` (meta — generate new skills) |
+
+**👉 [Full skill reference with trigger phrases + descriptions](SKILLS.md)**
+**👉 [Roadmap of 60+ more candidate skills](SKILL-ROADMAP.md)**
+
+---
 
 ---
 
@@ -296,38 +366,34 @@ Add your own competitors by editing this file — the format is self-explanatory
 
 ---
 
-## Quick Start
+## Quick Start (the long version)
 
-### Option 1 — Interactive Setup (Recommended for First Time)
+The 60-second install above is the easiest path. If you want to know what it's doing under the hood:
+
+### Option 1 — Claude Code wizard (recommended for first time)
 
 ```bash
-git clone https://github.com/adityaarsharma/orbit
-cd orbit
-bash setup/init.sh
+curl -fsSL https://raw.githubusercontent.com/adityaarsharma/orbit/main/install.sh | bash
+# Then in Claude Code:
+/orbit-setup
 ```
 
-`init.sh` asks you 9 questions and creates `qa.config.json`:
+The wizard asks you 9 questions and creates `qa.config.json`:
 - What type of plugin (Elementor addon / Gutenberg / SEO / WooCommerce / Theme)?
 - Where is your source code?
 - Who are your competitors? (auto-downloads and analyzes them)
 - Do you have a Pro version to compare?
 - Who uses this — dev, QA, or product team?
 
-Every subsequent command reads from `qa.config.json` so you never repeat yourself.
+Every subsequent `/orbit-*` command reads from `qa.config.json` so you never repeat yourself.
 
-### Option 2 — One-Liner (Skip Questions)
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/adityaarsharma/orbit/main/setup/install.sh | bash
-```
-
-### Option 3 — Manual
+### Option 2 — Manual (full control)
 
 ```bash
-git clone https://github.com/adityaarsharma/orbit
-cd orbit
-bash setup/install.sh   # installs all tools
-# Then configure qa.config.json manually (see structure below)
+git clone https://github.com/adityaarsharma/orbit ~/Claude/orbit
+cd ~/Claude/orbit
+bash install.sh           # symlinks skills + installs power tools
+bash setup/init.sh        # legacy plugin-config wizard (or use /orbit-setup)
 ```
 
 ---

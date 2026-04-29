@@ -1,150 +1,229 @@
-# Orbit — Skill Reference
+# Orbit — Skills Reference
 
-> **Hard rule**: Orbit never runs surface-level analysis. Every audit, test, or
-> review MUST invoke the skills defined here. See `AGENTS.md` for the
-> enforcement rules Claude follows automatically.
+> **45 specialised `/orbit-*` Claude Code skills** for WordPress plugin QA.
+> One master dispatcher + 44 deep-dive skills. Type `/orbit` to browse the menu.
 
----
-
-## The Six Core Skills (Always Run)
-
-These are mandatory for every Orbit audit. Run in parallel via the gauntlet.
-
-| Skill | When | What it covers |
-|-------|------|----------------|
-| `/wordpress-plugin-development` | Every audit | WP coding standards, hooks, escaping, nonces, capability checks, i18n, REST API patterns |
-| `/wordpress-penetration-testing` | Every audit | OWASP Top 10 for WP — XSS, CSRF, SQLi, auth bypass, path traversal, privilege escalation |
-| `/performance-engineer` | Every audit | Hook weight, N+1 DB calls, blocking assets, expensive loops, autoload bloat |
-| `/database-optimizer` | Every audit | Prepared statements, missing indexes, transient patterns, raw SQL, query count |
-| `/accessibility-compliance-accessibility-audit` | Every audit | WCAG 2.2 AA — admin UI, block output, frontend markup, keyboard nav, color contrast |
-| `/code-review-excellence` | Every audit | Code quality — dead code, complexity, error handling, type safety, readability |
+**Repo:** https://github.com/adityaarsharma/orbit
+**Author:** [Aditya Sharma](https://github.com/adityaarsharma) · POSIMYTH Innovation
+**Roadmap (60+ more):** [SKILL-ROADMAP.md](SKILL-ROADMAP.md)
+**How to add a new skill:** [skills/orbit-skill-add/SKILL.md](skills/orbit-skill-add/SKILL.md)
 
 ---
 
-## Add-on Skills (by Plugin Type)
-
-Run these on top of the core 6 based on what the plugin does.
-
-| Plugin type | Skill | What it adds |
-|-------------|-------|--------------|
-| UI-heavy / Elementor addon | `/antigravity-design-expert` | 44px hit areas, concentric radius, GSAP motion quality, spacing, visual polish |
-| Theme / FSE plugin | `/wordpress-theme-development` | Template hierarchy, FSE, theme.json, block templates, customizer |
-| WooCommerce plugin | `/wordpress-woocommerce-development` | WC hooks, gateway security, template overrides, cart/checkout safety |
-| REST API / headless | `/api-security-testing` | Endpoint auth, input validation, rate limiting, CORS |
-| Complex PHP / OOP | `/php-pro` | PHP 8.x patterns, typed properties, modern idioms, strict types |
-
----
-
-## Output Rules
-
-All skill output — whether from Playwright, gauntlet, or a direct skill call —
-must be written to a file. Never output only to terminal.
-
-| Skill type | Output format | Location |
-|-----------|--------------|----------|
-| Code audits (all 6 core) | Markdown with severity table | `reports/skill-audits/<skill>.md` |
-| Playwright test run | HTML report (auto-generated) | `reports/playwright-html/index.html` |
-| Playwright test run | Terminal summary | stdout (line reporter) |
-| Gauntlet full run | Markdown report | `reports/qa-report-<timestamp>.md` |
-| UAT flow run | HTML report with screenshots + videos | `reports/uat-report-<timestamp>.html` |
-| Lighthouse | JSON + summary | `reports/lighthouse/lh-<timestamp>.json` |
-| DB profile | Text | `reports/db-profile-<timestamp>.txt` |
-
-View reports after any run:
+## How to install
 
 ```bash
-# HTML test report
-npx playwright show-report reports/playwright-html
+# One-line install (clone + symlink + power tools)
+curl -fsSL https://raw.githubusercontent.com/adityaarsharma/orbit/main/install.sh | bash
 
-# UAT HTML report (screenshots + videos)
-open reports/uat-report-*.html
-
-# Skill audit markdown reports
-open reports/skill-audits/
+# Or, from a clone
+git clone https://github.com/adityaarsharma/orbit ~/Claude/orbit
+cd ~/Claude/orbit && bash install.sh
 ```
+
+After install, restart Claude Code (`Cmd+Q` and reopen on macOS) so the slash commands appear in the palette.
 
 ---
 
-## How to Install Skills
+## Quick reference — every skill in one table
 
-```bash
-# Recommended — Antigravity CLI installer (installs to ~/.claude/skills/)
-npx antigravity-awesome-skills
-
-# Manual — clone and symlink
-git clone https://github.com/VoltAgent/awesome-agent-skills ~/Claude/awesome-agent-skills
-ln -sf ~/Claude/awesome-agent-skills/skills/* ~/.claude/skills/
-```
-
-Verify a skill is installed:
-
-```bash
-ls ~/.claude/skills/wordpress-plugin-development
-ls ~/.claude/skills/wordpress-penetration-testing
-ls ~/.claude/skills/performance-engineer
-ls ~/.claude/skills/database-optimizer
-ls ~/.claude/skills/accessibility-compliance-accessibility-audit
-ls ~/.claude/skills/code-review-excellence
-```
-
----
-
-## Deduplication: Which Skill Wins
-
-Multiple similar skills exist in the ecosystem. Use only these:
-
-| Task | Use | Skip |
-|------|-----|------|
-| DB review | `/database-optimizer` | `/database`, `/database-admin`, `/database-architect` |
-| Security | `/wordpress-penetration-testing` | `/security-audit`, `/security-scanning-security-sast` |
-| Performance | `/performance-engineer` | `/performance-optimizer`, `/performance-profiling` |
-| Code review | `/code-review-excellence` | `/code-review-ai-ai-review`, `/code-reviewer`, `/code-review-checklist` |
-| E2E testing | `/playwright-skill` | `/e2e-testing`, `/playwright-java` |
-| WP plugin | `/wordpress-plugin-development` | `/wordpress` (too generic) |
-| Accessibility | `/accessibility-compliance-accessibility-audit` | `/accessibility-review`, `/wcag-audit-patterns` |
-
----
-
-## Running Skills
-
-### Full gauntlet (recommended)
-
-```bash
-bash scripts/gauntlet.sh --plugin /path/to/plugin --mode full
-```
-
-Runs all 6 core skills in parallel + Playwright + Lighthouse + DB profile.
-Output goes to `reports/` automatically.
-
-### Single skill
-
-```bash
-claude "/wordpress-penetration-testing Security audit /path/to/plugin — rate every finding Critical/High/Medium/Low. Output full markdown report."
-```
-
-### All 6 in parallel (manual)
-
-```bash
-P=/path/to/plugin
-claude "/wordpress-plugin-development Audit $P — WP standards. Output markdown." > reports/skill-audits/wp-standards.md &
-claude "/wordpress-penetration-testing Security audit $P — OWASP Top 10. Output markdown." > reports/skill-audits/security.md &
-claude "/performance-engineer Analyze $P — hooks, N+1, assets. Output markdown." > reports/skill-audits/performance.md &
-claude "/database-optimizer Review $P — queries, indexes, autoload. Output markdown." > reports/skill-audits/database.md &
-claude "/accessibility-compliance-accessibility-audit Audit $P admin UI + frontend. Output markdown." > reports/skill-audits/a11y.md &
-claude "/code-review-excellence Review $P — quality, complexity, patterns. Output markdown." > reports/skill-audits/code-quality.md &
-wait
-echo "All audits complete. Reports in reports/skill-audits/"
-```
+| # | Skill | Purpose | Trigger phrases |
+|---|---|---|---|
+| 1 | `/orbit` | Master dispatcher / role-based menu | "orbit", "orbit help", "what does orbit do" |
+| 2 | `/orbit-setup` | Guided onboarding wizard | "set up orbit", "first time", "new plugin" |
+| 3 | `/orbit-update` | Pull latest Orbit (zero questions) | "update orbit", "upgrade orbit", "refresh orbit" |
+| 4 | `/orbit-install` | Install all power tools | "install power tools", "missing tool" |
+| 5 | `/orbit-docker-site` | Spin up wp-env / wp-now test site | "create test site", "Docker WP", "wp-env" |
+| 6 | `/orbit-pre-commit` | Install pre-commit hook | "block bad commits", "git hook" |
+| 7 | `/orbit-gauntlet` | Full 11-step audit pipeline | "run gauntlet", "full QA", "audit my plugin" |
+| 8 | `/orbit-release-gate` | Day-of-release sequence | "ship it", "release this", "tag v2.0" |
+| 9 | `/orbit-multi-plugin` | Batch-test multiple plugins in parallel | "test all plugins", "batch QA" |
+| 10 | `/orbit-wp-standards` | WP coding standards review | "PHPCS", "WPCS", "nonces / escaping" |
+| 11 | `/orbit-wp-security` | XSS / CSRF / SQLi audit | "security audit", "find vulns" |
+| 12 | `/orbit-wp-performance` | Hook weight + N+1 + transient misuse | "performance audit", "find slow hooks" |
+| 13 | `/orbit-wp-database` | $wpdb / autoload / indexes | "DB review", "$wpdb audit" |
+| 14 | `/orbit-scaffold-tests` | Read code → 70+ QA scenarios | "generate tests", "scaffold tests" |
+| 15 | `/orbit-code-quality` | Dead code + complexity + AI hallucinations | "code quality", "AI-gen review" |
+| 16 | `/orbit-accessibility` | WCAG 2.2 AA on admin + frontend | "a11y", "WCAG", "axe-core" |
+| 17 | `/orbit-i18n` | Translation strings + POT + RTL | "i18n", "translation", "POT" |
+| 18 | `/orbit-pm-ux-audit` | Spell + guidance score + label benchmark | "PM UX", "spell check labels" |
+| 19 | `/orbit-compat-matrix` | PHP × WP version matrix | "PHP 7.4 vs 8.x", "WP 6.5 compat" |
+| 20 | `/orbit-cve-check` | Live CVE feed + ownership-transfer | "CVE check", "weekly security scan" |
+| 21 | `/orbit-playwright` | Setup / write / run / debug E2E | "Playwright", "E2E", "trace viewer" |
+| 22 | `/orbit-visual-regression` | Pixel-diff + responsive + admin colours | "visual regression", "pixel diff" |
+| 23 | `/orbit-user-flow` | Click depth + onboarding + analytics events | "user flow", "click depth" |
+| 24 | `/orbit-conflict-matrix` | Test against top 20 WP plugins | "plugin conflicts", "vs Yoast" |
+| 25 | `/orbit-lighthouse` | Core Web Vitals scoring | "Lighthouse", "LCP / CLS / TBT" |
+| 26 | `/orbit-editor-perf` | Elementor / Gutenberg editor timing | "Elementor slow", "Gutenberg lag" |
+| 27 | `/orbit-db-profile` | Query count + N+1 + autoload bloat | "Query Monitor", "N+1" |
+| 28 | `/orbit-bundle-analysis` | JS / CSS bundle weight + dead CSS | "bundle size", "PurgeCSS" |
+| 29 | `/orbit-uat-compare` | Plugin A vs Plugin B (HTML report) | "side-by-side", "UAT report" |
+| 30 | `/orbit-version-compare` | Old version vs new version diff | "v1 vs v2", "diff zips" |
+| 31 | `/orbit-competitor-compare` | Vs WP.org competitors | "competitor analysis" |
+| 32 | `/orbit-changelog-test` | Changelog → targeted test plan | "test the changelog" |
+| 33 | `/orbit-release-meta` | Plugin header + readme.txt + parity | "validate plugin header" |
+| 34 | `/orbit-zip-hygiene` | Validate the release zip | "validate zip", "before SVN" |
+| 35 | `/orbit-reports` | Generate master HTML report | "make HTML report" |
+| 36 | `/orbit-multisite` | Multisite / network compatibility | "multisite", "network activation" |
+| 37 | `/orbit-uninstall-test` | uninstall.php cleanup verification | "uninstall test", "remove all data" |
+| 38 | `/orbit-rest-fuzzer` | REST endpoint fuzzing | "REST fuzzer", "test REST permissions" |
+| 39 | `/orbit-ajax-fuzzer` | admin-ajax.php fuzzing | "AJAX fuzzer", "wp_ajax security" |
+| 40 | `/orbit-gdpr` | Personal data export + erase hooks | "GDPR", "right to be forgotten" |
+| 41 | `/orbit-block-json-validate` | Gutenberg block.json schema | "block.json validate" |
+| 42 | `/orbit-plugin-check` | Official WP.org plugin-check | "WP.org submission", "plugin-check" |
+| 43 | `/orbit-cron-audit` | wp_schedule_event hygiene | "cron audit", "WP-Cron" |
+| 44 | `/orbit-cache-compat` | Object + page cache compatibility | "Redis", "WP Rocket compat" |
+| 45 | `/orbit-skill-add` | Meta-skill — generate new orbit-* skills | "add a skill", "create new orbit skill" |
 
 ---
 
-## Severity Triage
+## By category
 
-Apply this to all skill output before releasing:
+### 🛠 Setup & Environment
+| Skill | What it does |
+|---|---|
+| `/orbit-setup` | Guided wizard — installs everything, configures first plugin, runs first audit |
+| `/orbit-docker-site` | wp-env (Docker) or wp-now setup; troubleshooting "site not running" |
+| `/orbit-install` | One-shot installer for PHPCS, Playwright, Lighthouse, WP-CLI, etc. |
+| `/orbit-pre-commit` | Git pre-commit hook — blocks `var_dump`, `console.log DEBUG`, etc. (<10s) |
+| `/orbit-update` | Pull latest Orbit + refresh skill symlinks |
+
+### 🏃 Run the Pipeline
+| Skill | What it does |
+|---|---|
+| `/orbit-gauntlet` | Full 11-step audit (modes: quick / full / release) |
+| `/orbit-release-gate` | Day-of-release sequence — preflight, metadata, gauntlet, evidence pack |
+| `/orbit-multi-plugin` | Batch-test multiple plugins in parallel with CPU throttling |
+
+### 🔍 Code Audits
+| Skill | What it does |
+|---|---|
+| `/orbit-wp-standards` | Naming, escaping, nonces, capability checks, i18n, hook patterns |
+| `/orbit-wp-security` | XSS / CSRF / SQLi / auth bypass / path traversal in source code |
+| `/orbit-wp-performance` | Hook weight, N+1 DB calls, blocking assets, transient misuse |
+| `/orbit-wp-database` | $wpdb, autoload bloat, missing indexes, uninstall cleanup |
+| `/orbit-scaffold-tests` | Read code → 70+ business-logic test scenarios |
+| `/orbit-code-quality` | Dead code, complexity, AI-hallucination risks |
+| `/orbit-accessibility` | WCAG 2.2 AA on admin UI + frontend output |
+| `/orbit-i18n` | Translation strings, text domain, POT freshness, RTL |
+| `/orbit-pm-ux-audit` | Spell-check + guided UX score + label benchmark |
+| `/orbit-compat-matrix` | PHP 7.4 / 8.1 / 8.3 × WP 6.3 / 6.5 / latest matrix |
+| `/orbit-cve-check` | Live CVE feed correlation + ownership-transfer detection |
+
+### 🌐 Browser Testing (Playwright)
+| Skill | What it does |
+|---|---|
+| `/orbit-playwright` | First-time setup, write specs, run, debug, trace viewer |
+| `/orbit-visual-regression` | Pixel-diff snapshots + responsive (375/768/1440) + admin colours |
+| `/orbit-user-flow` | Click depth, onboarding detection, analytics-event verification |
+| `/orbit-conflict-matrix` | Test against Yoast, RankMath, WC, Elementor + 16 more |
+
+### ⚡ Performance Deep-Dive
+| Skill | What it does |
+|---|---|
+| `/orbit-lighthouse` | Core Web Vitals (LCP / FCP / TBT / CLS / TTI) |
+| `/orbit-editor-perf` | Elementor / Gutenberg editor ready time + widget insert timing |
+| `/orbit-db-profile` | Query count per page, slow queries, N+1, autoload bloat |
+| `/orbit-bundle-analysis` | JS / CSS bundle weight + source-map-explorer + PurgeCSS |
+
+### 🆚 Comparison
+| Skill | What it does |
+|---|---|
+| `/orbit-uat-compare` | Plugin A vs Plugin B HTML report with paired screenshots + videos |
+| `/orbit-version-compare` | v(N-1).zip vs v(N).zip — function / hook / asset diffs |
+| `/orbit-competitor-compare` | Vs WP.org competitors (version, installs, code quality, bundle) |
+| `/orbit-changelog-test` | Map every changelog entry → targeted test or audit |
+
+### 📦 Release Metadata
+| Skill | What it does |
+|---|---|
+| `/orbit-release-meta` | Plugin header, readme.txt, version parity, license, POT freshness |
+| `/orbit-zip-hygiene` | Validate the release zip — no .git, no source maps, no dev deps |
+| `/orbit-plugin-check` | Run wordpress.org's official plugin-check tool |
+| `/orbit-block-json-validate` | Every block.json against current WP schema |
+| `/orbit-reports` | Generate master HTML index across every report |
+
+### 🔬 WordPress-Specific Edge Cases
+| Skill | What it does |
+|---|---|
+| `/orbit-multisite` | Network activation, super-admin caps, switch_to_blog safety |
+| `/orbit-uninstall-test` | uninstall.php removes options / postmeta / tables / crons |
+| `/orbit-rest-fuzzer` | Auto-discover register_rest_route + fuzz |
+| `/orbit-ajax-fuzzer` | wp_ajax_* / wp_ajax_nopriv_* fuzzing |
+| `/orbit-gdpr` | wp_privacy_personal_data_exporters + erasers |
+| `/orbit-cron-audit` | wp_schedule_event hygiene + zombie cron detection |
+| `/orbit-cache-compat` | Object cache (Redis) + page cache (WP Rocket) |
+
+### 🧬 Meta
+| Skill | What it does |
+|---|---|
+| `/orbit-skill-add` | Generate new `/orbit-*` skills following the established pattern |
+
+---
+
+## Mandatory skills for `/orbit-gauntlet --mode full`
+
+These run automatically as Step 11 of the gauntlet (6 parallel AI audits):
+
+1. `/orbit-wp-standards`
+2. `/orbit-wp-security`
+3. `/orbit-wp-performance`
+4. `/orbit-wp-database`
+5. `/orbit-accessibility`
+6. `/orbit-code-quality`
+
+---
+
+## Severity model (applied to all skill output)
 
 | Level | Action before release |
-|-------|--------------------|
+|---|---|
 | **Critical** | Block release. Fix immediately. |
 | **High** | Block release. Fix in this PR. |
 | **Medium** | Fix if under 30 min. Otherwise log and defer. |
 | **Low / Info** | Log in tech debt. Defer. |
+
+---
+
+## How to add a new skill
+
+```bash
+# In Claude Code:
+/orbit-skill-add
+```
+
+Or read the manual: [skills/orbit-skill-add/SKILL.md](skills/orbit-skill-add/SKILL.md).
+
+Naming pattern: `/orbit-<thing>` (specific tool), `/orbit-<thing>-test` (behavioural), `/orbit-<thing>-fuzzer` (active probe), `/orbit-<thing>-compat` (compatibility), `/orbit-<thing>-validate` (schema), `/orbit-<thing>-audit` (read-only review).
+
+Roadmap of 60+ candidate skills: [SKILL-ROADMAP.md](SKILL-ROADMAP.md).
+
+---
+
+## Output rules
+
+Every skill writes to `reports/` — never terminal-only.
+
+| Skill type | Output | Location |
+|---|---|---|
+| Code audits | Markdown with severity table | `reports/skill-audits/<skill>.md` |
+| Playwright | HTML reporter | `reports/playwright-html/index.html` |
+| Gauntlet | Master markdown | `reports/qa-report-<timestamp>.md` |
+| UAT compare | HTML with screenshots + videos | `reports/uat-report-<timestamp>.html` |
+| Lighthouse | JSON + summary | `reports/lighthouse/lh-<timestamp>.json` |
+| DB profile | Text | `reports/db-profile-<timestamp>.txt` |
+| PM UX | HTML | `reports/pm-ux/pm-ux-report-<timestamp>.html` |
+| Master index | HTML linking to all of the above | `reports/index.html` |
+
+View reports after any run:
+```bash
+python3 scripts/generate-reports-index.py
+open reports/index.html
+```
+
+---
+
+## Built by
+
+**[Aditya Sharma](https://adityaarsharma.com)** · POSIMYTH Innovation
+github.com/adityaarsharma/orbit

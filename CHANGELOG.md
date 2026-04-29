@@ -8,6 +8,94 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [2.5.0] — 2026-04-29 — "Claude Code-native"
+
+Orbit reorganises into a proper **Claude Code plugin** — 45 specialised `/orbit-*` slash commands, one master dispatcher, one curl-installer, one updater, and a meta-skill so the suite keeps growing. Pickle-style organisation: install once, type `/orbit`, get to work.
+
+### Added — 40 new skills (5 existing kept)
+
+**Master + Setup (5)**
+- **`/orbit`** — master dispatcher. Reads user intent, routes to the right `/orbit-*` skill or shows the role-based menu (Dev / QA / PM / Designer / Release Ops).
+- **`/orbit-setup`** — guided onboarding wizard. Installs skills + power tools, configures `qa.config.json`, spins up wp-env, runs first audit. ~10 min end-to-end.
+- **`/orbit-update`** — pulls latest Orbit + refreshes every skill symlink. Zero questions, ~20 sec. Removes deprecated entries.
+- **`/orbit-install`** — one-shot installer for PHPCS, WPCS, VIP, PHPCompatibility, PHPStan, Psalm, Rector, Playwright + browsers, Lighthouse, axe-core, WP-CLI, wp-env, wp-now, source-map-explorer, PurgeCSS, claude-mem.
+- **`/orbit-docker-site`** — wp-env (Docker) or wp-now setup, lifecycle commands, multi-version matrix, troubleshooting.
+
+**Pipeline (3)**
+- **`/orbit-gauntlet`** — full pipeline runner with 3 modes (quick / full / release). Documents what each of the 11 steps does, severity → release-gate mapping, sub-skill drill-down per failure layer.
+- **`/orbit-release-gate`** — day-of-release sequence: preflight → metadata → release-mode gauntlet → evidence-pack HTML.
+- **`/orbit-multi-plugin`** — batch-test multiple plugins in parallel with CPU throttling. Slack / Discord webhook integration.
+
+**Code Audits (6 new + 5 existing kept)**
+- **`/orbit-code-quality`** — dead code, complexity hotspots, error-handling gaps, type safety, **AI-hallucination radar** (catches Cursor/Copilot-introduced fake WP function names, wrong sanitize choices, missing nonces on AI-generated handlers — addresses Veracode's 45% AI-vuln stat).
+- **`/orbit-accessibility`** — axe-core (30%) + code review for the 70% axe can't see (focus traps, screen-reader announcements, dynamic content, WCAG 3.3 forms, block editor specifics).
+- **`/orbit-i18n`** — translation coverage, text-domain matching, POT freshness, locale-load hook timing, translator-friendly placeholders, RTL readiness.
+- **`/orbit-pm-ux-audit`** — wraps the v2.4 spell-check + guidance score + label benchmark with HTML report.
+- **`/orbit-compat-matrix`** — PHP 7.4 / 8.1 / 8.3 / 8.5 × WP 6.3 / 6.5 / latest matrix testing + modernisation opportunity report.
+- **`/orbit-cve-check`** — wraps `check-live-cve.sh` + `check-ownership-transfer.sh` as a unified weekly-cron-friendly skill.
+
+**Browser Testing (4)**
+- **`/orbit-playwright`** — full Playwright workflow: setup, write specs, 5 run modes (headless / UI / headed / debug / trace viewer), CI patterns.
+- **`/orbit-visual-regression`** — pixel-diff snapshots, responsive matrix (375 / 768 / 1440), 9-scheme admin colour matrix, baseline-update rules.
+- **`/orbit-user-flow`** — click-depth measurement, onboarding/wizard detection, confusion scoring, analytics-event verification, GDPR consent compliance.
+- **`/orbit-conflict-matrix`** — test against top 20 WP plugins (Yoast, RankMath, WC, Elementor, Jetpack, UpdraftPlus, etc.) one at a time. Configurable.
+
+**Performance (4)**
+- **`/orbit-lighthouse`** — Core Web Vitals scoring, multi-config (mobile / desktop / 4× CPU throttle), LHCI integration.
+- **`/orbit-editor-perf`** — Elementor / Gutenberg editor profiling: ready time, panel populated, widget insert→render, memory growth, console error spam.
+- **`/orbit-db-profile`** — query count per page, slow-query detection, N+1 patterns, autoload bloat, transient explosion, cron storm.
+- **`/orbit-bundle-analysis`** — JS / CSS bundle weight, source-map-explorer treemap, PurgeCSS unused-CSS report, asset-weight regression vs previous release.
+
+**Comparison (4)**
+- **`/orbit-uat-compare`** — Plugin A vs Plugin B HTML report with PAIR-NN-slug-a/b screenshot convention, paired videos, PM analysis JSON, RICE backlog, feature comparison table.
+- **`/orbit-version-compare`** — old.zip vs new.zip diff: PHPCS errors, asset weight, function adds/removes, hook adds/removes, visual baseline setup.
+- **`/orbit-competitor-compare`** — auto-downloads WP.org competitors, extracts version/installs/rating/bundle/PHPCS/security signals/block.json adoption, produces strategic gap analysis.
+- **`/orbit-changelog-test`** — reads CHANGELOG.md, classifies each entry (NEW FEATURE / PERFORMANCE / SECURITY / FIX / I18N / DEPRECATION), generates per-line test plan with spec paths and skill audit suggestions.
+
+**Release (5)**
+- **`/orbit-release-meta`** — plugin header validator, readme.txt (Stable tag, Tested up to, Requires PHP), version parity across 3 sources, license compliance, POT freshness, RTL readiness.
+- **`/orbit-zip-hygiene`** — release-zip validator: dev-artefact detection, source-map / composer-dev-deps / forbidden-functions / supply-chain audit.
+- **`/orbit-plugin-check`** — wraps the official wordpress.org `plugin-check` tool (the one their review team uses) with severity guidance.
+- **`/orbit-block-json-validate`** — every block.json against current schema (apiVersion 3, name format, attribute types, supports, file refs, textdomain).
+- **`/orbit-reports`** — generates the master `reports/index.html` with severity bar, tabbed audits, embedded Playwright + UAT + PM UX reports.
+
+**WP-specific edge cases (7)**
+- **`/orbit-multisite`** — network activation, super-admin caps, settings storage strategy, switch_to_blog safety, multisite uninstall pattern.
+- **`/orbit-uninstall-test`** — verifies uninstall.php cleans options, transients, postmeta, usermeta, custom tables, capabilities, scheduled crons, uploads.
+- **`/orbit-rest-fuzzer`** — auto-discovers `register_rest_route` calls, fuzzes each with malformed payloads / missing auth / type juggling / SQLi+XSS injection vectors.
+- **`/orbit-ajax-fuzzer`** — same for `wp_ajax_*` and the dangerous `wp_ajax_nopriv_*` handlers (with rate-limit + CSRF coverage).
+- **`/orbit-gdpr`** — verifies `wp_privacy_personal_data_exporters` + `wp_privacy_personal_data_erasers` registration, privacy-policy content, cookie declarations, consent-mode compliance.
+- **`/orbit-cron-audit`** — wp_schedule_event hygiene: missed schedules, duplicate registrations, missing unschedule, **zombie crons** (scheduled but no handler), cron storm detection.
+- **`/orbit-cache-compat`** — object cache (Redis / Memcached) compatibility, cache invalidation on writes, page-cache busting cookies, transient explosion, key namespacing.
+
+**Meta (1)**
+- **`/orbit-skill-add`** — generate new `/orbit-*` skills following the established pattern. Naming conventions, required sections, length sweet spot, install-script integration. The skill that creates skills.
+
+### Added — Distribution
+
+- **`install.sh`** at repo root — Pickle-style one-line installer: clones repo, symlinks 45 skills into `~/.claude/skills/orbit-*`, runs `setup/install.sh`, removes deprecated entries. Supports `--update` and `--skills-only` flags. Live updates without breaking — symlinks mean `git pull` instantly refreshes every skill.
+- **`update.sh`** at repo root — explicit updater (also invocable via `/orbit-update` from Claude Code). Handles local-changes safely, refuses destructive operations, shows changelog of new commits.
+- **`SKILL-ROADMAP.md`** — 60+ candidate skills organised in 10 tiers (compatibility, hosting, payment, lifecycle, REST/CLI, block editor, performance, security, SEO, plugin-store, DX, CI/CD, migration, docs). Each marked unclaimed; PR-friendly.
+- **`SKILLS.md`** — completely rewritten with all 45 skills in one table, by-category breakdown, install instructions, severity model, output rules, mandatory-skill list for the gauntlet.
+
+### Changed
+
+- **`README.md`** — new "Install in 60 seconds" section at the top, "The 45 Orbit skills" category table, repositioned existing Quick Start as the long-form alternative. Tagline updated: "A Claude Code plugin · 45 specialised /orbit-* skills".
+- **`GETTING-STARTED.md`** — install instructions now lead with the curl one-liner + `/orbit-setup` wizard. Old 5-step quick-start still documented.
+- **`AGENTS.md`** — references updated to point at the new orbit-* skills (kept the v2.4 hard rules around skill deduplication).
+
+### Removed
+
+- **`orbit-init`** skill (renamed to `/orbit-setup` to match Pickle's pattern). The installer auto-removes the old folder on next `/orbit-update`.
+
+### Migration notes
+
+- If you installed Orbit before v2.5: run `bash ~/Claude/orbit/install.sh --update` once. This removes deprecated `orbit-init`, symlinks the 40 new skills into `~/.claude/skills/`, and leaves your `qa.config.json` / `reports/` / `.auth/` untouched.
+- Restart Claude Code (`Cmd+Q` + reopen on macOS) so the new slash commands appear in the palette.
+- Old `bash setup/init.sh` still works for per-plugin `qa.config.json` setup, but `/orbit-setup` is the new front door (handles install + config in one wizard).
+
+---
+
 ## [2.4.0] — 2026-04-22 — "PM UX Quality"
 
 Three new PM-perspective checks that close the gap between "does it work" and "does it feel right." All checks are **warn severity** — PMs decide, never hard-blocks.

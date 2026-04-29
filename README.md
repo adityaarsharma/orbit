@@ -4,7 +4,7 @@
 
 ### **Complete UAT for WordPress Plugins**
 
-*A Claude Code plugin · 45 specialised `/orbit-*` skills · Dev → QA → PM → Designer → End User*
+*A Claude Code plugin · **106 specialised `/orbit-*` skills** · Dev → QA → PM → Designer → End User · **evergreen** (every skill links to live canonical sources, never frozen)*
 
 **👉 [Get started in 60 seconds](#install-in-60-seconds) — one curl command + a wizard**
 
@@ -24,7 +24,7 @@
 
 ---
 
-**v2.5.0 · April 2026 · Claude Code-native** — **45 specialised `/orbit-*` skills**: 11 audits, 4 Playwright suites, 4 perf deep-dives, 4 comparison flows, 5 release gates, 7 WP-specific edge-case probes (multisite, uninstall, REST/AJAX fuzzers, GDPR, cron, cache, plugin-check), and a meta-skill (`/orbit-skill-add`) so the suite keeps growing. Covers WP.org plugin-check rules, Patchstack 2025 top-5 vulns, WP 6.5→7.0 features, PHP 8.0→8.5.
+**v2.6.0 · April 2026 · Evergreen + Limitless** — **106 specialised `/orbit-*` skills**, every one of them linked to live canonical sources (WP Plugin Handbook, Block Editor Handbook, MDN, OWASP, schema.org, Stripe / PayPal docs, etc.) and instructed to fetch them on every audit. Rules in any SKILL.md are a starting point; the canonical doc is always source-of-truth. Quarterly drift-checks via `/orbit-evergreen-update`. Categories: 11 audits, 8 Gutenberg / Block Editor dev, 6 Elementor dev, 5 UAT templates (Elementor / Gutenberg / Woo / Forms / Membership), 5 PM, 5 Designer, 5 QA, 7 Performance, 3 Security probing, 3 SEO, 5 Hosting compat (WPE / Kinsta / Cloudways / Shared / Pantheon), 5 Plugin compat (Yoast / RankMath / WPML / Polylang / ACF), 4 Payment SDKs (Stripe / PayPal / EDD / Freemius), 3 Lifecycle (activation / upgrade / rollback), and a meta-skill (`/orbit-skill-add`) that helps you generate more. See [EVERGREEN.md](EVERGREEN.md) for the whitepaper / philosophy.
 
 🎯 **[Use Cases](docs/24-use-cases.md)** (25 real scenarios · Dev/QA/PM/PA/Designer/Release-Ops) &nbsp;·&nbsp; 🧩 **[Extending Orbit](docs/23-extending-orbit.md)** (how to add checks, write specs, create skills)
 
@@ -87,22 +87,35 @@ It walks you through plugin path, type (Elementor / Gutenberg / SEO / WooCommerc
 
 ---
 
-## The 45 Orbit skills
+## The 106 Orbit skills
 
-| Category | Skills |
-|---|---|
-| **Master + Setup** (5) | `/orbit` `/orbit-setup` `/orbit-install` `/orbit-update` `/orbit-docker-site` |
-| **Pipeline** (3) | `/orbit-gauntlet` `/orbit-release-gate` `/orbit-multi-plugin` |
-| **Code Audits** (11) | `/orbit-wp-standards` `/orbit-wp-security` `/orbit-wp-performance` `/orbit-wp-database` `/orbit-scaffold-tests` `/orbit-code-quality` `/orbit-accessibility` `/orbit-i18n` `/orbit-pm-ux-audit` `/orbit-compat-matrix` `/orbit-cve-check` |
-| **Browser Testing** (4) | `/orbit-playwright` `/orbit-visual-regression` `/orbit-user-flow` `/orbit-conflict-matrix` |
-| **Performance** (4) | `/orbit-lighthouse` `/orbit-editor-perf` `/orbit-db-profile` `/orbit-bundle-analysis` |
-| **Comparison** (4) | `/orbit-uat-compare` `/orbit-version-compare` `/orbit-competitor-compare` `/orbit-changelog-test` |
-| **Release** (5) | `/orbit-release-meta` `/orbit-zip-hygiene` `/orbit-plugin-check` `/orbit-block-json-validate` `/orbit-reports` |
-| **WP-specific edge cases** (7) | `/orbit-multisite` `/orbit-uninstall-test` `/orbit-rest-fuzzer` `/orbit-ajax-fuzzer` `/orbit-gdpr` `/orbit-cron-audit` `/orbit-cache-compat` |
-| **Other** (2) | `/orbit-pre-commit` `/orbit-skill-add` (meta — generate new skills) |
+| Category | Count | Examples |
+|---|---|---|
+| Master + Setup | 5 | `/orbit` `/orbit-setup` `/orbit-install` `/orbit-update` `/orbit-docker-site` |
+| Pipeline | 3 | `/orbit-gauntlet` `/orbit-release-gate` `/orbit-multi-plugin` |
+| Code Audits | 11 | `/orbit-wp-{standards,security,performance,database}` `/orbit-{accessibility,i18n,code-quality,pm-ux-audit,compat-matrix,cve-check,scaffold-tests}` |
+| **Gutenberg / Block Editor Dev** | 8 | `/orbit-gutenberg-dev` `/orbit-block-{render-test,edit-test,patterns,bindings,variations}` `/orbit-fse-test` `/orbit-interactivity-api` |
+| **Elementor Dev** | 6 | `/orbit-elementor-{dev,controls,compat,pro,skins,dynamic-tags}` |
+| Browser Testing | 4 | `/orbit-playwright` `/orbit-visual-regression` `/orbit-user-flow` `/orbit-conflict-matrix` |
+| **UAT Templates** | 5 | `/orbit-uat-{elementor,gutenberg,woo,forms,membership}` |
+| **QA Specialised** | 5 | `/orbit-qa-{flaky-detector,mutation,coverage,snapshot-cleanup,regression-pack}` |
+| **PM Specialised** | 5 | `/orbit-pm-{rice,release-notes,feedback-mining,roadmap,competitor-pulse}` |
+| **Designer Specialised** | 5 | `/orbit-designer-{tokens,empty-error,icons,rtl,dark-mode}` |
+| Performance | 7 | `/orbit-{lighthouse,editor-perf,db-profile,bundle-analysis}` `/orbit-perf-{stress-test,memory-leak,cdn}` |
+| Comparison | 4 | `/orbit-{uat,version,competitor}-compare` `/orbit-changelog-test` |
+| Release | 5 | `/orbit-{release-meta,zip-hygiene,plugin-check,block-json-validate,reports}` |
+| WP-specific edge cases | 7 | `/orbit-{multisite,uninstall-test,gdpr,cron-audit,cache-compat,rest-fuzzer,ajax-fuzzer}` |
+| **Lifecycle** | 3 | `/orbit-life-{activation,upgrade,rollback}` |
+| **Hosting Compat** | 5 | `/orbit-host-{wpengine,kinsta,cloudways,shared,pantheon}` |
+| **Plugin Compat** | 5 | `/orbit-compat-{yoast,rankmath,wpml,polylang,acf}` |
+| **Payment Integration** | 4 | `/orbit-pay-{stripe,paypal,edd,freemius}` |
+| **Security Specialised** | 3 | `/orbit-sec-{xss-active,supply-chain,secrets-leak}` |
+| **SEO** | 3 | `/orbit-seo-{schema,sitemap,page-speed}` |
+| Other / Meta | 3 | `/orbit-pre-commit` `/orbit-skill-add` `/orbit-evergreen-update` |
 
 **👉 [Full skill reference with trigger phrases + descriptions](SKILLS.md)**
-**👉 [Roadmap of 60+ more candidate skills](SKILL-ROADMAP.md)**
+**👉 [Evergreen pattern (whitepaper)](EVERGREEN.md)**
+**👉 [Roadmap of more candidate skills](SKILL-ROADMAP.md)**
 
 ---
 

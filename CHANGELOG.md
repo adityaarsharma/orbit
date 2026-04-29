@@ -8,6 +8,123 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [2.6.0] — 2026-04-29 — "Evergreen + Limitless"
+
+61 new skills (now **106 total**), each linked to live canonical sources so the suite stays current with the day's reality, not statically frozen. Plus a meta-skill (`/orbit-evergreen-update`) that walks every other skill, fetches the linked sources, flags drift.
+
+### Added — The Evergreen Pattern
+
+- **`EVERGREEN.md`** — the whitepaper / philosophy doc. Every skill must include a `Sources & Evergreen References` section with: canonical doc URLs (fetch on every audit), rule lineage (which release added each rule), and a `Last reviewed` date. The canonical doc is always source-of-truth; rules in SKILL.md are a starting point.
+
+- **`/orbit-evergreen-update`** — meta-skill that walks every `~/.claude/skills/orbit-*/SKILL.md`, fetches the linked sources, diffs against embedded rules, flags drift. Operating modes: `--check` (read-only), `--apply` (auto-fix non-controversial), `--specific orbit-X` (single skill), `--source <URL>` (force re-check across all skills). Recommended cadence: quarterly + after every WP minor release.
+
+### Added — 61 new skills
+
+#### Block Editor / Gutenberg Dev (8 new)
+- **`/orbit-gutenberg-dev`** — block dev workflow audit (apiVersion, render.php, supports, textdomain, ServerSideRender migration)
+- **`/orbit-block-render-test`** — server-side render coverage check + test scaffolder
+- **`/orbit-block-edit-test`** — editor-time UX coverage (InspectorControls, transforms, undo/redo, inner blocks)
+- **`/orbit-block-patterns`** — block-pattern registration audit (`viewportWidth`, synced patterns, pattern category)
+- **`/orbit-fse-test`** — Full-Site-Editing compat (theme.json schema 3, templates, parts, style variations, block locking)
+- **`/orbit-block-bindings`** — Block Bindings API (WP 6.5+) — catches plugins still using `render_block` filter pattern
+- **`/orbit-interactivity-api`** — modern client-side block behaviour without bundling React for the frontend
+- **`/orbit-block-variations`** — `registerBlockVariation()` audit; flags over-blocking that should be variations
+
+#### Elementor Dev (6 new)
+- **`/orbit-elementor-dev`** — Widget_Base structure, register_controls, render escaping, get_*_depends, content_template
+- **`/orbit-elementor-controls`** — built-in vs custom controls, selectors for live preview
+- **`/orbit-elementor-compat`** — across-version matrix (3.18 / 3.20 / 3.22 / latest), deprecated APIs, Editor V4 prep
+- **`/orbit-elementor-pro`** — Form Action subclasses, Display Conditions, Theme Builder locations, Popup triggers
+- **`/orbit-elementor-skins`** — Skin_Base subclassing; flags plugins shipping multiple widgets that should be skins
+- **`/orbit-elementor-dynamic-tags`** — Tag class structure, categories, sanitization, Pro guard
+
+#### UAT Specialised Templates (5 new)
+- **`/orbit-uat-elementor`** — drag → configure → save → frontend, responsive breakpoints, Theme Builder context
+- **`/orbit-uat-gutenberg`** — uses `@wordpress/e2e-test-utils-playwright`, FSE template context, Query Loop, synced patterns
+- **`/orbit-uat-woo`** — product CRUD, classic + Block Checkout, HPOS-aware, REST + Store API, refunds
+- **`/orbit-uat-forms`** — render, validation (client + server), anti-spam, file upload, multi-step, GDPR consent
+- **`/orbit-uat-membership`** — registration, server-side paywall, course progress, drip schedule, cert generation, sub lifecycle
+
+#### QA Specialised (5 new)
+- **`/orbit-qa-flaky-detector`** — runs each spec N times, flags pass-rate < 100%, suggests root causes
+- **`/orbit-qa-mutation`** — Infection PHP — measures TEST quality, not code quality; MSI tracking
+- **`/orbit-qa-coverage`** — PHPUnit + Xdebug / pcov line + branch + function coverage
+- **`/orbit-qa-snapshot-cleanup`** — find orphan / stale Playwright PNGs; Linux-only baseline strategy
+- **`/orbit-qa-regression-pack`** — `@regression`-tagged tests; coverage rate per [FIX] commit
+
+#### PM Specialised (5 new)
+- **`/orbit-pm-rice`** — RICE-scored backlog from any audit's findings; severity-override rules
+- **`/orbit-pm-release-notes`** — auto-draft 4 outputs (blog / email / readme.txt / social) from CHANGELOG + git diff + visual regression
+- **`/orbit-pm-feedback-mining`** — mine WP.org reviews + forum threads + GitHub issues into themed action items
+- **`/orbit-pm-roadmap`** — quarterly roadmap from RICE + feedback + competitor gaps; north-star metric per quarter
+- **`/orbit-pm-competitor-pulse`** — monthly competitor cadence / bundle / rating tracker; cron-friendly
+
+#### Designer Specialised (5 new)
+- **`/orbit-designer-tokens`** — colour / typography / spacing / radius / shadow tokens audit; WP admin token adoption
+- **`/orbit-designer-empty-error`** — empty-state coverage with CTAs; error-state coverage with recoverable messages
+- **`/orbit-designer-icons`** — icon-library inventory (Dashicons, FA, inline SVG), accessibility, sizing scale
+- **`/orbit-designer-rtl`** — logical properties vs hardcoded directional values; rtl.css + `wp_style_add_data`
+- **`/orbit-designer-dark-mode`** — WP admin colour-scheme matrix + `prefers-color-scheme` + contrast in both modes
+
+#### Performance Deep (3 new)
+- **`/orbit-perf-stress-test`** — k6 / JMeter — concurrent users, p50/p95/p99 latency, throughput, error rate
+- **`/orbit-perf-memory-leak`** — runs hot path N times, measures `memory_get_usage()`, flags linear growth
+- **`/orbit-perf-cdn`** — Cloudflare / BunnyCDN / KeyCDN compat — asset URL rewrites, immutable cache, CORS for fonts
+
+#### Security Specialised (3 new)
+- **`/orbit-sec-xss-active`** — active XSS probing — DOM / reflected / stored payloads against every URL parameter, form, REST endpoint
+- **`/orbit-sec-supply-chain`** — Composer + npm CVE check, license compatibility, abandoned packages, typosquatting risk, lockfile integrity
+- **`/orbit-sec-secrets-leak`** — gitleaks-style — API keys, OAuth tokens, AWS / Stripe / Twilio / Slack patterns; full git history scan
+
+#### SEO (3 new)
+- **`/orbit-seo-schema`** — Schema.org / JSON-LD audit; Google Rich Results eligibility; coexistence with Yoast / RankMath
+- **`/orbit-seo-sitemap`** — XML sitemap audit; sitemap-index for 50K+ URLs; robots.txt linkage; Yoast / RankMath / WP core coexistence
+- **`/orbit-seo-page-speed`** — Google PSI API integration — lab vs field (CrUX) Core Web Vitals comparison
+
+#### Lifecycle (3 new)
+- **`/orbit-life-activation`** — `register_activation_hook` safety, idempotency, multisite network-activate, defer heavy ops
+- **`/orbit-life-upgrade`** — version-migration logic — every n→n+1 path covered, idempotent, batched for big tables
+- **`/orbit-life-rollback`** — forward-compatible schema; what happens when a user downgrades; min_supported_version pattern
+
+#### Hosting Compat (5 new)
+- **`/orbit-host-wpengine`** — disallowed plugins, EverCache, file locks, Memcached
+- **`/orbit-host-kinsta`** — Cloudflare Enterprise, Redis add-on, Quicksilver-equivalent multidev
+- **`/orbit-host-cloudways`** — Breeze, Varnish, OCP, NGINX-only stack
+- **`/orbit-host-shared`** — memory / time / I/O / `disable_functions` / no Redis / mod_security
+- **`/orbit-host-pantheon`** — read-only filesystem (uploads only writable), Quicksilver hooks, NGINX-only
+
+#### Plugin Compat (5 new)
+- **`/orbit-compat-yoast`** — title-tag / schema / sitemap / breadcrumb / REST namespace coexistence
+- **`/orbit-compat-rankmath`** — schema graph (more aggressive than Yoast), redirections coexistence
+- **`/orbit-compat-wpml`** — wpml-config.xml registration, String API, language detection, URL filtering
+- **`/orbit-compat-polylang`** — pll_* functions, translatable strings, free + Pro features
+- **`/orbit-compat-acf`** — defensive get_field, ACF Blocks v3, JSON sync vs PHP, REST exposure
+
+#### Payment Integration (4 new)
+- **`/orbit-pay-stripe`** — keys, idempotency, webhook signatures, PaymentIntents (SCA), Stripe Elements (PCI scope), test vs live
+- **`/orbit-pay-paypal`** — REST v2 (Orders + Payments), Smart Buttons, webhook signature verification, IPN deprecation, OAuth token caching
+- **`/orbit-pay-edd`** — Software Licensing — license check, EDD_SL_Plugin_Updater, expiry behaviour (don't ransom)
+- **`/orbit-pay-freemius`** — SDK init, opt-in flow (GDPR), opt-out preservation, telemetry disclosure, SDK version pinning
+
+### Changed
+
+- **`SKILLS.md`** rewritten — every skill in one table, by-category breakdown, evergreen-pattern note, severity model, output rules.
+- **`README.md`** — bumped to "106 specialised skills, evergreen", new category table, EVERGREEN.md link prominent.
+- **`SKILL-ROADMAP.md`** — most v2.6 candidate skills marked DONE; roadmap now lists remaining gaps + new wishlist (CCPA / HIPAA / multilingual deep / hosting tier 2).
+
+### Migration notes from v2.5
+
+```bash
+bash ~/Claude/orbit/install.sh --update
+# Re-symlinks the 61 new skills into ~/.claude/skills/orbit-*
+# Restart Claude Code (Cmd+Q + reopen) to register the new commands.
+# Then: /orbit-evergreen-update --check  to verify your existing 45 skills are current.
+```
+
+Existing v2.5 skills (45) are unchanged. Future versions will gradually backfill the `Sources & Evergreen References` section into them — `/orbit-evergreen-update` flags which need it.
+
+---
+
 ## [2.5.0] — 2026-04-29 — "Claude Code-native"
 
 Orbit reorganises into a proper **Claude Code plugin** — 45 specialised `/orbit-*` slash commands, one master dispatcher, one curl-installer, one updater, and a meta-skill so the suite keeps growing. Pickle-style organisation: install once, type `/orbit`, get to work.

@@ -1,12 +1,12 @@
 ---
 name: orbit-nexter-block
-description: Full automated block testing pipeline for Nexter Blocks — covers BOTH the free plugin (the-plus-addons-for-block-editor, 57 blocks) and the Pro plugin (the-plus-addons-for-block-editor-pro, 74 blocks). Auto-inserts every block into the Gutenberg editor via wp.data, randomises ALL attribute controls to stress-test the PHP renderer, runs a deterministic value-verification pass (confirms option values actually appear in frontend HTML), publishes each post, and checks for PHP fatal errors, JS console errors, and broken renders. Also includes a UI-driven spec that physically clicks every sidebar control. Use when the user says "test all blocks", "run block tests", "smoke test blocks", "check frontend render", "verify options applied", "test free version", "block controls test", or after fixing any block bug. Built with Playwright + wp.data store.
+description: Full automated block testing pipeline for Nexter Blocks — covers BOTH the free plugin (the-plus-addons-for-block-editor, 57 blocks) and the Pro plugin (the-plus-addons-for-block-editor-pro, 74 blocks). Auto-inserts every block into the Gutenberg editor via wp.data, randomises ALL attributes declared in block.json (98% coverage — 4082/4151 attrs), runs a deterministic value-verification pass, publishes each post, and checks for PHP fatal errors, JS console errors, and broken renders. Also includes a UI-driven spec that physically clicks every sidebar control. Use when the user says "test all blocks", "run block tests", "smoke test blocks", "check all attributes", "verify options applied", "test free version", or after fixing any block bug. Built with Playwright + wp.data store.
 argument-hint: [--version free|pro|all] [--mode smoke|ui|all|quick] [--block tp-accordion] [--rounds 3]
 ---
 
 # 🪐 orbit-nexter-block — Automated Block Testing Pipeline
 
-Insert every block. Randomise every attribute. Verify option values appear on the frontend. Covers **both** the free and Pro versions of Nexter Blocks.
+Insert every block. Randomise **every attribute in block.json**. Verify option values appear on the frontend. Covers both the free and Pro versions of Nexter Blocks.
 
 ---
 
@@ -30,10 +30,58 @@ SMOKE_ROUNDS=1 SKIP_VERIFY=1 npm run test:blocks
 # Single block
 npx playwright test --project=block-smoke --grep "tp-heading"
 
+# Attribute coverage audit
+node scripts/generate-block-manifest.js --report
+
 # Open the visual HTML dashboard
 node scripts/generate-smoke-report.js
 open tests/playwright/reports/smoke-report.html
 ```
+
+---
+
+## Attribute coverage — all block.json attrs tested
+
+The manifest generator reads **every attribute** from every `block.json` and classifies it into one of four test categories. Current coverage for Nexter Blocks Pro v4.7.3:
+
+| Category | Count | How tested |
+|---|---|---|
+| **text-content** | ~600 | Sentinel string set → must appear in frontend HTML |
+| **style-class** | ~200 | Known value (`style-1`) → must appear as CSS class |
+| **boolean-flip** | ~800 | Set `true` → assert no PHP crash |
+| **css-inject** (`scopy:true`) | 2704 | Valid hex colour → assert no CSS injection crash |
+| **skip** (internal) | 69 | `block_id`, `className` — not randomised |
+| **Total tested** | **4082 / 4151** | **98% attribute coverage** |
+
+The only excluded attributes are `block_id`, `className`, `lock`, `anchor` — internal WordPress IDs that must not be randomised.
+
+### Attribute categories explained
+
+| Category | Key pattern | What it does | Verified how |
+|---|---|---|---|
+| `text-content` | `title`, `label`, `heading`, `btnText`, `daysText` | Renders as visible text | Sentinel `TpVfy_<key>` found in `body.innerText()` |
+| `style-class` | `style` (default `style-1`), `skin`, `variant` | Becomes a CSS class modifier | Value found in `body.innerHTML()` as class |
+| `boolean-flip` | Any `boolean` type | Toggles a feature on/off | Set `true` → no PHP crash |
+| `css-inject` | Has `scopy:true` + `style` array | Injects CSS via `<style>` tag | Valid hex set → no crash, no broken `<style>` |
+| `skip` | `block_id`, `className`, `anchor`, `lock` | Internal WordPress identifiers | Default value preserved |
+
+### CSS-inject attributes (Nexter scopy system)
+
+These are colour and style attributes unique to Nexter Blocks. Each stores a CSS value that is injected into a `<style>` tag at render time via the `scopy` engine:
+
+```json
+{
+  "titleColor": {
+    "type": "string",
+    "default": "",
+    "scopy": true,
+    "style": [{ "selector": "{{PLUS_WRAP}} .title { color: {{titleColor}}; }" }]
+  }
+}
+```
+
+**Previous behaviour:** These were accidentally excluded from testing (filter bug — `default: ""` was treated as "no default").
+**Current behaviour:** All 2704 `scopy` attrs are randomised with a valid hex colour (`#e74c3c`) and the renderer is asserted to produce no PHP fatals.
 
 ---
 
@@ -44,106 +92,80 @@ open tests/playwright/reports/smoke-report.html
 | **Free** | `the-plus-addons-for-block-editor` | 57 | `the-plus-addons-for-block-editor` | `tpgb/` |
 | **Pro** | `the-plus-addons-for-block-editor-pro` | 74 | `tpgbp` | `tpgb/` |
 
-Both plugins are loaded simultaneously in `wp-env` — blocks from both are registered under the same `tpgb/` namespace and are testable in the same editor session.
+Both plugins are loaded simultaneously in `wp-env`. Both share the `tpgb/` namespace.
 
 ---
 
 ## Block inventory
 
-### Free-only blocks (35 unique to free)
+### Free-only blocks (35)
 ```
-tp-blockquote       tp-breadcrumbs      tp-button
-tp-button-core      tp-code-highlighter tp-dark-mode
-tp-draw-svg         tp-empty-space      tp-external-form-styler
-tp-heading          tp-heading-title    tp-hovercard
-tp-icon-box         tp-image            tp-infobox
-tp-interactive-circle-info              tp-messagebox
-tp-number-counter   tp-post-author      tp-post-comment
-tp-post-content     tp-post-image       tp-post-meta
-tp-post-title       tp-pricing-list     tp-pro-paragraph
-tp-progress-bar     tp-progress-tracker tp-search-bar
-tp-site-logo        tp-smooth-scroll    tp-social-embed
-tp-social-icons     tp-stylist-list     tp-video
+tp-blockquote  tp-breadcrumbs  tp-button  tp-button-core  tp-code-highlighter
+tp-dark-mode   tp-draw-svg     tp-empty-space  tp-external-form-styler
+tp-heading     tp-heading-title  tp-hovercard  tp-icon-box  tp-image
+tp-infobox     tp-interactive-circle-info  tp-messagebox  tp-number-counter
+tp-post-author tp-post-comment  tp-post-content  tp-post-image  tp-post-meta
+tp-post-title  tp-pricing-list  tp-pro-paragraph  tp-progress-bar
+tp-progress-tracker  tp-search-bar  tp-site-logo  tp-smooth-scroll
+tp-social-embed  tp-social-icons  tp-stylist-list  tp-video
 ```
 
-### Pro-only blocks (36 unique to Pro)
+### Pro-only blocks (36)
 ```
-tp-adv-typo         tp-advanced-buttons tp-advanced-chart
-tp-animated-service-boxes               tp-anything-carousel
-tp-audio-player     tp-before-after     tp-carousel-remote
-tp-circle-menu      tp-coupon-code      tp-cta-banner
-tp-dynamic-category tp-dynamic-device   tp-expand
-tp-heading-animation tp-hotspot         tp-login-register
-tp-lottiefiles      tp-mailchimp        tp-media-listing
-tp-mobile-menu      tp-mouse-cursor     tp-popup-builder
-tp-post-navigation  tp-preloader        tp-process-steps
-tp-product-listing  tp-repeater-block   tp-scroll-navigation
-tp-scroll-sequence  tp-social-sharing   tp-spline-3d-viewer
-tp-table-content    tp-timeline         tp-timeline-inner
+tp-adv-typo  tp-advanced-buttons  tp-advanced-chart  tp-animated-service-boxes
+tp-anything-carousel  tp-audio-player  tp-before-after  tp-carousel-remote
+tp-circle-menu  tp-coupon-code  tp-cta-banner  tp-dynamic-category
+tp-dynamic-device  tp-expand  tp-heading-animation  tp-hotspot  tp-login-register
+tp-lottiefiles  tp-mailchimp  tp-media-listing  tp-mobile-menu  tp-mouse-cursor
+tp-popup-builder  tp-post-navigation  tp-preloader  tp-process-steps
+tp-product-listing  tp-repeater-block  tp-scroll-navigation  tp-scroll-sequence
+tp-social-sharing  tp-spline-3d-viewer  tp-table-content  tp-timeline  tp-timeline-inner
 ```
 
-### Shared blocks (22 in both plugins)
+### Shared blocks (22 in both)
 ```
-tp-accordion  tp-container  tp-countdown  tp-creative-image
-tp-data-table tp-flipbox    tp-form-block tp-google-map
-tp-tab        tp-team       tp-testimonial tp-toggle
-tp-video-player tp-woo-listing tp-woo-single tp-woo-slider
+tp-accordion  tp-container  tp-countdown  tp-creative-image  tp-data-table
+tp-flipbox    tp-form-block  tp-google-map  tp-tab  tp-team  tp-testimonial
+tp-toggle  tp-video-player  tp-woo-listing  tp-woo-single  tp-woo-slider
 ```
 
-> **Note:** When both plugins are active, the Pro version's `block.json` takes precedence for shared block names. Test the free version with the Pro plugin deactivated, or use the `PLUGIN_VERSION=free` flag.
+> When both plugins are active, the Pro version's `block.json` takes precedence for shared blocks. Test the free version with the Pro plugin deactivated, or use `PLUGIN_VERSION=free`.
 
 ---
 
 ## Free version testing
 
-### Setup — test the free plugin in isolation
+### Isolate and test the free plugin
 
 ```bash
-# Temporarily deactivate Pro plugin in wp-env
+# Deactivate Pro
 npx wp-env run cli wp plugin deactivate the-plus-addons-for-block-editor-pro
 
-# Point the manifest generator at the free plugin
+# Generate free manifest
 BLOCKS_DIR=../the-plus-addons-for-block-editor/classes/blocks \
+  OUTPUT_FILE=tests/playwright/fixtures/block-manifest-free.json \
   node scripts/generate-block-manifest.js
 
-# Run smoke tests (free blocks only)
-PLUGIN_VERSION=free npm run test:blocks
+# Run smoke tests against free manifest
+PLUGIN_VERSION=free MANIFEST=block-manifest-free.json npm run test:blocks
 
-# Re-activate Pro after
+# Re-activate Pro
 npx wp-env run cli wp plugin activate the-plus-addons-for-block-editor-pro
 ```
 
 ### Free-specific checks
 
-Beyond the standard crash / value verification checks, free version testing adds:
-
-1. **No Pro leakage** — Free blocks must not call Pro-only PHP classes (`Tpgbp_Pro_Blocks_Helper`, `Tpgb_Pro_Library`, etc.)
-2. **Textdomain consistency** — All `__()` calls in free blocks must use `'the-plus-addons-for-block-editor'`, not `'tpgbp'`
-3. **Upsell UI** — Blocks that show upgrade prompts must not crash or produce empty output
-4. **Shared block parity** — For blocks in both versions, the free `render.php` must produce valid HTML without Pro attributes
+1. **No Pro leakage** — Free blocks must not call Pro-only PHP classes
+2. **Textdomain** — All `__()` calls must use `'the-plus-addons-for-block-editor'`, not `'tpgbp'`
+3. **Upsell UI safety** — Blocks with upgrade prompts must not crash or show empty output
+4. **Shared block parity** — Free `render.php` must produce valid HTML without Pro attributes
 
 ```bash
 # Check for Pro class leakage in free plugin
-grep -r "Tpgbp_" \
-  "../the-plus-addons-for-block-editor/classes/blocks/" \
-  --include="*.php" -l
+grep -r "Tpgbp_" "../the-plus-addons-for-block-editor/classes/blocks/" --include="*.php" -l
 
-# Check for wrong textdomain in free plugin
-grep -r "'tpgbp'" \
-  "../the-plus-addons-for-block-editor/" \
-  --include="*.php"
-```
-
-### Free block manifest generation
-
-```bash
-# Generate manifest for free plugin
-BLOCKS_DIR=../the-plus-addons-for-block-editor/classes/blocks \
-  OUTPUT_FILE=tests/playwright/fixtures/block-manifest-free.json \
-  node scripts/generate-block-manifest.js
-
-# Run against free manifest
-MANIFEST=block-manifest-free.json npm run test:blocks
+# Check for wrong textdomain
+grep -r "'tpgbp'" "../the-plus-addons-for-block-editor/" --include="*.php"
 ```
 
 ---
@@ -160,33 +182,10 @@ MANIFEST=block-manifest-free.json npm run test:blocks
 ### One-time setup
 
 ```bash
-# 1. Start the Docker test site (loads both free + Pro plugins)
 npx wp-env start
-
-# 2. Install Playwright + Chromium
-npm install
-npx playwright install chromium
-
-# 3. Generate Pro block manifest
+npm install && npx playwright install chromium
 node scripts/generate-block-manifest.js
-
-# 4. Save admin session (once per wp-env boot)
 npx playwright test tests/playwright/auth.setup.js --project=setup
-```
-
-### `.wp-env.json` — both plugins loaded together
-
-```json
-{
-  "core": null,
-  "phpVersion": "8.2",
-  "port": 8881,
-  "plugins": [
-    ".",
-    "../the-plus-addons-for-block-editor",
-    "https://downloads.wordpress.org/plugin/query-monitor.zip"
-  ]
-}
 ```
 
 ---
@@ -196,66 +195,27 @@ npx playwright test tests/playwright/auth.setup.js --project=setup
 ```
 1. Open Gutenberg editor      →  post-new.php + autosave to get post ID
 2. Insert block               →  wp.blocks.createBlock() via wp.data
-3. Randomise attributes × N   →  wp.data.dispatch(…).updateBlockAttributes()
-4. Verification pass          →  set sentinel text values ("TpVfy_title" etc.)
+3. Randomise ALL attributes   →  text→random text, bool→random bool,
+                                  css-inject→valid hex, style→style-N
+4. Verification pass          →  sentinel text values ("TpVfy_title" etc.)
 5. Publish                    →  wp.data.dispatch('core/editor').savePost()
 6. Visit frontend             →  new browser context (no admin cookies)
 7. Assert — crash check       →  zero PHP fatals | no JS errors | screenshot saved
-8. Assert — value check       →  sentinel values confirmed in rendered HTML
-```
-
----
-
-## Test suites
-
-### `block-smoke.spec.js` — attribute randomisation + value verification
-
-- Inserts each block via `wp.blocks.createBlock()`
-- Applies **N rounds** of fully-randomised attribute sets (default `SMOKE_ROUNDS=3`)
-- Runs one **deterministic verification pass** with sentinel values on text/label/title attributes
-- Publishes and checks the frontend
-- **Hard assertion:** zero PHP fatals
-- **Soft check:** sentinel text values appear in the page (misses logged, not failures)
-
-### `block-controls.spec.js` — sidebar UI interaction
-
-- Inserts each block and **physically clicks** every visible control in the inspector sidebar
-- Expands all panels, touches every toggle / select / slider / color-hex / button-group / radio
-- Takes an editor screenshot, publishes, checks the frontend
-
----
-
-## Attribute value verification
-
-`helpers/attribute-verifier.js` answers: **"Does setting this option actually change the frontend output?"**
-
-| Category | Key pattern | Sentinel | Verification |
-|---|---|---|---|
-| `text-content` | `title`, `label`, `heading`, `btnText` | `TpVfy_<key>` | Must appear in `body.innerText()` |
-| `style-class` | `style` (default `style-1`), `skin` | `style-1` | Must appear in `body.innerHTML()` as CSS class |
-| `boolean-flip` | Any `boolean` attribute | `true` | No crash = pass |
-| `skip` | `url`, `color`, `size`, `image`, dates | Default value | Not verified |
-
-### Terminal output per block
-
-```
-  ✓ tpgb/tp-accordion  value-verify: 3/3 text attrs confirmed
-  ~ tpgb/tp-heading    value-verify: 1/2 text attrs confirmed (missed: subTitle)
-  ⚠ tpgb/tp-flipbox    value-verify: 0/2 text attrs confirmed (missed: frontTitle)
+8. Assert — value check       →  sentinel text appears in rendered HTML
 ```
 
 ---
 
 ## Run commands
 
-| Command | What it does | Time |
+| Command | Time | What it does |
 |---|---|---|
-| `npm run test:blocks` | Smoke — Pro blocks, random + value verify | ~12 min |
-| `PLUGIN_VERSION=free npm run test:blocks` | Smoke — Free blocks only | ~8 min |
-| `PLUGIN_VERSION=all npm run test:blocks` | Smoke — Free + Pro blocks | ~20 min |
-| `npm run test:blocks:ui` | Controls suite — sidebar click-through | ~25 min |
-| `npm run test:blocks:all` | Smoke + controls suites | ~40 min |
-| `npm run generate-manifest` | Rebuild Pro block manifest | 2s |
+| `npm run test:blocks` | ~12 min | Smoke — Pro blocks, all attrs randomised + value verify |
+| `PLUGIN_VERSION=free npm run test:blocks` | ~8 min | Smoke — Free blocks only |
+| `PLUGIN_VERSION=all npm run test:blocks` | ~20 min | Smoke — Free + Pro |
+| `npm run test:blocks:ui` | ~25 min | Controls — sidebar click-through |
+| `npm run test:blocks:all` | ~40 min | Both suites |
+| `npm run generate-manifest` | 2s | Rebuild manifest (re-runs attribute coverage audit) |
 
 ### Environment variables
 
@@ -263,18 +223,8 @@ npx playwright test tests/playwright/auth.setup.js --project=setup
 |---|---|---|
 | `PLUGIN_VERSION` | `pro` | `free` / `pro` / `all` — which blocks to test |
 | `SMOKE_ROUNDS` | `3` | Randomisation passes per block |
-| `SKIP_VERIFY` | `0` | Set `1` to skip value-verification (faster) |
+| `SKIP_VERIFY` | `0` | `1` = skip value-verification (faster) |
 | `WP_BASE_URL` | `http://localhost:8881` | WordPress site URL |
-
----
-
-## Block manifest counts
-
-| Version | Total | Testable | Child blocks | API-skip |
-|---|---|---|---|---|
-| **Free** | 57 | ~35 | ~18 | 2 |
-| **Pro** | 74 | 48 | 22 | 4 |
-| **Combined** | ~107 unique | ~75 | ~30 | 5 |
 
 ---
 
@@ -282,29 +232,21 @@ npx playwright test tests/playwright/auth.setup.js --project=setup
 
 ```
 <plugin-root>/
-├── playwright.config.js
-├── package.json
 ├── scripts/
-│   ├── generate-block-manifest.js    ← Scans block.json → manifest
+│   ├── generate-block-manifest.js    ← Scans ALL block.json attrs → manifest
 │   └── generate-smoke-report.js      ← JSON → visual HTML dashboard
 └── tests/playwright/
-    ├── auth.setup.js
     ├── block-smoke.spec.js           ← Random attrs + value verification
     ├── block-controls.spec.js        ← Sidebar click-through
     ├── helpers/
-    │   ├── randomizer.js             ← Type-safe random value generator
+    │   ├── randomizer.js             ← Type-safe random values (incl. css-inject)
     │   ├── wp-editor.js              ← createDraftPost / insertBlock / publishPost
     │   ├── frontend-checker.js       ← PHP fatal / JS error / screenshots
-    │   ├── attribute-verifier.js     ← Sentinel value verification
+    │   ├── attribute-verifier.js     ← Sentinel value + css-inject verification
     │   └── sidebar-controls.js       ← Clicks toggles, selects, sliders
-    ├── fixtures/
-    │   ├── block-manifest.json       ← Pro blocks (auto-generated)
-    │   ├── block-manifest-free.json  ← Free blocks (auto-generated)
-    │   └── auth.json
-    └── reports/
-        ├── smoke-summary.json
-        ├── smoke-report.html
-        └── screenshots/
+    └── fixtures/
+        ├── block-manifest.json       ← Pro blocks — 4082 attrs (98% coverage)
+        └── block-manifest-free.json  ← Free blocks
 ```
 
 ---
@@ -316,7 +258,7 @@ npx playwright test tests/playwright/auth.setup.js --project=setup
 - `Call to undefined function/method` in page body
 - `Allowed memory size` in page body
 
-### Free-version specific warnings
+### Free-version specific
 - `class 'Tpgbp_Pro_Blocks_Helper' not found` — Pro class called from free block
 - `undefined function tpgbp_` — Pro helper called from free render
 
@@ -325,17 +267,16 @@ npx playwright test tests/playwright/auth.setup.js --project=setup
 ## Real bugs found by this pipeline
 
 ### `tp-countdown` — `DateTime::__construct` crashes on non-date string
-```
-Uncaught Exception: Failed to parse time string (Heading Test) at position 0 (H)
-in classes/blocks/tp-countdown/index.php on line 29
-```
-**Fix:** Wrapped `new DateTime()` and `new DateTimeZone()` in `try/catch`, fallback to UTC.
-**Affects:** Both free and Pro versions.
+**Root cause:** `new DateTime( $attributes['datetime'] )` — randomiser set `datetime` to `"Heading Test"`.
+**Fix:** Wrapped in `try/catch`, fallback to UTC. Affected both free and Pro.
 
-### Display Rules — `is_array()` fails on JSON-encoded string attributes
-**Root cause:** 10 check functions received JSON-encoded strings but tested `is_array()` — always false, breaking all display conditions.
-**Fix:** Added `json_decode()` guard at the start of each check function.
-**Affects:** Pro version only.
+### Display Rules — `is_array()` always false on JSON-encoded string attributes
+**Root cause:** 10 check functions received JSON-encoded strings (`"[{\"value\":\"post\"}]"`) but tested `is_array()`.
+**Fix:** Added `json_decode()` guard. Pro only.
+
+### 755 CSS-injection attrs silently excluded from testing (manifest bug)
+**Root cause:** `if (def.style && !def.default)` treated `default: ""` as "no default", excluding all `scopy` colour attrs.
+**Fix:** Changed filter to detect only WP style-binding objects (`!Array.isArray(def.style)`). Coverage: 80% → 98%.
 
 ---
 

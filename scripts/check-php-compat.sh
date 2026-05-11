@@ -25,7 +25,7 @@ GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; CYAN='\033[0;36m'; NC
 
 MAIN_FILE=$(grep -lE "^\s*\*?\s*Plugin Name:" "$PLUGIN_PATH"/*.php 2>/dev/null | head -1)
 MIN_PHP=""
-[ -n "$MAIN_FILE" ] && MIN_PHP=$(grep -iE "^\s*\*?\s*Requires PHP:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires PHP:\s*//' | tr -d ' \r')
+[ -n "$MAIN_FILE" ] && MIN_PHP=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Requires PHP:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires PHP:[[:space:]]*//' | tr -d ' \r')
 
 if [ -z "$MIN_PHP" ]; then
   echo -e "${YELLOW}⚠ 'Requires PHP' not declared in plugin header${NC}"

@@ -23,7 +23,7 @@ if [ -z "$MAIN_FILE" ]; then
   exit 0
 fi
 
-MIN_WP=$(grep -iE "^\s*\*?\s*Requires at least:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires at least:\s*//' | tr -d ' \r')
+MIN_WP=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Requires at least:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires at least:[[:space:]]*//' | tr -d ' \r')
 if [ -z "$MIN_WP" ]; then
   echo -e "${YELLOW}⚠ 'Requires at least' not declared — can't check compatibility${NC}"
   echo "   Add to plugin header: Requires at least: 6.3"

@@ -27,12 +27,12 @@ if [ -z "$MAIN_FILE" ]; then
 fi
 
 # 2. Extract version from plugin header
-HEADER_VER=$(grep -E "^\s*\*?\s*Version:" "$MAIN_FILE" | head -1 | sed -E 's/.*Version:\s*//' | tr -d ' \r')
+HEADER_VER=$(grep -E "^[[:space:]]*\*?[[:space:]]*Version:" "$MAIN_FILE" | head -1 | sed -E 's/.*Version:[[:space:]]*//' | tr -d ' \r')
 
 # 3. Extract stable tag from readme.txt
 README_VER=""
 if [ -f "$PLUGIN_PATH/readme.txt" ]; then
-  README_VER=$(grep "^Stable tag:" "$PLUGIN_PATH/readme.txt" | head -1 | sed -E 's/^Stable tag:\s*//' | tr -d ' \r')
+  README_VER=$(grep "^Stable tag:" "$PLUGIN_PATH/readme.txt" | head -1 | sed -E 's/^Stable tag:[[:space:]]*//' | tr -d ' \r')
 fi
 
 # 4. Extract top version from CHANGELOG.md
@@ -40,7 +40,7 @@ CHANGELOG_VER=""
 if [ -f "$PLUGIN_PATH/CHANGELOG.md" ]; then
   # Match "## [1.2.3]" or "## 1.2.3" or "## v1.2.3"
   CHANGELOG_VER=$(grep -E "^##\s+v?\[?[0-9]+\.[0-9]+(\.[0-9]+)?\]?" "$PLUGIN_PATH/CHANGELOG.md" | \
-    head -1 | sed -E 's/^##\s+v?\[?//; s/\].*//; s/\s.*//' | tr -d ' \r')
+    head -1 | sed -E 's/^##[[:space:]]+v?\[?//; s/\].*//; s/[[:space:]].*//' | tr -d ' \r')
 fi
 
 # Summary

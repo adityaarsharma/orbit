@@ -99,7 +99,7 @@ echo ""
 echo -e "${CYAN}#3 — Domain Path header present${NC}"
 MAIN_FILE=$(grep -lE "^\s*\*?\s*Plugin Name:" "$PLUGIN_PATH"/*.php 2>/dev/null | head -1 || true)
 if [ -n "$MAIN_FILE" ]; then
-  DP=$(grep -iE "^\s*\*?\s*Domain Path:" "$MAIN_FILE" | head -1 | sed -E 's/.*Domain Path:\s*//' | tr -d ' \r')
+  DP=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Domain Path:" "$MAIN_FILE" | head -1 | sed -E 's/.*Domain Path:[[:space:]]*//' | tr -d ' \r')
   if [ -n "$DP" ]; then
     echo -e "${GREEN}✓${NC} Domain Path: $DP"
   else

@@ -79,7 +79,7 @@ MAIN_FILE=$(grep -lE "^\s*\*?\s*Plugin Name:" "$PLUGIN_PATH"/*.php 2>/dev/null |
 if [ -z "$MAIN_FILE" ]; then
   echo -e "  ${CYAN}ℹ${NC} No main plugin file detected"
 else
-  REQUIRES=$(grep -iE "^\s*\*?\s*Requires Plugins:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires Plugins:\s*//' | tr -d ' \r')
+  REQUIRES=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Requires Plugins:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires Plugins:[[:space:]]*//' | tr -d ' \r')
   # Detect hidden dependencies on other plugins (usage of their functions/classes without guards)
   USES_WC=$(grep -rEln "WC\(\)|wc_get_order|WC_Order|WooCommerce" "$PLUGIN_PATH" --include="*.php" \
     --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | wc -l | tr -d ' ')

@@ -38,7 +38,7 @@ echo ""
 echo -e "${CYAN}#1 — GPL-compatible license${NC}"
 MAIN_FILE=$(grep -lE "^\s*\*?\s*Plugin Name:" "$PLUGIN_PATH"/*.php 2>/dev/null | head -1 || true)
 if [ -n "$MAIN_FILE" ]; then
-  LICENSE=$(grep -iE "^\s*\*?\s*License:" "$MAIN_FILE" | head -1 | sed -E 's/.*License:\s*//' | tr -d ' \r' || true)
+  LICENSE=$(grep -iE "^[[:space:]]*\*?[[:space:]]*License:" "$MAIN_FILE" | head -1 | sed -E 's/.*License:[[:space:]]*//' | tr -d ' \r' || true)
   if echo "$LICENSE" | grep -qiE "gpl|mit|bsd|apache|isc"; then
     echo -e "${GREEN}✓${NC} License: $LICENSE"
   else

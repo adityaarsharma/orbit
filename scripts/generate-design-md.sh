@@ -23,16 +23,16 @@ MAIN_FILE=$(grep -lE "^\s*\*?\s*Plugin Name:" "$PLUGIN_PATH"/*.php 2>/dev/null |
 
 # ─── Extract metadata ────────────────────────────────────────────────────────
 if [ -n "$MAIN_FILE" ]; then
-  PLUGIN_NAME=$(grep -iE "^\s*\*?\s*Plugin Name:" "$MAIN_FILE" | head -1 | sed -E 's/.*Plugin Name:\s*//' | tr -d '\r' | sed 's/^ *//;s/ *$//' | head -c 100)
-  VERSION=$(grep -iE "^\s*\*?\s*Version:" "$MAIN_FILE" | head -1 | sed -E 's/.*Version:\s*//' | tr -d ' \r')
-  DESC=$(grep -iE "^\s*\*?\s*Description:" "$MAIN_FILE" | head -1 | sed -E 's/.*Description:\s*//' | tr -d '\r' | sed 's/^ *//;s/ *$//' | head -c 300)
-  REQUIRES_WP=$(grep -iE "^\s*\*?\s*Requires at least:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires at least:\s*//' | tr -d ' \r')
-  REQUIRES_PHP=$(grep -iE "^\s*\*?\s*Requires PHP:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires PHP:\s*//' | tr -d ' \r')
-  TESTED_UP=$(grep -iE "^\s*\*?\s*Tested up to:" "$MAIN_FILE" | head -1 | sed -E 's/.*Tested up to:\s*//' | tr -d ' \r')
-  TEXT_DOMAIN=$(grep -iE "^\s*\*?\s*Text Domain:" "$MAIN_FILE" | head -1 | sed -E 's/.*Text Domain:\s*//' | tr -d ' \r')
-  AUTHOR=$(grep -iE "^\s*\*?\s*Author:" "$MAIN_FILE" | head -1 | sed -E 's/.*Author:\s*//' | tr -d '\r' | sed 's/^ *//;s/ *$//' | head -c 100)
-  LICENSE=$(grep -iE "^\s*\*?\s*License:" "$MAIN_FILE" | head -1 | sed -E 's/.*License:\s*//' | tr -d '\r' | sed 's/^ *//;s/ *$//' | head -c 50)
-  REQUIRES_PLUGINS=$(grep -iE "^\s*\*?\s*Requires Plugins:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires Plugins:\s*//' | tr -d '\r' | sed 's/^ *//;s/ *$//' | head -c 200)
+  PLUGIN_NAME=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Plugin Name:" "$MAIN_FILE" | head -1 | sed -E 's/.*Plugin Name:[[:space:]]*//' | tr -d '\r' | sed 's/^ *//;s/ *$//' | head -c 100)
+  VERSION=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Version:" "$MAIN_FILE" | head -1 | sed -E 's/.*Version:[[:space:]]*//' | tr -d ' \r')
+  DESC=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Description:" "$MAIN_FILE" | head -1 | sed -E 's/.*Description:[[:space:]]*//' | tr -d '\r' | sed 's/^ *//;s/ *$//' | head -c 300)
+  REQUIRES_WP=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Requires at least:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires at least:[[:space:]]*//' | tr -d ' \r')
+  REQUIRES_PHP=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Requires PHP:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires PHP:[[:space:]]*//' | tr -d ' \r')
+  TESTED_UP=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Tested up to:" "$MAIN_FILE" | head -1 | sed -E 's/.*Tested up to:[[:space:]]*//' | tr -d ' \r')
+  TEXT_DOMAIN=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Text Domain:" "$MAIN_FILE" | head -1 | sed -E 's/.*Text Domain:[[:space:]]*//' | tr -d ' \r')
+  AUTHOR=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Author:" "$MAIN_FILE" | head -1 | sed -E 's/.*Author:[[:space:]]*//' | tr -d '\r' | sed 's/^ *//;s/ *$//' | head -c 100)
+  LICENSE=$(grep -iE "^[[:space:]]*\*?[[:space:]]*License:" "$MAIN_FILE" | head -1 | sed -E 's/.*License:[[:space:]]*//' | tr -d '\r' | sed 's/^ *//;s/ *$//' | head -c 50)
+  REQUIRES_PLUGINS=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Requires Plugins:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires Plugins:[[:space:]]*//' | tr -d '\r' | sed 's/^ *//;s/ *$//' | head -c 200)
 else
   PLUGIN_NAME="$PLUGIN_SLUG"
   VERSION=""; DESC=""; REQUIRES_WP=""; REQUIRES_PHP=""; TESTED_UP=""
@@ -51,11 +51,11 @@ ADMIN_PAGES=$(grep -rEh "add_(menu|submenu|options|dashboard|management|plugins|
 
 SHORTCODES=$(grep -rEh "add_shortcode\s*\(\s*['\"]([^'\"]+)['\"]" "$PLUGIN_PATH" \
   --include="*.php" --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | \
-  sed -E "s/.*add_shortcode\s*\(\s*['\"]([^'\"]+)['\"].*/\1/" | list_unique)
+  sed -E "s/.*add_shortcode[[:space:]]*\([[:space:]]*['\"]([^'\"]+)['\"].*/\1/" | list_unique)
 
 REST_ROUTES=$(grep -rEh "register_rest_route\s*\(\s*['\"]([^'\"]+)['\"]" "$PLUGIN_PATH" \
   --include="*.php" --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | \
-  sed -E "s/.*register_rest_route\s*\(\s*['\"]([^'\"]+)['\"].*/\1/" | list_unique)
+  sed -E "s/.*register_rest_route[[:space:]]*\([[:space:]]*['\"]([^'\"]+)['\"].*/\1/" | list_unique)
 
 AJAX_PRIV=$(grep -rEh "add_action\s*\(\s*['\"]wp_ajax_([^'\"]+)['\"]" "$PLUGIN_PATH" \
   --include="*.php" --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | \
@@ -76,11 +76,11 @@ BLOCKS=$(find "$PLUGIN_PATH" -name "block.json" -not -path "*/node_modules/*" -n
 
 CPTS=$(grep -rEh "register_post_type\s*\(\s*['\"]([^'\"]+)['\"]" "$PLUGIN_PATH" \
   --include="*.php" --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | \
-  sed -E "s/.*register_post_type\s*\(\s*['\"]([^'\"]+)['\"].*/\1/" | list_unique)
+  sed -E "s/.*register_post_type[[:space:]]*\([[:space:]]*['\"]([^'\"]+)['\"].*/\1/" | list_unique)
 
 TAXONOMIES=$(grep -rEh "register_taxonomy\s*\(\s*['\"]([^'\"]+)['\"]" "$PLUGIN_PATH" \
   --include="*.php" --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | \
-  sed -E "s/.*register_taxonomy\s*\(\s*['\"]([^'\"]+)['\"].*/\1/" | list_unique)
+  sed -E "s/.*register_taxonomy[[:space:]]*\([[:space:]]*['\"]([^'\"]+)['\"].*/\1/" | list_unique)
 
 TABLES=$(grep -rEh "\\\$wpdb->prefix\s*\.\s*['\"]([a-z0-9_]+)['\"]" "$PLUGIN_PATH" \
   --include="*.php" --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | \
@@ -113,12 +113,12 @@ TOTAL_LOC=$(find "$PLUGIN_PATH" -name "*.php" -not -path "*/vendor/*" -not -path
 # ─── Hooks this plugin provides (for integrators) ────────────────────────────
 PROVIDED_ACTIONS=$(grep -rEh "do_action\s*\(\s*['\"][a-z0-9_]+['\"]" "$PLUGIN_PATH" --include="*.php" \
   --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | \
-  sed -E "s/.*do_action\s*\(\s*['\"]([a-z0-9_]+)['\"].*/\1/" | \
+  sed -E "s/.*do_action[[:space:]]*\([[:space:]]*['\"]([a-z0-9_]+)['\"].*/\1/" | \
   grep -v "^wp_\|^admin_\|^init\$\|^plugins_loaded\$" | list_unique | head -15)
 
 PROVIDED_FILTERS=$(grep -rEh "apply_filters\s*\(\s*['\"][a-z0-9_]+['\"]" "$PLUGIN_PATH" --include="*.php" \
   --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | \
-  sed -E "s/.*apply_filters\s*\(\s*['\"]([a-z0-9_]+)['\"].*/\1/" | \
+  sed -E "s/.*apply_filters[[:space:]]*\([[:space:]]*['\"]([a-z0-9_]+)['\"].*/\1/" | \
   grep -v "^the_content\$\|^the_title\$\|^wp_" | list_unique | head -15)
 
 # ─── Generate the design.md ──────────────────────────────────────────────────

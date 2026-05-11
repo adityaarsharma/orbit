@@ -65,7 +65,7 @@ fi
 # Plugin's own declared license (in main header)
 MAIN_FILE=$(grep -lE "^\s*\*?\s*Plugin Name:" "$PLUGIN_PATH"/*.php 2>/dev/null | head -1 || true)
 if [ -n "$MAIN_FILE" ]; then
-  PLUGIN_LICENSE=$(grep -iE "^\s*\*?\s*License:" "$MAIN_FILE" | head -1 | sed -E 's/.*License:\s*//' | tr -d ' \r' || true)
+  PLUGIN_LICENSE=$(grep -iE "^[[:space:]]*\*?[[:space:]]*License:" "$MAIN_FILE" | head -1 | sed -E 's/.*License:[[:space:]]*//' | tr -d ' \r' || true)
   if [ -z "$PLUGIN_LICENSE" ]; then
     echo -e "${RED}✗ Plugin header missing License: field (WP.org requires GPL v2 or later)${NC}"
     FAIL=1

@@ -1,6 +1,6 @@
 # Orbit — Skills Reference
 
-> **115 specialised `/orbit-*` Claude Code skills** for WordPress plugin QA.
+> **116 specialised `/orbit-*` Claude Code skills** for WordPress plugin QA.
 > Every skill is **runtime-evergreen** — fetches its canonical sources at runtime,
 > derives current rules from today's docs, and cites the live URL + fetch timestamp
 > in every finding. No quarterly maintenance. The skill stays current automatically.
@@ -36,7 +36,7 @@ Full pattern: [EVERGREEN.md](EVERGREEN.md).
 
 ---
 
-## All 106 skills, by category
+## All 112 skills, by category
 
 ### 🛠 Setup & Environment (6)
 | Skill | What it does |
@@ -85,7 +85,7 @@ Full pattern: [EVERGREEN.md](EVERGREEN.md).
 | `/orbit-rtc-compat` | **WP 7.0 Real-Time Collaboration compat — meta-box → register_post_meta** |
 | `/orbit-broken-access-control` | **OWASP A01 deep audit — Patchstack's 57% top attack class** |
 
-### 🧱 Gutenberg / Block Editor Dev (8) — **NEW v2.6**
+### 🧱 Gutenberg / Block Editor Dev (9) — **NEW v2.6**
 | Skill | What it does |
 |---|---|
 | `/orbit-gutenberg-dev` | Block dev workflow — apiVersion, render.php, supports, textdomain |
@@ -96,6 +96,7 @@ Full pattern: [EVERGREEN.md](EVERGREEN.md).
 | `/orbit-block-bindings` | Block Bindings API (WP 6.5+) — modern data-source binding |
 | `/orbit-interactivity-api` | Interactivity API — modern client-side block behaviour |
 | `/orbit-block-variations` | Block variations + transforms — vs separate blocks |
+| `/orbit-nexter-block` | **Nexter Blocks smoke + value-verify pipeline — 98% attr coverage, both Free (57) and Pro (74) blocks, scopy CSS-inject attrs** |
 
 ### 🎨 Elementor Dev (6) — **NEW v2.6**
 | Skill | What it does |

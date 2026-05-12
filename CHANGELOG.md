@@ -6,6 +6,10 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ## [Unreleased]
 
+### Added
+
+- **`/orbit-nexter-block`** — Full automated block testing pipeline for Nexter Blocks. Covers both Free (57 blocks) and Pro (74 blocks). Auto-inserts every block via `wp.data`, randomises all block.json attributes (98% coverage — 4082/4151 attrs incl. 2704 `scopy` CSS-inject attrs), runs a sentinel value-verification pass, publishes each post, and asserts no PHP fatals / JS errors on the frontend. Includes a UI spec that clicks every sidebar control. Found two real bugs during development: `tp-countdown` `DateTime::__construct` crash on non-date strings, and Display Rules `is_array()` always-false on JSON-encoded attributes.
+
 ---
 
 ## [2.7.0] — 2026-04-30 — "Runtime-Evergreen + Brainless Agent"

@@ -247,6 +247,187 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 **Check every PHP file in the plugin** (except the main plugin file) for `defined('ABSPATH')` guard at the top.
 
+### 11. No Hardcoded File Paths
+
+```php
+// BAD: Hardcoded absolute path constants for locating plugin files
+$file = ABSPATH . 'wp-content/plugins/my-plugin/includes/file.php';
+$file = WP_PLUGIN_DIR . '/my-plugin/includes/file.php';
+$file = WP_CONTENT_DIR . '/plugins/my-plugin/includes/file.php';
+
+// CORRECT: Always use the WordPress path helpers relative to __FILE__
+$file = plugin_dir_path( __FILE__ ) . 'includes/file.php';  // Absolute path
+$url  = plugin_dir_url( __FILE__ ) . 'assets/script.js';   // URL
+$url  = plugins_url( 'assets/script.js', __FILE__ );       // URL to specific file
+// For uploads:
+$upload = wp_upload_dir();
+$path   = $upload['basedir'] . '/my-plugin/file.txt';
+
+// Best practice in main plugin file — define once, use everywhere:
+define( 'MYPLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'MYPLUGIN_URL', plugin_dir_url( __FILE__ ) );
+```
+
+**Check every file path construction** — flag any direct use of `ABSPATH`, `WP_PLUGIN_DIR`, or `WP_CONTENT_DIR` to locate plugin-own files.
+
+### 12. No Files Written Inside Plugin Folder
+
+```php
+// BAD: Writing files inside the plugin directory (wiped on upgrade)
+file_put_contents( plugin_dir_path( __FILE__ ) . 'cache/data.json', $json );
+file_put_contents( MYPLUGIN_DIR . 'logs/error.log', $log );
+
+// CORRECT: Write only to the uploads directory
+$upload_dir = wp_upload_dir();
+$plugin_dir = $upload_dir['basedir'] . '/my-plugin/';
+if ( ! file_exists( $plugin_dir ) ) {
+    wp_mkdir_p( $plugin_dir );
+}
+file_put_contents( $plugin_dir . 'data.json', $json );
+
+// For settings/config: use the database via Settings API
+update_option( 'myplugin_config', $config_array );
+```
+
+**Check every `file_put_contents`, `fopen`, `fwrite`, `mkdir`** — flag any path inside the plugin directory. Plugin folders are deleted on upgrade. Rate: High.
+
+### 13. No Direct WordPress Core File Includes
+
+```php
+// BAD: Directly including WP core files
+require_once ABSPATH . 'wp-admin/includes/plugin.php';
+require_once ABSPATH . 'wp-config.php';
+require_once ABSPATH . 'wp-load.php';
+include_once ABSPATH . 'wp-admin/includes/upgrade.php'; // allowed only if dbDelta used immediately
+
+// CORRECT: Use WordPress APIs instead
+// For plugin functions (is_plugin_active, etc.):
+if ( ! function_exists( 'is_plugin_active' ) ) {
+    include_once ABSPATH . 'wp-admin/includes/plugin.php'; // only if calling immediately
+}
+// For upgrade functions — allowed exception:
+require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+dbDelta( $sql ); // Must use the function immediately after
+```
+
+**Check every `require_once` and `include_once`** for `ABSPATH . 'wp-admin/...'` or `wp-config.php`. Flag any include that is not immediately followed by a call to a function from that file. Rate: Medium.
+
+### 14. No HEREDOC Syntax
+
+```php
+// BAD: HEREDOC prevents security scanners from detecting unescaped variables
+$html = <<<HTML
+<div class="wrapper">
+    <p>{$user_input}</p>  <!-- scanner cannot see this is unescaped -->
+</div>
+HTML;
+
+// CORRECT: Use string concatenation or output buffering
+$html  = '<div class="wrapper">';
+$html .= '<p>' . esc_html( $user_input ) . '</p>';
+$html .= '</div>';
+
+// Or with ob_start():
+ob_start();
+?>
+<div class="wrapper">
+    <p><?php echo esc_html( $user_input ); ?></p>
+</div>
+<?php
+$html = ob_get_clean();
+```
+
+**Grep for `<<<`** in all PHP files. Any HEREDOC usage is a violation — WP.org review will reject it. Rate: Medium.
+
+### 15. Paired ob_start() / ob_get_clean()
+
+```php
+// BAD: ob_start() opened but never closed — corrupts buffer stack for other plugins
+function myplugin_render() {
+    ob_start();
+    echo '<div>Content</div>';
+    // Missing: ob_get_clean() or ob_end_flush()
+}
+
+// BAD: Closed in a DIFFERENT function scope than it was opened
+function myplugin_start() { ob_start(); }
+function myplugin_end()   { return ob_get_clean(); }  // Risky — hooks run in unpredictable order
+
+// CORRECT: Open and close in the same function scope
+function myplugin_render() {
+    ob_start();
+    ?>
+    <div class="my-plugin-widget">
+        <p><?php echo esc_html( $title ); ?></p>
+    </div>
+    <?php
+    return ob_get_clean();  // Opened and closed here ✓
+}
+```
+
+**Check every `ob_start()`** — verify it is paired with `ob_get_clean()`, `ob_end_flush()`, or `ob_end_clean()` in the same function scope. Unclosed buffers cause conflicts with themes and other plugins. Rate: High.
+
+### 16. No active_plugins Manipulation
+
+```php
+// BAD: Directly rewriting the active plugins option
+$active = get_option( 'active_plugins' );
+$active[] = 'some-plugin/some-plugin.php';
+update_option( 'active_plugins', $active );  // Bypasses WP plugin lifecycle
+
+// BAD: Deactivating another plugin without user action
+deactivate_plugins( 'conflicting-plugin/conflicting-plugin.php' );
+
+// CORRECT: Deactivate self only (e.g., when a requirement isn't met)
+add_action( 'admin_init', function() {
+    if ( ! function_exists( 'required_dependency' ) ) {
+        deactivate_plugins( plugin_basename( __FILE__ ) );
+        add_action( 'admin_notices', 'myplugin_missing_dependency_notice' );
+    }
+} );
+
+// CORRECT: Use WordPress 6.5+ Plugin Dependencies for dependency management
+// In plugin header: Requires Plugins: woocommerce
+```
+
+**Check for `update_option( 'active_plugins'`** and `update_option( 'active_sitewide_plugins'` — any direct write is a violation. Also check for `deactivate_plugins()` calls against slugs that are not `plugin_basename(__FILE__)`. Rate: Critical.
+
+### 17. No Global WordPress Constants Defined at Runtime
+
+```php
+// BAD: Defining global WP constants inside plugin code changes behaviour for ALL plugins
+define( 'SAVEQUERIES', true );        // Forces query logging sitewide
+define( 'DONOTCACHEPAGE', true );     // Disables page caching for entire request
+define( 'WP_DEBUG', true );           // Enables debug mode sitewide
+define( 'DISALLOW_FILE_EDIT', true ); // Changes admin behaviour for all users
+
+// CORRECT: These belong in wp-config.php only, controlled by the site admin
+// Plugin should use WP APIs to achieve its goals without overriding globals
+// e.g., for query debugging use the $wpdb->queries API after confirming SAVEQUERIES is already set
+```
+
+**Grep for `define( 'SAVEQUERIES'`, `define( 'DONOTCACHEPAGE'`, `define( 'WP_DEBUG'`, `define( 'DISALLOW_FILE_'`** — any of these defined inside plugin code is a violation. Rate: High.
+
+### 18. No Programmatic User Login or Application Password Creation
+
+```php
+// BAD: Programmatically logging in a user
+wp_set_current_user( $user_id );
+wp_set_auth_cookie( $user_id );
+
+// BAD: Creating application passwords without user consent
+WP_Application_Passwords::create_new_application_password( $user_id, [ 'name' => 'My Plugin' ] );
+
+// CORRECT: If your plugin needs authenticated API access, ask the user to manually
+// create an Application Password in their profile (WP > Users > Profile > Application Passwords)
+// Then store the password hash they provide — never generate one silently.
+
+// CORRECT: For REST API authentication, use nonces for logged-in users
+wp_create_nonce( 'wp_rest' );  // Via wp_localize_script to frontend JS
+```
+
+**Check for `wp_set_current_user(`, `wp_set_auth_cookie(`, `WP_Application_Passwords::create_new_application_password(`** — any call that logs in a user or creates credentials programmatically is a violation. Bypasses brute-force security plugins. Rate: Critical.
+
 ---
 
 ## Report Format

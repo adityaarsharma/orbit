@@ -539,3 +539,61 @@ routes:
     used_by: [03-senior-dev, 05-uat]
     notes: Docker Compose orchestration, layer caching, image size reduction, container security.
            Pair with orbit-docker-site for WP test environment setup.
+
+# ─────────────────────────────────────────────────────────────
+# BRAIN-POSIMYTH SUB-ENDPOINTS (brain.posimyth.com/connectors)
+# HTTP MCP — Claude Code CLI only (not claude_desktop_config.json)
+# Each is a named sub-endpoint of the brain-posimyth umbrella.
+# Register in ~/.claude/settings.json using type: http.
+# ─────────────────────────────────────────────────────────────
+
+  # ── PM (01) ────────────────────────────────────────────────
+  - name: fluentsupport-posi
+    source: brain-posimyth
+    endpoint: https://brain.posimyth.com/fluentsupport/mcp
+    category: support
+    used_by: [01-pm]
+    notes: Mine support tickets for user pain points + feature feedback patterns.
+           4 tools. Admin key required.
+
+  # ── Performance (06) ───────────────────────────────────────
+  - name: ga4-posi
+    source: brain-posimyth
+    endpoint: https://brain.posimyth.com/ga4/mcp
+    category: analytics
+    used_by: [06-performance]
+    notes: Real user performance data — Core Web Vitals, bounce rate, session time.
+           2 tools. Admin key required.
+
+  - name: gsc-posi
+    source: brain-posimyth
+    endpoint: https://brain.posimyth.com/gsc/mcp
+    category: analytics
+    used_by: [06-performance, 09-docs]
+    notes: Google Search Console — CWV field data, indexing status, docs search performance.
+           2 tools. Admin key required.
+
+  # ── Release (08) / Docs (09) ───────────────────────────────
+  - name: wp-tpae-posi
+    source: brain-posimyth
+    endpoint: https://brain.posimyth.com/wp-tpae/mcp
+    category: wordpress
+    used_by: [08-release, 09-docs]
+    notes: Publish release notes + docs to theplusaddons.com.
+           3 tools. Admin key required.
+
+  - name: wp-nexterwp-posi
+    source: brain-posimyth
+    endpoint: https://brain.posimyth.com/wp-nexterwp/mcp
+    category: wordpress
+    used_by: [08-release, 09-docs]
+    notes: Publish release notes + docs to nexterwp.com. Live endpoint.
+           2 tools. Admin key required.
+
+  - name: clickup-dora-posi
+    source: brain-posimyth
+    endpoint: https://brain.posimyth.com/clickup-dora/mcp
+    category: project-management
+    used_by: [01-pm, 08-release]
+    notes: Post to ClickUp chat channels as Dora Agent. Release announcements, sprint updates.
+           2 tools. Admin key required.

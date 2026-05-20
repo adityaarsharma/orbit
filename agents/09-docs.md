@@ -176,7 +176,8 @@ ON operator approve + docs ready:
 | Connector | Operation | Key needed |
 |---|---|---|
 | `brain-posimyth` | Docs freshness history, release context, ingest | Admin |
-| `wp-nexterwp` / `wp-tpae` / `wp-uichemy` | Publish docs pages | Admin |
+| `wp-nexterwp-posi` / `wp-tpae-posi` | Publish docs pages to NexterWP / TPAE sites | Admin |
+| `gsc-posi` | Check docs page indexing + search performance | Admin |
 | `gh` CLI | Read source for hook/filter documentation | Team |
 | Context7 | Live WP.org readme.txt spec, WP coding docs | — |
 

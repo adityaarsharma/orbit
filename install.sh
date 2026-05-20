@@ -257,9 +257,11 @@ else
   fi
 
   if [ -n "$ORBIT_KEY" ]; then
-    # Inject brain-posimyth into settings.json
+    # Safety: backup settings.json before modifying
+    [ -f "$CLAUDE_SETTINGS" ] && cp "$CLAUDE_SETTINGS" "${CLAUDE_SETTINGS}.orbit-backup-$(date +%Y%m%d-%H%M%S)" 2>/dev/null || true
+    # Inject brain-posimyth into settings.json (only touches mcpServers.brain-posimyth key)
     python3 - "$CLAUDE_SETTINGS" "$ORBIT_KEY" "$BRAIN_URL" <<'PYEOF'
-import json, sys
+import json, sys, os
 settings_path, key, url = sys.argv[1], sys.argv[2], sys.argv[3]
 try:
     with open(settings_path) as f:
@@ -272,8 +274,11 @@ settings['mcpServers']['brain-posimyth'] = {
     "url": url,
     "headers": {"Authorization": f"Bearer {key}"}
 }
-with open(settings_path, 'w') as f:
+# Write to temp first, then atomic replace (prevents partial-write corruption)
+tmp = settings_path + '.tmp'
+with open(tmp, 'w') as f:
     json.dump(settings, f, indent=2)
+os.replace(tmp, settings_path)
 print("ok")
 PYEOF
     echo "   ✓ brain-posimyth installed into Claude Code settings (~/.claude/settings.json)"

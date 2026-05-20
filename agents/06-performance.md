@@ -171,6 +171,8 @@ ON approve:
 | Connector | Operation | Key needed |
 |---|---|---|
 | `brain-posimyth` | Benchmark history, budgets, ingest new baselines | Admin |
+| `ga4-posi` | Real user performance data (CWV, bounce rate, session time) | Admin |
+| `gsc-posi` | Core Web Vitals field data from Google Search Console | Admin |
 | `wp-env` via Bash | Clean install for measurement | — |
 | `Claude in Chrome` | Lighthouse visual profiling | — |
 

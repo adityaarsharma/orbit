@@ -148,11 +148,18 @@ Orbit agents: 05-uat (production error review before release)
 
 These are not for public Orbit users. Internal POSIMYTH team only (Admin key).
 
-| MCP | Purpose | Orbit agent that uses it |
-|---|---|---|
-| `wp-posimyth` / `wp-nexterwp` / `wp-theplusaddons` | Publish release notes, docs, changelogs | 08-release, 09-docs |
-| `fluentcrm` (via brain-posimyth) | Release email announcements | 08-release |
-| `n8n-mcp` | CI/CD automation, scheduled audits | 05-uat |
+All sub-endpoints live under `brain.posimyth.com` and are accessed via `mcp-remote` in Claude Code.  
+**Claude Code** (`~/.claude/settings.json`) → use `type: http`.  
+**Claude desktop app** → use `npx mcp-remote <url> --header "Authorization: Bearer <key>"`.
+
+| MCP | Endpoint | Purpose | Orbit agent |
+|---|---|---|---|
+| `wp-tpae-posi` | `/wp-tpae/mcp` | Publish release notes + docs to theplusaddons.com | 08-release, 09-docs |
+| `wp-nexterwp-posi` | `/wp-nexterwp/mcp` | Publish release notes + docs to nexterwp.com | 08-release, 09-docs |
+| `clickup-dora-posi` | `/clickup-dora/mcp` | Post release announcements to ClickUp as Dora Agent | 01-pm, 08-release |
+| `fluentsupport-posi` | `/fluentsupport/mcp` | Mine support tickets for user pain points | 01-pm |
+| `ga4-posi` | `/ga4/mcp` | Real user CWV + engagement data | 06-performance |
+| `gsc-posi` | `/gsc/mcp` | Search Console CWV field data + docs indexing | 06-performance, 09-docs |
 
 ---
 
@@ -184,11 +191,13 @@ bash brain/seed-brain.sh --key <orbit_admin_key>
 |---|---|---|
 | Check live WP API docs | Context7 skill | 02-code-reviewer, 03-senior-dev |
 | Scrape WP.org user reviews | Apify via brain | 01-pm |
-| Run PageSpeed on staging | DataForSEO via brain | 06-performance |
+| Run PageSpeed on staging | `orbit-lighthouse` skill | 06-performance |
+| Check real CWV from users | `ga4-posi` + `gsc-posi` | 06-performance |
 | Create a GitHub issue for a bug | `gh issue create` | 05-uat |
 | Test cross-browser (Chrome/Firefox/Safari) | LambdaTest | 05-uat |
 | Monitor production errors | Sentry | 05-uat |
-| Publish release notes to WP site | WP MCP (Admin) | 08-release |
-| Automate findings → Slack | n8n MCP (Admin) | 05-uat |
+| Publish release notes to WP site | `wp-tpae-posi` / `wp-nexterwp-posi` (Admin) | 08-release |
+| Post to ClickUp as Dora | `clickup-dora-posi` (Admin) | 08-release |
+| Mine support tickets for PM insight | `fluentsupport-posi` (Admin) | 01-pm |
 | Mine CVE databases | Apify via brain | 07-security |
-| Track feature backlog | Linear | 01-pm |
+| Track feature backlog | ClickUp via brain | 01-pm |

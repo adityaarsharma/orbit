@@ -200,9 +200,9 @@ ON revise: <reason>:
 | Connector | Operation | Key needed |
 |---|---|---|
 | `brain-posimyth` | Release history, WP.org rules, ingest findings | Admin |
-| `wp-nexterwp` / `wp-tpae` / `wp-uichemy` | Publish release notes | Admin |
+| `wp-nexterwp-posi` / `wp-tpae-posi` | Publish release notes to NexterWP / TPAE sites | Admin |
+| `clickup-dora-posi` | Post release announcement to ClickUp as Dora Agent | Admin |
 | `gh` CLI | Create PR, create git tag, push | Admin |
-| ClickUp via brain | Close release task, update sprint | Admin |
 | Context7 | Live WP.org Plugin Check rules, readme.txt spec | — |
 
 ---

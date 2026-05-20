@@ -8,6 +8,24 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.1.1] — 2026-05-20
+
+### Added
+
+- **`ga4-posi` + `gsc-posi` connectors in 06-Performance** — agents now pull real user CWV and search performance data directly from GA4 and Google Search Console
+- **`fluentsupport-posi` connector in 01-PM** — PM agent can mine support tickets for user pain points and feedback patterns
+- **`wp-tpae-posi` + `wp-nexterwp-posi` connectors in 08-Release + 09-Docs** — named sub-endpoints replace generic `wp-*` references for cleaner routing
+- **`clickup-dora-posi` connector in 01-PM + 08-Release** — direct Dora Agent posting to ClickUp channels
+- **`routes/routes.yaml`** — new `BRAIN-POSIMYTH SUB-ENDPOINTS` section documents all 6 new connectors with endpoint URLs, tool counts, and agent assignments
+- **`docs/mcp-library.md`** — updated internal team MCP table with named endpoints + usage guide for Claude Code vs Claude desktop app
+
+### Fixed
+
+- **`install.sh` — atomic write + backup on settings.json** — settings file is backed up before modification; write uses temp-file + atomic replace to prevent partial-write corruption on interrupted installs
+- **`docs/mcp-library.md`** — removed stale DataForSEO and Slack rows from agent table; updated WP site connector names to match live endpoints
+
+---
+
 ## [3.0.0] — 2026-05-20 — "Orbit Agentic"
 
 The architecture shift: Orbit is no longer just a skill suite — it's a **10-agent QA team** that runs like a company. Each agent has a defined role, a written SOP, a brain connection, and the MCP access to act on what it finds.

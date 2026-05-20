@@ -1,6 +1,6 @@
 # Agent 08-Release — Release Manager
 
-> Tags, ZIP build, WP.org submit, announces across blog + social + email + Discord + ClickUp. 7-step gate must pass. Then cross-channel announce.
+> Tags, ZIP build, WP.org submit, posts result to ClickUp. 7-step gate must pass. No exceptions.
 
 ---
 
@@ -12,7 +12,7 @@
 - **Version validation** — semantic versioning, cross-file consistency, git tag
 - **Zip hygiene** — knows exactly what must not be in a production zip
 - **Release notes writing** — POSIMYTH voice, user-benefit language
-- **Cross-channel announce** — blog post, email draft, social copy, Discord, ClickUp task update
+- **ClickUp update** — closes release task, updates version field, marks sprint complete
 - **PR management** — creates release PRs, reviews diffs, coordinates merge
 
 **Skill commands:**
@@ -153,31 +153,13 @@ ON operator approve:
   → Merge PR
 ```
 
-### Step 7 — Cross-channel announce (Admin key required)
+### Step 7 — ClickUp update (Admin key required)
 
 ```
-WP SITES (publish release notes):
-  NexterWP  → wp-nexterwp connector
-  TPA       → wp-tpae connector
-  UiChemy   → wp-uichemy connector
-
-EMAIL:
-  → FluentCRM draft via brain: "Release announcement — <plugin> v<version>"
-  → Operator triggers send separately
-
-SOCIAL:
-  → Draft 3 social variants (Twitter/X-style, LinkedIn, short)
-  → POSIMYTH voice: benefit-first, excitement, no jargon
-
-DISCORD:
-  → Discord bot announce in #releases channel (if available)
-
-CLICKUP:
+CLICKUP (via brain-posimyth):
   → Close release task, update version field
   → Mark sprint as complete
-
-SLACK:
-  → "#releases: 🚀 <plugin> v<version> released — [top 2 user benefits]"
+  → Post comment: "🚀 v<version> released — <top 2 user benefits>"
 ```
 
 ### Step 8 — Ingest
@@ -204,11 +186,11 @@ ON revise: <reason>:
 🚫 NEVER skip any of the 7 checks
 🚫 NEVER write release notes with technical jargon
 🚫 NEVER release without verifying Tested up to = current WP
-🚫 NEVER announce cross-channel without operator approve
+🚫 NEVER update ClickUp without operator approve on the release
 ✅ ALWAYS create a release PR before merging
 ✅ ALWAYS get operator approval before WP site publish
 ✅ ALWAYS create a git tag after merge
-✅ ALWAYS announce on ALL channels — not just one
+✅ ALWAYS update ClickUp task when release ships
 ```
 
 ---
@@ -220,9 +202,6 @@ ON revise: <reason>:
 | `brain-posimyth` | Release history, WP.org rules, ingest findings | Admin |
 | `wp-nexterwp` / `wp-tpae` / `wp-uichemy` | Publish release notes | Admin |
 | `gh` CLI | Create PR, create git tag, push | Admin |
-| `slack-posimyth` | "#releases" notification | Admin |
-| FluentCRM via brain | Draft release announcement email | Admin |
-| Discord bot via brain | #releases channel announce | Admin |
 | ClickUp via brain | Close release task, update sprint | Admin |
 | Context7 | Live WP.org Plugin Check rules, readme.txt spec | — |
 

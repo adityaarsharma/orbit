@@ -326,7 +326,7 @@ Full routing: `routes/routes.yaml`
 Agent files support two operating modes:
 
 - **Mode A (now)** — Operator-invoked in Claude Code. Open an agent, describe the task, it runs its SOP.
-- **Mode B (Phase 2)** — API runner (Dora + PM2). 9 AM–6 PM IST. Autonomous scheduled dispatch. No agent file changes needed.
+- **Mode B (Phase 2)** — API runner Autonomous runner. 9 AM–6 PM IST. Autonomous scheduled dispatch. No agent file changes needed.
 
 When Phase 2 activates, 5 always-on agents will run on schedule: 00-CTO (competitor pulse weekly), 01-PM (daily sprint routing), 06-Performance (benchmark on every commit), 07-Security (CVE feed daily), 08-Release (release gate on tag push).
 

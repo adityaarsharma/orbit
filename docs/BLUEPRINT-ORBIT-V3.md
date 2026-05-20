@@ -120,7 +120,7 @@ The intelligence layer. Two jobs:
 
 ```
 brain-posimyth
-└── orbit/              ← Orbit namespace (separated from Golden Circle)
+└── orbit/              ← Orbit namespace (separated from other namespaces)
     ├── plugins/
     │   ├── nexterwp/   ← per-plugin findings history
     │   ├── tpa/
@@ -138,7 +138,7 @@ brain-posimyth
         └── agents/     ← per-agent learnings (01-qa-lead, 02-security, ...)
 ```
 
-**Team key:** Can search + read `orbit/*`. Cannot write. Cannot access Golden Circle drawers.
+**Team key:** Can search + read `orbit/*`. Cannot write. Cannot write to brain.
 **Admin key:** Can write to `orbit/*`. Full ingest. Can add to `knowledge/` base.
 
 ---
@@ -147,7 +147,7 @@ brain-posimyth
 
 5 agents will run 9 AM – 6 PM IST like real employees. Which 5 is operator's choice. The framework already supports this — agent files are written for both:
 - **Mode A (current):** Claude Code — operator types, agent responds
-- **Mode B (future):** API-based runner — Dora/PM2 dispatches task, agent runs headlessly, reports back to ClickUp/Slack
+- **Mode B (future):** API-based runner — Autonomous runner dispatches task, agent runs headlessly, reports back to ClickUp/Slack
 
 No change to agent files needed between modes. The 5-step WAKE/ANALYSE/PLAN/EXECUTE/INGEST is mode-agnostic.
 
@@ -166,9 +166,9 @@ See full spec at `docs/mcp-library.md`.
 6. DataForSEO — PageSpeed, SERP, performance data
 
 **POSIMYTH team additionally:**
-7. `wp-nexterwp` / `wp-theplusaddons` / `adityaarsharma-wordpress` — WP publish
+7. `wp-nexterwp` / `wp-theplusaddons` / `wp-posimyth` — WP publish
 8. `n8n-mcp` — workflow automation
-9. `slack-aditya` — team notifications
+9. `slack-posimyth` — team notifications
 10. `fluentcrm` — release email drafts
 
 ---
@@ -188,7 +188,7 @@ See full spec at `docs/mcp-library.md`.
 - [ ] README.md update — Agentic section
 
 ### What's Phase 2 (post-v3.0)
-- Always-on 5 agents (Dora + PM2 + Claude API runner)
+- Always-on 5 agents (Autonomous runner (Phase 2))
 - ClickUp task queue integration
 - Slack status mirror
 - Per-agent daily digest

@@ -90,7 +90,7 @@ $sync_provider = apply_filters( 'sync.providers', 'default' );
 
 ### 4. Color-coded selections + presence indicators
 
-If your plugin renders a custom interactive UI inside the editor (canvas widget, custom list), it should expose selection / focus events to RTC's presence layer so other collaborators see "Aditya is editing the My Hero widget."
+If your plugin renders a custom interactive UI inside the editor (canvas widget, custom list), it should expose selection / focus events to RTC's presence layer so other collaborators see "User A is editing the My Hero widget."
 
 This is opt-in and rare — flag only if relevant.
 

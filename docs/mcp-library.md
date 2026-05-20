@@ -105,7 +105,7 @@ Orbit agents: 07-security (CVE scraping), 01-pm (review mining), 09-docs (SERP d
 - PageSpeed Insights data for Performance agent (03)
 - Plugin search results for SEO & Docs agent (12)
 - Competitor plugin rankings for PM agent (10)
-**Access:** Via `brain-posimyth` connector (same as Golden Circle).
+**Access:** Via `brain-posimyth` connector .
 ```
 Orbit agents: 06-performance (PageSpeed), 01-pm (SERP), 09-docs (schema + speed)
 ```
@@ -150,11 +150,10 @@ These are not for public Orbit users. Internal POSIMYTH team only (Admin key).
 
 | MCP | Purpose | Orbit agent that uses it |
 |---|---|---|
-| `adityaarsharma-wordpress` / `wp-nexterwp` / `wp-theplusaddons` | Publish release notes, docs, changelogs | 08-release, 09-docs |
+| `wp-posimyth` / `wp-nexterwp` / `wp-theplusaddons` | Publish release notes, docs, changelogs | 08-release, 09-docs |
 | `fluentcrm` (via brain-posimyth) | Release email announcements | 08-release |
-| `slack-aditya` | Team notifications on audit completion | 05-uat, 08-release |
+| `slack-posimyth` | Team notifications on audit completion | 05-uat, 08-release |
 | `n8n-mcp` | CI/CD automation, scheduled audits | 05-uat |
-| `mcp__Aditya_s_Desktop___webmcp` | Web scraping, content parsing | 01-pm, 09-docs |
 
 ---
 

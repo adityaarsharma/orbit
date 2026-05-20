@@ -39,7 +39,7 @@ Required fields:
  * Version:           2.4.0                       ← MUST match git tag + readme.txt Stable tag
  * Requires at least: 6.0                         ← required for WP.org
  * Requires PHP:      7.4                         ← required for WP.org
- * Author:            Aditya Sharma                ← required
+ * Author:            Your Name                ← required
  * Author URI:        https://yoursite.com  ← required
  * License:           GPL-2.0-or-later            ← MUST be GPL-compatible
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -58,7 +58,7 @@ Flags missing fields, mismatched text domain, License URI not pointing to a GPL-
 ### readme.txt (the WP.org-facing one)
 ```
 === My Plugin ===
-Contributors: aditya
+Contributors: yourname
 Tags: elementor, addons, widgets       ← max 12, no trademarks
 Requires at least: 6.0
 Tested up to: 6.5                       ← bump on every WP minor release

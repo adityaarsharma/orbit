@@ -1,7 +1,7 @@
 # Orbit — Team vs Admin Key Setup
 
 > Every Orbit install gets two keys: Team (read) and Admin (write).
-> Exact same model as Golden Circle.
+> Key-gated access. Team key = read. Admin key = read+write.
 
 ---
 
@@ -12,7 +12,7 @@ brain-posimyth
 └── orbit/ namespace
     │
     ├── Team key ──► READ orbit/* (search, recall, browse)
-    │                  Cannot write. Cannot access Golden Circle drawers.
+    │                  Cannot write. Cannot write to brain.
     │
     └── Admin key ──► READ + WRITE orbit/*
                        Can ingest findings, add patterns, update knowledge/
@@ -59,7 +59,7 @@ brain-posimyth
 **Service operations:**
 - `wp_nexterwp_*` — publish release notes to NexterWP site
 - `wp_tpae_*` — publish to The Plus Addons site
-- Slack notifications via `slack-aditya`
+- Slack notifications via `slack-posimyth`
 - n8n workflow triggers
 - FluentCRM release email drafts
 - GitHub write (create PRs, close issues, push tags)
@@ -67,7 +67,7 @@ brain-posimyth
 **Seed operations:**
 - `bash brain/seed-brain.sh` — seed starter brain on new install
 
-**Best for:** POSIMYTH internal team (Aditya, Sagar, Jigar, Raj). Release coordinators. QA leads.
+**Best for:** POSIMYTH internal team (POSIMYTH internal team). Release coordinators. QA leads.
 
 ---
 
@@ -79,7 +79,7 @@ brain-posimyth
 # 1. Install Orbit
 curl -fsSL https://raw.githubusercontent.com/adityaarsharma/orbit/main/install.sh | bash
 
-# 2. Get your keys from Aditya (brain.posimyth.com admin panel)
+# 2. Get your keys from the POSIMYTH admin (brain.posimyth.com admin panel)
 # Request: orbit_team_key and/or orbit_admin_key
 
 # 3. Add to Claude Code settings
@@ -111,7 +111,7 @@ curl -fsSL https://raw.githubusercontent.com/adityaarsharma/orbit/main/install.s
 
 ---
 
-## Key provisioning (for Admin / Aditya)
+## Key provisioning (for Admin)
 
 Keys are provisioned from the brain.posimyth.com admin panel under the `orbit` tenant.
 

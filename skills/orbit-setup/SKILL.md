@@ -146,7 +146,7 @@ On yes, run:
 bash ~/Claude/orbit/install.sh
 ```
 
-`install.sh` is the Pickle-style installer (in repo root) — it symlinks every `skills/orbit-*` into `~/.claude/skills/`, removes any deprecated entries, prints `✓` for each.
+`install.sh` is the standard installer (in repo root) — it symlinks every `skills/orbit-*` into `~/.claude/skills/`, removes any deprecated entries, prints `✓` for each.
 
 After it finishes, verify:
 

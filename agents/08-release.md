@@ -220,7 +220,7 @@ ON revise: <reason>:
 | `brain-posimyth` | Release history, WP.org rules, ingest findings | Admin |
 | `wp-nexterwp` / `wp-tpae` / `wp-uichemy` | Publish release notes | Admin |
 | `gh` CLI | Create PR, create git tag, push | Admin |
-| `slack-aditya` | "#releases" notification | Admin |
+| `slack-posimyth` | "#releases" notification | Admin |
 | FluentCRM via brain | Draft release announcement email | Admin |
 | Discord bot via brain | #releases channel announce | Admin |
 | ClickUp via brain | Close release task, update sprint | Admin |

@@ -1,7 +1,7 @@
 # Orbit — Brain Architecture Spec
 
 > brain-posimyth is the single memory layer for all Orbit agents.
-> Orbit data lives in the `orbit/` namespace — separated from Golden Circle.
+> Orbit data lives in the `orbit/` namespace — separated from other POSIMYTH namespaces.
 
 ---
 

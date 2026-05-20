@@ -99,7 +99,17 @@ for entry in "${SERVICES[@]}"; do
 done
 echo "  Endpoints for this tier: ${#ALLOWED[@]} / ${#SERVICES[@]}"
 
-# ─── 2 + 3. Whitelist cleanup + register ─────────────────────
+# ─── 2 + 3. Stale cleanup + register ────────────────────────
+#
+# SHARED MCP POOL RULE:
+#   All -posi MCPs belong to one shared pool used by BOTH Orbit and
+#   Golden Circle. Neither installer removes the other's MCPs.
+#
+#   What gets removed:   old stdio-style MCPs with known stale names
+#                        (pre-posi era: fluentcrm, ga4, gsc, wp-theplusaddons, etc.)
+#   What is NEVER removed: anything ending in -posi, brain-aditya, personal MCPs
+#   What gets added/updated: this installer's allowed endpoints (fresh token)
+#
 update_config() {
   local cfg_path="$1"
   local label="$2"
@@ -113,45 +123,47 @@ update_config() {
   # Backup
   cp "$cfg_path" "${cfg_path}.orbit-install.bak"
 
-  # Build comma-separated strings for python
-  local expected_str=""
-  for s in "${ALLOWED[@]}"; do
-    IFS=':' read -r name _ <<< "$s"
-    expected_str="${expected_str}${name},"
-  done
-
   local personal_str=""
   for p in "${PERSONAL_KEEP[@]}"; do
     personal_str="${personal_str}${p},"
   done
 
   python3 - "$cfg_path" "$KEY" "$POSIMYTH_BASE" "$client" "$label" \
-    "$expected_str" "$personal_str" "${ALLOWED[@]}" <<'PYEOF'
+    "$personal_str" "${ALLOWED[@]}" <<'PYEOF'
 import json, sys, os
 
 path, key, base, client, label = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
-expected = set(n for n in sys.argv[6].split(',') if n)
-personal = set(n for n in sys.argv[7].split(',') if n)
-services  = sys.argv[8:]
+personal = set(n for n in sys.argv[6].split(',') if n)
+services  = sys.argv[7:]
+
+# Known stale stdio MCPs from pre-posi era — safe to remove
+STALE_OLD_NAMES = {
+    "fluentcrm", "wp-theplusaddons", "wp-nexterwp", "wp-uichemy",
+    "ga4", "gsc", "dataforseo", "apify", "snov", "ocoya",
+    "generatebanners", "meta-ads", "clickup-dora", "discord-guti",
+    "fluentsupport", "plausible", "edd-store", "sproutai-blog",
+    "wp-tpae", "wp-nexter", "wp-store",
+}
 
 with open(path) as f:
     cfg = json.load(f)
 cfg.setdefault("mcpServers", {})
 
-# WHITELIST CLEANUP
-# Keep: personal MCPs + brain-aditya (if present). Remove everything else.
-# Anything in expected will be re-added below with fresh config.
+# STALE CLEANUP — only remove known old stdio names
+# NEVER remove: -posi suffix MCPs (shared pool), brain-aditya, personal MCPs
 removed = []
 for name in list(cfg["mcpServers"].keys()):
     if name in personal:
         continue
-    if name == "brain-aditya":      # personal brain — never touched
+    if name == "brain-aditya":
         continue
-    if name not in expected:
+    if name.endswith("-posi"):          # shared pool — never touched by either installer
+        continue
+    if name in STALE_OLD_NAMES:
         removed.append(name)
         del cfg["mcpServers"][name]
 
-# Register allowed Orbit endpoints
+# Register/update this installer's allowed endpoints (upsert — keeps others untouched)
 for s in services:
     name, sub = s.split(':', 1)
     url = base + sub
@@ -162,25 +174,24 @@ for s in services:
             "headers": {"Authorization": f"Bearer {key}"}
         }
     else:
-        # Claude Desktop — mcp-remote stdio bridge (HTTP MCPs not natively supported)
+        # Claude Desktop — mcp-remote stdio bridge
         cfg["mcpServers"][name] = {
             "command": "npx",
             "args": ["-y", "mcp-remote", url, "--header", f"Authorization: Bearer {key}"]
         }
-    if name in removed:
-        removed.remove(name)   # it's being re-added, not truly removed
 
-# Atomic write (prevents partial-write corruption)
+# Atomic write
 tmp = path + '.tmp'
 with open(tmp, 'w') as f:
     json.dump(cfg, f, indent=2)
 os.replace(tmp, path)
 
+total_posi = sum(1 for n in cfg["mcpServers"] if n.endswith("-posi"))
 print(f"  {label}:")
-print(f"    ✓ {len(services)} Orbit MCPs registered")
+print(f"    ✓ {len(services)} Orbit MCPs registered/updated")
+print(f"    ✓ {total_posi} total -posi MCPs in config (Orbit + GC shared pool)")
 if removed:
-    stale = ', '.join(removed[:8]) + (' ...' if len(removed) > 8 else '')
-    print(f"    ✓ {len(removed)} stale MCP(s) removed: {stale}")
+    print(f"    ✓ {len(removed)} stale old-style MCP(s) removed: {', '.join(removed)}")
 else:
     print(f"    ✓ no stale MCPs found")
 PYEOF

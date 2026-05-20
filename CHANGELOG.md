@@ -8,6 +8,14 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.1.3] — 2026-05-20
+
+### Fixed
+
+- **`install-connectors.sh` — shared MCP pool, no cross-installer conflicts**: Changed from whitelist cleanup (remove everything not in my list) to stale-only cleanup (remove only known pre-posi era stdio names). All `-posi` MCPs are now treated as a shared pool — running Orbit's installer never removes Golden Circle's MCPs and vice versa. Both tools coexist on the same machine without overwriting each other.
+
+---
+
 ## [3.1.2] — 2026-05-20
 
 ### Added

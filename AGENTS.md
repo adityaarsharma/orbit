@@ -1,8 +1,10 @@
 # Orbit — Agent Instructions
 
-> This file is read automatically by Claude Code. It defines which skills to
-> always invoke, in what order, and under what conditions for every Orbit QA run.
-> Never skip these. Surface-level or skill-free audits are not useful.
+> **Agentic system is live.** See `CLAUDE.md` for the full routing layer and 12-agent team.
+> This file retains the core skill rules and deduplication reference (still applies).
+> For intent → agent routing, approval gates, and brain integration, use CLAUDE.md.
+
+---
 
 ---
 

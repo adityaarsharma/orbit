@@ -147,6 +147,29 @@ git add languages/ && git commit -m "chore: regen POT for v2.4.0"
 ### `Vendor library is non-GPL`
 Replace it. Common offenders: ChartJS (MIT — OK), Stripe SDK (MIT — OK), proprietary fonts (NOT OK in GPL plugin).
 
+### `Missing == External Services == section`
+Any plugin that makes external HTTP calls (wp_remote_get/post, curl, any API) must document every service in readme.txt:
+```
+== External Services ==
+
+This plugin connects to Example API (https://example.com) to [purpose].
+Data sent: [what data, when].
+Terms of Service: https://example.com/tos
+Privacy Policy: https://example.com/privacy
+```
+One block per external service. Missing this section is a WP.org rejection reason.
+
+### `Dead links in readme.txt (404)`
+All URLs in readme.txt must return HTTP 200. Check with:
+```bash
+# Quick link audit
+grep -oP 'https?://[^\s\)>]+' readme.txt | while read url; do
+    status=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$url")
+    [ "$status" != "200" ] && echo "FAIL $status $url"
+done
+```
+Failing links: Plugin URI, Author URI, License URI, Terms of Service, Privacy Policy in External Services section.
+
 ---
 
 ## When to run

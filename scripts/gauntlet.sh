@@ -303,45 +303,76 @@ else
 fi
 
 # ── STEP 2b: WORDPRESS.ORG PLUGIN CHECK (official WP.org review tool) ────────
-# This is what the WordPress.org plugin review team actually runs.
-# Catches: unsafe functions (eval, base64_decode), remote code exec patterns,
-# GPL violations, readme.txt format errors, plugin header issues, and 40+ more.
+# Canonical WP.org submission validator. Host-first, Docker (wp-env) fallback.
+# In --mode release this is a HARD FAIL gate. If neither runtime is available,
+# the release is blocked. In other modes it warn-skips.
 header "Step 2b: WordPress.org Plugin Check"
 log "## Step 2b: Plugin Check (WP.org)"
 
-if command -v wp &>/dev/null; then
-  PLUGIN_SLUG=$(basename "$PLUGIN_PATH")
-  # Copy plugin to wp-env plugins dir if running in local wp-env
-  WP_ENV_PLUGINS=""
-  if [ -d ".wp-env" ]; then
-    WP_ENV_PLUGINS=$(wp eval 'echo WP_PLUGIN_DIR;' --path="$(wp eval 'echo ABSPATH;' 2>/dev/null)" 2>/dev/null || echo "")
-  fi
+PLUGIN_SLUG=$(basename "$PLUGIN_PATH")
+WP_CHECK_OUT=""
+WP_CHECK_SOURCE=""
+WP_CHECK_RAN=false
 
-  # Run plugin-check via wp-cli (requires plugin-check plugin installed in wp-env)
-  # Install: wp plugin install plugin-check --activate
-  WP_CHECK_OUT=$(wp plugin check "$PLUGIN_SLUG" \
-    --format=table 2>&1 || true)
+# Host wp-cli path — works only if `wp` resolves to a real WP install
+if command -v wp &>/dev/null; then
+  HOST_OUT=$(wp plugin check "$PLUGIN_SLUG" --format=table 2>&1 || true)
+  if ! echo "$HOST_OUT" | grep -qiE "not a WordPress install|could not be found|requires WordPress|Error establishing"; then
+    if [ -n "$HOST_OUT" ]; then
+      WP_CHECK_OUT="$HOST_OUT"
+      WP_CHECK_SOURCE="host wp-cli"
+      WP_CHECK_RAN=true
+    fi
+  fi
+fi
+
+# Docker fallback via wp-env — bootstraps a clean WP if needed
+if [ "$WP_CHECK_RAN" = false ]; then
+  if command -v docker &>/dev/null && docker info &>/dev/null 2>&1 && command -v wp-env &>/dev/null; then
+    if [ ! -f ".wp-env.json" ] && [ ! -d ".wp-env-site/default" ]; then
+      echo "Bootstrapping Docker test site (one-time, ~45s)..."
+      bash scripts/create-test-site.sh --mode full --plugin "$PLUGIN_PATH" >/dev/null 2>&1 || true
+    fi
+    wp-env start >/dev/null 2>&1 || true
+    wp-env run cli wp plugin install plugin-check --activate >/dev/null 2>&1 || true
+    DOCKER_OUT=$(wp-env run cli wp plugin check "$PLUGIN_SLUG" --format=table 2>&1 || true)
+    if [ -n "$DOCKER_OUT" ] && ! echo "$DOCKER_OUT" | grep -qiE "not a WordPress install|could not be found"; then
+      WP_CHECK_OUT="$DOCKER_OUT"
+      WP_CHECK_SOURCE="wp-env (Docker)"
+      WP_CHECK_RAN=true
+    fi
+  fi
+fi
+
+if [ "$WP_CHECK_RAN" = true ]; then
   WP_CHECK_ERRORS=$(echo "$WP_CHECK_OUT" | grep -c "ERROR\|error" 2>/dev/null || echo "0")
   WP_CHECK_WARNINGS=$(echo "$WP_CHECK_OUT" | grep -c "WARNING\|warning" 2>/dev/null || echo "0")
 
-  if echo "$WP_CHECK_OUT" | grep -qi "no errors\|no issues\|0 errors"; then
-    ok "Plugin Check — passed (WP.org review compliant)"
-    log "- ✓ Plugin Check: passed"
+  if echo "$WP_CHECK_OUT" | grep -qiE "no errors|no issues|0 errors|Checks complete"; then
+    ok "Plugin Check — passed via $WP_CHECK_SOURCE (WP.org review compliant)"
+    log "- ✓ Plugin Check: passed (via $WP_CHECK_SOURCE)"
     ((PASS++))
   elif [ "$WP_CHECK_ERRORS" -gt 0 ]; then
-    fail "Plugin Check — $WP_CHECK_ERRORS errors (would fail WP.org review)"
+    fail "Plugin Check — $WP_CHECK_ERRORS errors via $WP_CHECK_SOURCE (would fail WP.org review)"
     echo "$WP_CHECK_OUT" | head -20
-    log "- ✗ Plugin Check: $WP_CHECK_ERRORS errors, $WP_CHECK_WARNINGS warnings"
+    log "- ✗ Plugin Check: $WP_CHECK_ERRORS errors, $WP_CHECK_WARNINGS warnings (via $WP_CHECK_SOURCE)"
     ((FAIL++))
   else
-    warn "Plugin Check — $WP_CHECK_WARNINGS warnings (review before WP.org submission)"
-    log "- ⚠ Plugin Check: $WP_CHECK_WARNINGS warnings"
+    warn "Plugin Check — $WP_CHECK_WARNINGS warnings via $WP_CHECK_SOURCE (review before WP.org submission)"
+    log "- ⚠ Plugin Check: $WP_CHECK_WARNINGS warnings (via $WP_CHECK_SOURCE)"
     ((WARN++))
   fi
 else
-  warn "WP-CLI not found — skipping Plugin Check. Install: brew install wp-cli"
-  log "- ⚠ Plugin Check: skipped (wp-cli not found)"
-  ((WARN++))
+  if [ "$MODE" = "release" ]; then
+    fail "Plugin Check — could NOT run via host wp-cli or Docker wp-env. Release gate BLOCKED."
+    fail "  Fix: start Docker Desktop, then re-run. Orbit will auto-bootstrap wp-env."
+    log "- ✗ Plugin Check: BLOCKED — neither host wp-cli nor Docker wp-env available (release mode hard-fail)"
+    ((FAIL++))
+  else
+    warn "Plugin Check — skipped (no host wp-cli, no Docker wp-env). Install: brew install wp-cli OR start Docker"
+    log "- ⚠ Plugin Check: skipped (no runtime available)"
+    ((WARN++))
+  fi
 fi
 
 # ── STEP 3: PHPSTAN STATIC ANALYSIS ──────────────────────────────────────────

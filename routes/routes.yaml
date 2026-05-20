@@ -1,0 +1,541 @@
+# Orbit — Route Registry
+# Source of truth for external skill repos tracked by Orbit agents.
+# Used by update.sh + agent files. Human-readable skill map.
+# Update a skill: pull latest from its repo source.
+
+version: 1
+
+# ─────────────────────────────────────────────────────────────
+# ORBIT CORE — skills in this repo (always current)
+# ─────────────────────────────────────────────────────────────
+
+routes:
+  - name: orbit-core
+    repo: https://github.com/adityaarsharma/orbit.git
+    local_path: ~/.claude/skills/
+    update_mode: track-main
+    install_cmd: "bash install.sh"
+    used_by:
+      - 00-cto
+      - 01-pm
+      - 02-code-reviewer
+      - 03-senior-dev
+      - 04-dev-designer
+      - 05-uat
+      - 06-performance
+      - 07-security
+      - 08-release
+      - 09-docs
+    primary_commands:
+      # Pipeline
+      - /orbit-gauntlet
+      - /orbit-do-it
+      - /orbit-release-gate
+      - /orbit-multi-plugin
+      # Code audits
+      - /orbit-wp-standards
+      - /orbit-wp-security
+      - /orbit-wp-performance
+      - /orbit-wp-database
+      - /orbit-code-quality
+      - /orbit-scaffold-tests
+      # Security
+      - /orbit-broken-access-control
+      - /orbit-ajax-fuzzer
+      - /orbit-rest-fuzzer
+      - /orbit-sec-xss-active
+      - /orbit-sec-supply-chain
+      - /orbit-sec-secrets-leak
+      - /orbit-cve-check
+      - /orbit-vdp
+      # Performance
+      - /orbit-lighthouse
+      - /orbit-editor-perf
+      - /orbit-db-profile
+      - /orbit-bundle-analysis
+      - /orbit-perf-stress-test
+      - /orbit-perf-memory-leak
+      - /orbit-perf-cdn
+      - /orbit-seo-page-speed
+      # Gutenberg
+      - /orbit-gutenberg-dev
+      - /orbit-block-json-validate
+      - /orbit-block-render-test
+      - /orbit-block-edit-test
+      - /orbit-block-patterns
+      - /orbit-fse-test
+      - /orbit-block-bindings
+      - /orbit-interactivity-api
+      - /orbit-block-variations
+      - /orbit-nexter-block
+      - /orbit-abilities-api
+      # Elementor
+      - /orbit-elementor-dev
+      - /orbit-elementor-controls
+      - /orbit-elementor-compat
+      - /orbit-elementor-pro
+      - /orbit-elementor-skins
+      - /orbit-elementor-dynamic-tags
+      # Designer
+      - /orbit-accessibility
+      - /orbit-designer-rtl
+      - /orbit-designer-dark-mode
+      - /orbit-designer-empty-error
+      - /orbit-designer-icons
+      - /orbit-designer-tokens
+      - /orbit-i18n
+      # Release
+      - /orbit-release-meta
+      - /orbit-changelog-test
+      - /orbit-version-compare
+      - /orbit-zip-hygiene
+      - /orbit-plugin-check
+      - /orbit-pre-commit
+      - /orbit-pm-release-notes
+      - /orbit-reports
+      # Compat
+      - /orbit-compat-matrix
+      - /orbit-compat-acf
+      - /orbit-compat-wpml
+      - /orbit-compat-yoast
+      - /orbit-compat-polylang
+      - /orbit-compat-rankmath
+      - /orbit-conflict-matrix
+      - /orbit-cache-compat
+      - /orbit-multisite
+      - /orbit-host-wpengine
+      - /orbit-host-kinsta
+      - /orbit-host-cloudways
+      - /orbit-host-pantheon
+      - /orbit-host-shared
+      - /orbit-uninstall-test
+      - /orbit-life-activation
+      - /orbit-life-upgrade
+      - /orbit-life-rollback
+      # Test automation
+      - /orbit-playwright
+      - /orbit-visual-regression
+      - /orbit-user-flow
+      - /orbit-uat-elementor
+      - /orbit-uat-gutenberg
+      - /orbit-uat-woo
+      - /orbit-uat-forms
+      - /orbit-uat-membership
+      - /orbit-uat-compare
+      - /orbit-uat-agent
+      - /orbit-qa-flaky-detector
+      - /orbit-qa-mutation
+      - /orbit-qa-coverage
+      - /orbit-qa-snapshot-cleanup
+      - /orbit-qa-regression-pack
+      # PM
+      - /orbit-pm-roadmap
+      - /orbit-pm-rice
+      - /orbit-pm-feedback-mining
+      - /orbit-pm-competitor-pulse
+      - /orbit-pm-ux-audit
+      - /orbit-competitor-compare
+      # Compliance
+      - /orbit-pay-stripe
+      - /orbit-pay-paypal
+      - /orbit-pay-edd
+      - /orbit-pay-freemius
+      - /orbit-gdpr
+      - /orbit-premium-audit
+      - /orbit-rtc-compat
+      # SEO
+      - /orbit-seo-schema
+      - /orbit-seo-sitemap
+      - /orbit-mcp-discover
+
+# ─────────────────────────────────────────────────────────────
+# CHERRY-PICKED SKILLS FROM GLOBAL LIBRARY
+# These are selected from the 1600+ skill library.
+# To update: pull latest from the skill's source repo.
+# ─────────────────────────────────────────────────────────────
+
+  # ── Code Reviewer (02) / UAT (05) ──────────────────────────
+  - name: vibe-code-auditor
+    source: global-skills
+    category: code-quality
+    used_by: [05-uat, 02-code-reviewer]
+    notes: AI-generated code risks, vibe coding patterns, hallucination radar
+
+  - name: codebase-audit-pre-push
+    source: global-skills
+    category: code-quality
+    used_by: [02-code-reviewer, 03-senior-dev]
+    notes: Pre-push quality gate, diff-based review
+
+  - name: production-code-audit
+    source: global-skills
+    category: code-quality
+    used_by: [02-code-reviewer]
+    notes: Production-readiness checks
+
+  - name: php-pro
+    source: global-skills
+    category: language
+    used_by: [02-code-reviewer, 03-senior-dev]
+    notes: PHP 8.x patterns, type safety, modern idioms
+
+  - name: systematic-debugging
+    source: global-skills
+    category: debugging
+    used_by: [03-senior-dev]
+    notes: Root cause analysis, debugging methodology
+
+  # ── Security (07) ──────────────────────────────────────────
+  - name: security-auditor
+    source: global-skills
+    category: security
+    used_by: [07-security]
+    notes: General PHP security, OWASP Top 10
+
+  - name: security-scanning-security-sast
+    source: global-skills
+    category: security
+    used_by: [07-security]
+    notes: Static analysis security testing
+
+  - name: vulnerability-scanner
+    source: global-skills
+    category: security
+    used_by: [07-security]
+    notes: CVE matching, known vulnerability database
+
+  - name: web-security-testing
+    source: global-skills
+    category: security
+    used_by: [07-security]
+    notes: Web security testing methodology
+
+  - name: api-security-testing
+    source: global-skills
+    category: security
+    used_by: [07-security]
+    notes: REST endpoint security, auth, rate limiting, IDOR
+
+  - name: api-security-best-practices
+    source: global-skills
+    category: security
+    used_by: [07-security]
+    notes: API security design patterns
+
+  - name: xss-html-injection
+    source: global-skills
+    category: security
+    used_by: [07-security]
+    notes: XSS deep dive, output escaping audit
+
+  - name: sql-injection-testing
+    source: global-skills
+    category: security
+    used_by: [07-security]
+    notes: SQL injection in $wpdb queries
+
+  - name: file-path-traversal
+    source: global-skills
+    category: security
+    used_by: [07-security]
+    notes: Path traversal, file inclusion vulnerabilities
+
+  - name: broken-authentication
+    source: global-skills
+    category: security
+    used_by: [07-security]
+    notes: Auth bypass, session management, nonce issues
+
+  # ── Performance (06) ───────────────────────────────────────
+  - name: web-performance-optimization
+    source: global-skills
+    category: performance
+    used_by: [06-performance]
+    notes: General WP performance, Core Web Vitals
+
+  - name: performance-profiling
+    source: global-skills
+    category: performance
+    used_by: [06-performance]
+    notes: PHP/JS profiling, hotspot identification
+
+  - name: k6-load-testing
+    source: global-skills
+    category: performance
+    used_by: [06-performance]
+    notes: k6 load test scripts for endpoint benchmarks
+
+  # ── Code Reviewer (02) / Senior Dev (03) ──────────────────
+  - name: react-best-practices
+    source: global-skills
+    category: frontend
+    used_by: [02-code-reviewer, 03-senior-dev]
+    notes: React component patterns in block editor
+
+  - name: react-patterns
+    source: global-skills
+    category: frontend
+    used_by: [02-code-reviewer, 03-senior-dev]
+    notes: Component composition, hooks patterns
+
+  - name: javascript-pro
+    source: global-skills
+    category: language
+    used_by: [02-code-reviewer, 03-senior-dev]
+    notes: Modern JS/ES modules, async patterns
+
+  - name: typescript-expert
+    source: global-skills
+    category: language
+    used_by: [02-code-reviewer, 03-senior-dev]
+    notes: TypeScript for block attributes and APIs
+
+  # ── Dev Designer (04) ──────────────────────────────────────
+  - name: accessibility-compliance-accessibility-audit
+    source: global-skills
+    category: accessibility
+    used_by: [04-dev-designer]
+    notes: Comprehensive WCAG 2.2 AA audit
+
+  - name: fixing-accessibility
+    source: global-skills
+    category: accessibility
+    used_by: [04-dev-designer]
+    notes: Actionable fixes for accessibility issues
+
+  - name: wcag-audit-patterns
+    source: global-skills
+    category: accessibility
+    used_by: [04-dev-designer]
+    notes: WCAG audit methodology
+
+  - name: antigravity-design-expert
+    source: global-skills
+    category: design
+    used_by: [04-dev-designer]
+    notes: 44px touch targets, spacing, motion, micro-interactions
+
+  - name: ui-review
+    source: global-skills
+    category: design
+    used_by: [04-dev-designer]
+    notes: UI quality review, visual consistency
+
+  - name: screen-reader-testing
+    source: global-skills
+    category: accessibility
+    used_by: [04-dev-designer]
+    notes: Screen reader compatibility (NVDA, JAWS, VoiceOver)
+
+  # ── Release Manager (08) ───────────────────────────────────
+  - name: git-pr-review
+    source: global-skills
+    category: git
+    used_by: [08-release]
+    notes: PR review for release merges
+
+  - name: git-pr-workflows-pr-enhance
+    source: global-skills
+    category: git
+    used_by: [08-release]
+    notes: PR description quality for release PRs
+
+  - name: app-store-changelog
+    source: global-skills
+    category: release
+    used_by: [08-release]
+    notes: Changelog writing, user-friendly language
+
+  - name: wiki-changelog
+    source: global-skills
+    category: release
+    used_by: [08-release, 09-docs]
+    notes: Changelog documentation standards
+
+  - name: commit
+    source: global-skills
+    category: git
+    used_by: [08-release]
+    notes: Commit message quality and conventions
+
+  - name: create-pr
+    source: global-skills
+    category: git
+    used_by: [08-release]
+    notes: Create release PR with proper description
+
+  # ── Senior Dev (03) / Code Reviewer (02) ──────────────────
+  - name: database-migrations-sql-migrations
+    source: global-skills
+    category: database
+    used_by: [03-senior-dev, 02-code-reviewer]
+    notes: DB migration patterns for activation/upgrade
+
+  # ── UAT (05) ───────────────────────────────────────────────
+  - name: playwright-skill
+    source: global-skills
+    category: testing
+    used_by: [05-uat]
+    notes: Playwright testing patterns, test architecture
+
+  - name: playwright-pro
+    source: global-skills
+    category: testing
+    used_by: [05-uat]
+    notes: Advanced Playwright: network mocking, parallel, retries
+
+  - name: e2e-testing-patterns
+    source: global-skills
+    category: testing
+    used_by: [05-uat]
+    notes: E2E test design patterns, page object model
+
+  - name: javascript-testing-patterns
+    source: global-skills
+    category: testing
+    used_by: [05-uat]
+    notes: JS unit test patterns for block editor code
+
+  # ── PM (01) ────────────────────────────────────────────────
+  - name: product-manager
+    source: global-skills
+    category: product
+    used_by: [01-pm]
+    notes: PM methodology, user story writing
+
+  - name: product-manager-toolkit
+    source: global-skills
+    category: product
+    used_by: [01-pm]
+    notes: PM tools, frameworks, templates
+
+  - name: task-intelligence
+    source: global-skills
+    category: product
+    used_by: [01-pm, 03-senior-dev]
+    notes: Task decomposition, effort estimation
+
+  - name: competitive-landscape
+    source: global-skills
+    category: product
+    used_by: [00-cto, 01-pm]
+    notes: Market positioning analysis
+
+  - name: ux-audit
+    source: global-skills
+    category: design
+    used_by: [01-pm, 04-dev-designer]
+    notes: UX design review, flow analysis
+
+  # ── Security (07) / Compliance ─────────────────────────────
+  - name: gdpr-data-handling
+    source: global-skills
+    category: compliance
+    used_by: [07-security]
+    notes: GDPR technical implementation patterns
+
+  - name: pci-compliance
+    source: global-skills
+    category: compliance
+    used_by: [07-security]
+    notes: PCI DSS card data rules, scoping
+
+  - name: stripe-integration
+    source: global-skills
+    category: payments
+    used_by: [07-security]
+    notes: Stripe best practices, SCA/3DS, error handling
+
+  - name: payment-integration
+    source: global-skills
+    category: payments
+    used_by: [07-security]
+    notes: General payment security patterns
+
+  - name: privacy-by-design
+    source: global-skills
+    category: compliance
+    used_by: [07-security]
+    notes: Privacy-first design patterns
+
+  # ── Docs (09) ──────────────────────────────────────────────
+  - name: seo-schema
+    source: global-skills
+    category: seo
+    used_by: [09-docs]
+    notes: Structured data best practices, rich results
+
+  - name: schema-markup
+    source: global-skills
+    category: seo
+    used_by: [09-docs]
+    notes: Schema markup implementation
+
+  - name: documentation
+    source: global-skills
+    category: docs
+    used_by: [09-docs]
+    notes: Documentation quality, completeness, freshness
+
+  - name: api-documentation
+    source: global-skills
+    category: docs
+    used_by: [09-docs]
+    notes: API docs for plugin REST endpoints
+
+  # ── CTO (00) ───────────────────────────────────────────────
+  - name: orbit-mcp-discover
+    source: orbit-core
+    category: discovery
+    used_by: [00-cto, 01-pm]
+    notes: Search glama.ai (23k) + smithery + mcp-get + npm + GitHub simultaneously.
+           Find any MCP or Claude Code skill. Returns install commands. No auth needed.
+
+  - name: deep-research
+    source: global-skills
+    category: research
+    used_by: [00-cto]
+    notes: In-depth technology landscape research, WP ecosystem analysis
+
+  - name: technology-radar
+    source: global-skills
+    category: research
+    used_by: [00-cto]
+    notes: Evaluate new technologies and APIs for WP ecosystem fit
+
+  - name: context7-auto-research
+    source: global-skills
+    category: research
+    used_by: [00-cto, 02-code-reviewer, 03-senior-dev, 07-security, 09-docs]
+    notes: Auto-fetch live library/framework docs via Context7 MCP.
+           Use before writing any WP/React/PHP code to get accurate, version-current APIs.
+           No API key needed. Requires context7 MCP (already active).
+           Invoke with /context7-auto-research in any coding or docs task.
+
+  # ── Senior Dev (03) ────────────────────────────────────────
+  - name: clean-code-principles
+    source: global-skills
+    category: code-quality
+    used_by: [03-senior-dev, 02-code-reviewer]
+    notes: Clean code principles, refactoring methodology
+
+  - name: design-patterns
+    source: global-skills
+    category: code-quality
+    used_by: [03-senior-dev]
+    notes: PHP/OOP design patterns for WP plugin architecture
+
+  - name: docker-expert
+    source: global-skills
+    category: devops
+    used_by: [03-senior-dev, 05-uat, 06-performance]
+    notes: Docker containerization — Dockerfile optimization, multi-stage builds, security hardening,
+           compose orchestration. wp-env runs on Docker; use this for troubleshooting, custom images,
+           CI container setup, and production-grade container patterns.
+
+  - name: docker-development
+    source: global-skills
+    category: devops
+    used_by: [03-senior-dev, 05-uat]
+    notes: Docker Compose orchestration, layer caching, image size reduction, container security.
+           Pair with orbit-docker-site for WP test environment setup.

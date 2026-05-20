@@ -229,71 +229,57 @@ else
   echo "⏳ [3/4] Skipping power tools ($([ $UPDATE_MODE -eq 1 ] && echo 'update mode' || echo 'skills-only mode'))"
 fi
 
-# ── Brain connector check + install ────────────────────────────
+# ── Brain connector install (via install-connectors.sh) ─────────
 echo ""
-echo "⏳ [3c] Checking brain-posimyth connector..."
+echo "⏳ [3c] Checking brain-posimyth connectors..."
 
 BRAIN_CONFIGURED=0
 BRAIN_JUST_INSTALLED=0
 
-# Check if already in settings.json
+# Try to get key from ~/.orbit/keys.env
+ORBIT_KEY=""
+if [ -f "$ORBIT_KEYS_FILE" ]; then
+  ORBIT_KEY=$(grep -E "^ORBIT_ADMIN_KEY=" "$ORBIT_KEYS_FILE" 2>/dev/null | head -1 | cut -d= -f2 | tr -d '"')
+  [ -z "$ORBIT_KEY" ] && \
+    ORBIT_KEY=$(grep -E "^ORBIT_TEAM_KEY=" "$ORBIT_KEYS_FILE" 2>/dev/null | head -1 | cut -d= -f2 | tr -d '"')
+fi
+
+# Check if already configured and key hasn't changed
 if python3 -c "
 import json, sys
 try:
     d = json.load(open('$CLAUDE_SETTINGS'))
     sys.exit(0 if 'brain-posimyth' in d.get('mcpServers', {}) else 1)
 except: sys.exit(1)
-" 2>/dev/null; then
-  echo "   ✓ brain-posimyth already configured in Claude Code settings"
+" 2>/dev/null && [ -z "$ORBIT_KEY" ]; then
+  echo "   ✓ brain-posimyth already configured — skipping (no key in ~/.orbit/keys.env to refresh)"
   BRAIN_CONFIGURED=1
-else
-  # Try to get key from ~/.orbit/keys.env
-  ORBIT_KEY=""
-  if [ -f "$ORBIT_KEYS_FILE" ]; then
-    # Read ORBIT_ADMIN_KEY first, fall back to ORBIT_TEAM_KEY
-    ORBIT_KEY=$(grep -E "^ORBIT_ADMIN_KEY=" "$ORBIT_KEYS_FILE" 2>/dev/null | head -1 | cut -d= -f2 | tr -d '"')
-    [ -z "$ORBIT_KEY" ] && \
-      ORBIT_KEY=$(grep -E "^ORBIT_TEAM_KEY=" "$ORBIT_KEYS_FILE" 2>/dev/null | head -1 | cut -d= -f2 | tr -d '"')
-  fi
-
-  if [ -n "$ORBIT_KEY" ]; then
-    # Safety: backup settings.json before modifying
-    [ -f "$CLAUDE_SETTINGS" ] && cp "$CLAUDE_SETTINGS" "${CLAUDE_SETTINGS}.orbit-backup-$(date +%Y%m%d-%H%M%S)" 2>/dev/null || true
-    # Inject brain-posimyth into settings.json (only touches mcpServers.brain-posimyth key)
-    python3 - "$CLAUDE_SETTINGS" "$ORBIT_KEY" "$BRAIN_URL" <<'PYEOF'
-import json, sys, os
-settings_path, key, url = sys.argv[1], sys.argv[2], sys.argv[3]
-try:
-    with open(settings_path) as f:
-        settings = json.load(f)
-except (FileNotFoundError, json.JSONDecodeError):
-    settings = {}
-settings.setdefault('mcpServers', {})
-settings['mcpServers']['brain-posimyth'] = {
-    "type": "http",
-    "url": url,
-    "headers": {"Authorization": f"Bearer {key}"}
-}
-# Write to temp first, then atomic replace (prevents partial-write corruption)
-tmp = settings_path + '.tmp'
-with open(tmp, 'w') as f:
-    json.dump(settings, f, indent=2)
-os.replace(tmp, settings_path)
-print("ok")
-PYEOF
-    echo "   ✓ brain-posimyth installed into Claude Code settings (~/.claude/settings.json)"
-    BRAIN_CONFIGURED=1
-    BRAIN_JUST_INSTALLED=1
+elif [ -n "$ORBIT_KEY" ]; then
+  # Run the full connector installer (whitelist cleanup + Claude Desktop + verification)
+  CONNECTOR_SCRIPT="$ORBIT_HOME/install-connectors.sh"
+  if [ -f "$CONNECTOR_SCRIPT" ]; then
+    echo "   Running install-connectors.sh..."
+    bash "$CONNECTOR_SCRIPT" "$ORBIT_KEY" && {
+      BRAIN_CONFIGURED=1
+      BRAIN_JUST_INSTALLED=1
+    } || {
+      echo "   ⚠  Connector install had issues — check output above"
+    }
   else
-    echo "   ⚠  brain-posimyth not configured — no key found."
-    echo "      To connect agents to the brain, save your key:"
-    echo ""
-    echo "        mkdir -p ~/.orbit"
-    echo "        echo 'ORBIT_TEAM_KEY=your_key_here' >> ~/.orbit/keys.env"
-    echo "        bash install.sh --update"
-    echo ""
-    echo "      Get a key: contact POSIMYTH or see docs/team-access.md"
+    echo "   ⚠  install-connectors.sh not found at $CONNECTOR_SCRIPT"
   fi
+else
+  echo "   ⚠  No brain key found — skipping MCP connector setup."
+  echo "      To connect Orbit agents to the brain:"
+  echo ""
+  echo "        mkdir -p ~/.orbit"
+  echo "        echo 'ORBIT_TEAM_KEY=your_key_here' >> ~/.orbit/keys.env"
+  echo "        bash install.sh --update"
+  echo ""
+  echo "      Or run directly once you have a key:"
+  echo "        bash install-connectors.sh <your_key>"
+  echo ""
+  echo "      Get a key: contact POSIMYTH or see docs/team-access.md"
 fi
 
 # ── Restart Claude Code (macOS — picks up new agents + MCP) ────
@@ -349,9 +335,9 @@ if [ $UPDATE_MODE -eq 0 ]; then
                          "CTO brief — Elementor just shipped X"
                          "Run release gate for my-plugin v2.5"
 
-  First-time brain setup (requires Admin key from POSIMYTH):
-     bash brain/seed-brain.sh --key <orbit-admin-key>
-     (seeds 40 WP knowledge drawers into orbit/00-cto — one-time)
+  Connect agents to brain (requires key from POSIMYTH):
+     bash install-connectors.sh <your-brain-key>
+     (validates key, detects tier, cleans stale MCPs, verifies live)
 
   Or use skills directly (no brain key needed):
      /orbit-setup            Guided wizard for your first plugin
@@ -362,7 +348,7 @@ if [ $UPDATE_MODE -eq 0 ]; then
   All agents:  ~/.claude/agents/00-cto.md … 09-docs.md
   All skills:  ~/Claude/orbit/SKILLS.md
 
-  Update later:    /orbit-update  (refreshes both agents + skills)
+  Update later:    bash install.sh --update  (refreshes agents + skills + MCPs)
 
 NEXT
 else

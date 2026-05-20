@@ -8,6 +8,25 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.1.2] — 2026-05-20
+
+### Added
+
+- **`install-connectors.sh`** — dedicated connector installer ported from Golden Circle v1.2.5:
+  - Key validation via `brain.posimyth.com/connectors/whoami` — auto-detects tier (readonly / team / admin)
+  - **Whitelist cleanup** — removes ANY stale MCP not on the known-good list; prevents corrupted config after re-installs
+  - Registers Orbit MCPs in **both** Claude Code (`~/.claude/settings.json`, `type: http`) and **Claude Desktop** (`claude_desktop_config.json`, `mcp-remote` bridge) — fixes the "MCP server could not be loaded" desktop error
+  - **Live verification** — MCP initialize handshake + tool count per endpoint so install failures are visible before restart
+  - Tier-gated: readonly gets umbrella only; team gets + ClickUp/FluentSupport; admin gets all endpoints
+  - Safe to re-run; idempotent; backs up both config files before writing
+  - Personal MCPs (apple-mail, playwright, github, context7, brain-aditya) are never touched
+
+### Changed
+
+- **`install.sh`** — brain connector section now calls `install-connectors.sh` instead of inline single-key injection; falls back gracefully if no key present
+
+---
+
 ## [3.1.1] — 2026-05-20
 
 ### Added

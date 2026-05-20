@@ -6,6 +6,108 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ## [Unreleased]
 
+---
+
+## [3.0.0] — 2026-05-20 — "Orbit Agentic"
+
+The architecture shift: Orbit is no longer just a skill suite — it's a **10-agent QA team** that runs like a company. Each agent has a defined role, a written SOP, a brain connection, and the MCP access to act on what it finds.
+
+Two keys power the system: **Team** (read) and **Admin** (read+write). Connect once — every agent uses `brain-posimyth` as the shared intelligence layer. Approved patterns get remembered. Revised work gets redlined. Cold starts become warm starts.
+
+The **CTO agent** (`00-cto`) is the head of the brain — `orbit/00-cto` is the shared intelligence layer for the entire team. Every other agent reads CTO's brain first (hard rules, WP standards, approved patterns, strategic decisions) before their own collection.
+
+### Added — Agentic Framework
+
+- **`CLAUDE.md`** rewritten as the team router — natural-language intent → agent dispatch, Team/Admin tier capability matrix, approval protocol (`approve` / `revise: <reason>` / `skip` / `escalate`), full audit orchestration sequence
+
+- **10 agent files** in `agents/` — each written with the 4-part structure:
+  - **Skills** — what the agent knows
+  - **Process** — POSIMYTH SOPs with explicit step order + guardrails (🚫 Never / ✅ Always)
+  - **MCP + Connectors** — which systems the agent acts on, key tier required
+  - **Brain** — what to recall before starting, what to ingest when done
+
+  | Agent | Role |
+  |---|---|
+  | `00-cto` | Strategic advisor. Reads all agent brains. Sets direction — does not execute. Sole writer to shared brain. |
+  | `01-pm` | Daily coordinator. RICE scoring, feedback mining, routes work to 02–09, sprint health, competitor pulse. |
+  | `02-code-reviewer` | Code review: PHP + Gutenberg + Elementor + compat. Senior + skeptical. Blocks bad code. |
+  | `03-senior-dev` | Builds features, fixes UAT-flagged bugs. NEVER self-merges — always hands off to 02. |
+  | `04-dev-designer` | WCAG 2.2 AA, RTL, dark mode, empty/error states. Writes specs for 03 to implement. |
+  | `05-uat` | Docker WP env, Playwright E2E, visual regression, severity triage. Orchestrates 06+07+04 in parallel. |
+  | `06-performance` | Hook weight, DB queries, bundle analysis, Lighthouse. Sets + enforces perf budgets. |
+  | `07-security` | PHP vulns, XSS, SQLi, nonces, supply chain, CVE, payments, GDPR, PCI, premium gating. |
+  | `08-release` | 7-step release gate, WP.org submission, zip hygiene, release notes, cross-channel announce. |
+  | `09-docs` | README, feature docs, API/hook docs, in-code comments, changelog language, WP.org freshness. |
+
+  Previous 12 agent files archived in `agents/_archive/` — not deleted.
+
+- **`brain/orbit-brain-spec.md`** — `orbit/00-cto` as the shared head brain (no separate general collection), per-agent Chroma collections, POSIMYTH-Admin vs Customer-Team key model, mandatory 5-search Brain Prime pattern, ingest rules
+
+- **`brain/starter-brain.md`** — 40 pre-loaded knowledge drawers in 8 categories (WP Standards, Block Editor, Elementor, Security, Performance, Release, Accessibility, Compat). Seeds via `bash brain/seed-brain.sh --key <admin-key>`. Eliminates cold starts for every Orbit install.
+
+- **`brain/seed-brain.sh`** — shell script to bootstrap the starter brain on first install
+
+- **`docs/mcp-library.md`** — MCP reference for WordPress developers. Must-have (brain-posimyth, gh CLI, Claude in Chrome, Context7, wp-env/wp-cli), strong recommendations (DataForSEO, Sentry, LambdaTest), POSIMYTH internal (WP connectors, FluentCRM, Slack)
+
+- **`docs/team-access.md`** — Team key vs Admin key permissions matrix, per-agent key requirements, first-time setup commands, key rotation policy (90 days)
+
+- **`docs/BLUEPRINT-ORBIT-V3.md`** — full architecture design document for the v3.0 system
+
+- **`memory/agent-workflow-pattern.md`** — 5-step WAKE/ANALYSE/PLAN/EXECUTE/INGEST workflow, Brain Prime block format, ingest rules table
+
+- **`memory/brain-connectors.md`** — brain-posimyth as primary connector, drawer naming, hard rules
+
+- **`memory/cross-agent-handoffs.md`** — handoff brief schema, standard orchestration paths, escalation rules
+
+- **`routes/routes.yaml`** — skill source map. All 116 `/orbit-*` skills mapped with `used_by` agent IDs. 50 cherry-picked global skills from the 1600+ library, each with `source`, `category`, `used_by`, and `notes`. Updatable from source repos.
+
+### Added — Always-On Agent Framework (Phase 1 — Claude Code mode)
+
+Agents are designed for two operating modes:
+
+- **Mode A (now)** — Claude Code, operator-invoked. Follows the 5-step workflow per session.
+- **Mode B (Phase 2)** — API runner (Dora + PM2), 9 AM–6 PM IST, scheduled autonomous dispatch.
+
+The agent files are compatible with both modes. When Phase 2 activates for the chosen 5 always-on agents, no changes to the agent files are needed — the runner handles scheduling, the files handle behaviour.
+
+### Changed
+
+- **`AGENTS.md`** — header updated to point at the new `CLAUDE.md` as the routing layer
+- **Agent learning loop** — every `approve` or `revise: <reason>` response ingests to brain. Agents never re-ask for context already in brain. Pattern: brain prime first, skill invocation second.
+
+### Guardrails introduced
+
+Every agent now has explicit guardrails:
+- **Never test production** (07-security: staging-only active testing)
+- **Never skip lifecycle tests** (02-code-reviewer: activation/upgrade/uninstall mandatory)
+- **Never delete a failing test** (05-uat: quarantine and understand)
+- **Never use EDD operations with Team key** (07-security: Admin only)
+- **Never downgrade Critical** (05-uat: operator approval required to change severity)
+- **Never execute** (00-cto: advises only — 01-pm assigns, 03-senior-dev builds)
+- **Never self-merge** (03-senior-dev: always routes through 02-code-reviewer)
+
+### Brain bootstrap
+
+```bash
+# New install — seed starter brain (requires Admin key)
+bash brain/seed-brain.sh --key <your-orbit-admin-key>
+
+# Per-plugin — prime from existing brain history
+# (agent does this automatically on first invocation)
+```
+
+### Stats
+- 116 total skills (115 in v2.8.0)
+- 10 agents with full 4-part breakdown (00-CTO through 09-Docs)
+- 40 starter brain drawers across 8 categories seeded to `orbit/00-cto/hard-rules/`
+- 50 cherry-picked global skills in routes.yaml
+- Previous 12 agents archived in `agents/_archive/`
+- Team key (read) + Admin key (read+write) tier model
+
+---
+
+## [2.8.0] — 2026-05-12 — "Nexter Block Pipeline"
+
 ### Added
 
 - **`/orbit-nexter-block`** — Full automated block testing pipeline for Nexter Blocks. Covers both Free (57 blocks) and Pro (74 blocks). Auto-inserts every block via `wp.data`, randomises all block.json attributes (98% coverage — 4082/4151 attrs incl. 2704 `scopy` CSS-inject attrs), runs a sentinel value-verification pass, publishes each post, and asserts no PHP fatals / JS errors on the frontend. Includes a UI spec that clicks every sidebar control. Found two real bugs during development: `tp-countdown` `DateTime::__construct` crash on non-date strings, and Display Rules `is_array()` always-false on JSON-encoded attributes.

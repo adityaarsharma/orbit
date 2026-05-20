@@ -32,8 +32,12 @@ done
 
 # ── Constants ───────────────────────────────────────────────────
 SKILLS_DIR="$HOME/.claude/skills"
+AGENTS_DIR="$HOME/.claude/agents"
 ORBIT_HOME_DEFAULT="$HOME/Claude/orbit"
+ORBIT_KEYS_FILE="$HOME/.orbit/keys.env"
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 REPO_URL="https://github.com/adityaarsharma/orbit.git"
+BRAIN_URL="https://brain.posimyth.com/connectors"
 
 # ── Header ──────────────────────────────────────────────────────
 if [ $UPDATE_MODE -eq 0 ]; then
@@ -43,19 +47,25 @@ if [ $UPDATE_MODE -eq 0 ]; then
   🪐  Orbit — WordPress Plugin QA Framework
 ════════════════════════════════════════════════════
 
-  Installing 45 specialised /orbit-* commands:
+  Installing 10 AI agents + 116 /orbit-* skills:
 
-    /orbit                  Master dispatcher (start here)
-    /orbit-setup            Guided onboarding
-    /orbit-gauntlet         Full 11-step audit
-    /orbit-wp-standards     PHP/WP coding standards
-    /orbit-wp-security      XSS / CSRF / SQLi audit
-    /orbit-wp-performance   Hook weight + N+1
-    /orbit-wp-database      $wpdb / autoload / indexes
-    /orbit-playwright       E2E browser tests
-    /orbit-uat-compare      Plugin A vs Plugin B
-    /orbit-update           One-command updater
-    ... and 35 more
+  Agents (talk to these in Claude Code):
+    00-cto          Strategic advisor — tech direction, competitor intel
+    01-pm           Coordinator — RICE, routing, sprint health
+    02-code-reviewer PHP + Gutenberg + Elementor + compat review
+    03-senior-dev   Builds features, fixes bugs
+    04-dev-designer WCAG, RTL, dark mode, empty states
+    05-uat          Playwright E2E, visual regression, severity triage
+    06-performance  Hook weight, DB queries, Lighthouse budgets
+    07-security     XSS/SQLi/CSRF, CVE, payments, GDPR
+    08-release      7-step gate, WP.org, zip hygiene, announce
+    09-docs         README, API hooks, freshness, changelog
+
+  Key skills (agents invoke these automatically):
+    /orbit-wp-standards     /orbit-wp-security    /orbit-lighthouse
+    /orbit-playwright       /orbit-release-gate   /orbit-plugin-check
+    /orbit-accessibility    /orbit-cve-check      /orbit-gdpr
+    ... and 107 more
 
   Repo:    github.com/adityaarsharma/orbit
   License: GPL-2.0+ (open source)
@@ -118,6 +128,52 @@ done
 
 echo "   ✓ Linked $INSTALLED skills"
 
+# ── Install agents (symlinks for live updates) ──────────────────
+echo ""
+echo "⏳ [2b] Installing 10 Orbit agents to ~/.claude/agents/..."
+mkdir -p "$AGENTS_DIR"
+
+AGENTS_INSTALLED=0
+for agent_path in "$ORBIT_HOME/agents/"[0-9]*.md; do
+  agent=$(basename "$agent_path")
+  [ -f "$agent_path" ] || continue
+
+  # Remove existing entry so we can re-link cleanly
+  if [ -L "$AGENTS_DIR/$agent" ] || [ -f "$AGENTS_DIR/$agent" ]; then
+    rm -f "$AGENTS_DIR/$agent"
+  fi
+
+  # Symlink so /orbit-update gets fresh agent content automatically
+  ln -s "$agent_path" "$AGENTS_DIR/$agent"
+  AGENTS_INSTALLED=$((AGENTS_INSTALLED + 1))
+done
+
+echo "   ✓ Linked $AGENTS_INSTALLED agents (00-cto through 09-docs)"
+
+# ── Remove old 12-agent model symlinks (v2.x → v3.0 migration) ──
+OLD_ORBIT_AGENTS=(
+  "01-qa-lead.md"   "02-security.md"   "03-performance.md"
+  "04-gutenberg.md" "05-elementor.md"  "06-designer.md"
+  "07-release.md"   "08-compat.md"     "09-test-auto.md"
+  "10-pm.md"        "11-compliance.md" "12-seo-docs.md"
+)
+AGENTS_REMOVED=0
+for old_agent in "${OLD_ORBIT_AGENTS[@]}"; do
+  if [ -L "$AGENTS_DIR/$old_agent" ] || [ -f "$AGENTS_DIR/$old_agent" ]; then
+    rm -f "$AGENTS_DIR/$old_agent"
+    AGENTS_REMOVED=$((AGENTS_REMOVED + 1))
+  fi
+done
+[ $AGENTS_REMOVED -gt 0 ] && echo "   ✓ Removed $AGENTS_REMOVED stale agent(s) (old 12-agent model)"
+
+# ── Purge broken symlinks in agents + skills dirs ───────────────
+BROKEN_AGENTS=$(find "$AGENTS_DIR" -maxdepth 1 -name "*.md" -xtype l 2>/dev/null | wc -l | tr -d ' ')
+find "$AGENTS_DIR" -maxdepth 1 -name "*.md" -xtype l -delete 2>/dev/null || true
+BROKEN_SKILLS=$(find "$SKILLS_DIR" -maxdepth 1 -name "orbit-*" -xtype l 2>/dev/null | wc -l | tr -d ' ')
+find "$SKILLS_DIR" -maxdepth 1 -name "orbit-*" -xtype l -delete 2>/dev/null || true
+[ "$BROKEN_AGENTS" -gt 0 ] 2>/dev/null && echo "   ✓ Cleaned $BROKEN_AGENTS broken agent symlink(s)" || true
+[ "$BROKEN_SKILLS" -gt 0 ] 2>/dev/null && echo "   ✓ Cleaned $BROKEN_SKILLS broken skill symlink(s)" || true
+
 # ── Remove deprecated skills ────────────────────────────────────
 DEPRECATED=(
   orbit-init           # → orbit-setup (renamed in v2.5)
@@ -173,6 +229,92 @@ else
   echo "⏳ [3/4] Skipping power tools ($([ $UPDATE_MODE -eq 1 ] && echo 'update mode' || echo 'skills-only mode'))"
 fi
 
+# ── Brain connector check + install ────────────────────────────
+echo ""
+echo "⏳ [3c] Checking brain-posimyth connector..."
+
+BRAIN_CONFIGURED=0
+BRAIN_JUST_INSTALLED=0
+
+# Check if already in settings.json
+if python3 -c "
+import json, sys
+try:
+    d = json.load(open('$CLAUDE_SETTINGS'))
+    sys.exit(0 if 'brain-posimyth' in d.get('mcpServers', {}) else 1)
+except: sys.exit(1)
+" 2>/dev/null; then
+  echo "   ✓ brain-posimyth already configured in Claude Code settings"
+  BRAIN_CONFIGURED=1
+else
+  # Try to get key from ~/.orbit/keys.env
+  ORBIT_KEY=""
+  if [ -f "$ORBIT_KEYS_FILE" ]; then
+    # Read ORBIT_ADMIN_KEY first, fall back to ORBIT_TEAM_KEY
+    ORBIT_KEY=$(grep -E "^ORBIT_ADMIN_KEY=" "$ORBIT_KEYS_FILE" 2>/dev/null | head -1 | cut -d= -f2 | tr -d '"')
+    [ -z "$ORBIT_KEY" ] && \
+      ORBIT_KEY=$(grep -E "^ORBIT_TEAM_KEY=" "$ORBIT_KEYS_FILE" 2>/dev/null | head -1 | cut -d= -f2 | tr -d '"')
+  fi
+
+  if [ -n "$ORBIT_KEY" ]; then
+    # Inject brain-posimyth into settings.json
+    python3 - "$CLAUDE_SETTINGS" "$ORBIT_KEY" "$BRAIN_URL" <<'PYEOF'
+import json, sys
+settings_path, key, url = sys.argv[1], sys.argv[2], sys.argv[3]
+try:
+    with open(settings_path) as f:
+        settings = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    settings = {}
+settings.setdefault('mcpServers', {})
+settings['mcpServers']['brain-posimyth'] = {
+    "type": "http",
+    "url": url,
+    "headers": {"Authorization": f"Bearer {key}"}
+}
+with open(settings_path, 'w') as f:
+    json.dump(settings, f, indent=2)
+print("ok")
+PYEOF
+    echo "   ✓ brain-posimyth installed into Claude Code settings (~/.claude/settings.json)"
+    BRAIN_CONFIGURED=1
+    BRAIN_JUST_INSTALLED=1
+  else
+    echo "   ⚠  brain-posimyth not configured — no key found."
+    echo "      To connect agents to the brain, save your key:"
+    echo ""
+    echo "        mkdir -p ~/.orbit"
+    echo "        echo 'ORBIT_TEAM_KEY=your_key_here' >> ~/.orbit/keys.env"
+    echo "        bash install.sh --update"
+    echo ""
+    echo "      Get a key: contact POSIMYTH or see docs/team-access.md"
+  fi
+fi
+
+# ── Restart Claude Code (macOS — picks up new agents + MCP) ────
+# Only auto-restart if we just changed something that needs it:
+# - agents were re-linked (always on update)
+# - brain connector was just added
+NEEDS_RESTART=0
+[ $AGENTS_INSTALLED -gt 0 ] && NEEDS_RESTART=1
+[ $BRAIN_JUST_INSTALLED -eq 1 ] && NEEDS_RESTART=1
+
+if [ $NEEDS_RESTART -eq 1 ] && [[ "$OSTYPE" == "darwin"* ]]; then
+  # Check if Claude Code is actually running
+  if pgrep -x "Claude" > /dev/null 2>&1; then
+    echo ""
+    echo "🔄 Restarting Claude Code to load updated agents + MCP connector..."
+    osascript -e 'quit app "Claude"' 2>/dev/null || pkill -x "Claude" 2>/dev/null || true
+    sleep 3
+    open -a "Claude" 2>/dev/null && echo "   ✓ Claude Code restarted" || \
+      echo "   ⚠  Couldn't relaunch — open Claude Code manually"
+  else
+    echo "   ℹ  Claude Code not running — open it now to load agents + MCP"
+  fi
+elif [ $NEEDS_RESTART -eq 1 ]; then
+  echo "   ℹ  Restart Claude Code to load the updated agents + MCP connector"
+fi
+
 # ── Closing ─────────────────────────────────────────────────────
 echo ""
 echo "⏳ [4/4] Wrapping up..."
@@ -182,10 +324,11 @@ cat <<FOOTER
   ✅  Orbit installed — $ORBIT_VERSION
 ════════════════════════════════════════════════════
 
-  Skills installed:    $INSTALLED
+  Agents installed:    $AGENTS_INSTALLED  (~/.claude/agents/)
+  Agents removed:      $AGENTS_REMOVED (old 12-agent model)
+  Skills installed:    $INSTALLED  (~/.claude/skills/)
   Skills removed:      $REMOVED (deprecated)
   Repo:                $ORBIT_HOME
-  Skills folder:       $SKILLS_DIR
 
 ────────────────────────────────────────────────────
   Next steps
@@ -195,31 +338,39 @@ FOOTER
 
 if [ $UPDATE_MODE -eq 0 ]; then
   cat <<'NEXT'
-  1. Fully quit Claude Code (Cmd+Q on Mac)
-  2. Reopen it
-  3. Type /orbit  →  master menu appears
+  1. Fully quit Claude Code (Cmd+Q on Mac) and reopen
+  2. Talk to an agent:   "UAT audit my-plugin v2.5"
+                         "Security scan the ajax handler in settings.php"
+                         "CTO brief — Elementor just shipped X"
+                         "Run release gate for my-plugin v2.5"
 
-  Or jump straight in:
+  First-time brain setup (requires Admin key from POSIMYTH):
+     bash brain/seed-brain.sh --key <orbit-admin-key>
+     (seeds 40 WP knowledge drawers into orbit/00-cto — one-time)
 
+  Or use skills directly (no brain key needed):
      /orbit-setup            Guided wizard for your first plugin
-     /orbit-docker-site      Spin up a wp-env test site
-     /orbit-gauntlet         Full audit (after setup)
+     /orbit-do-it            Brainless full audit
+     /orbit-release-gate     7-step release gate
 
-  Documentation:
-     ~/Claude/orbit/README.md
-     ~/Claude/orbit/GETTING-STARTED.md
-     ~/Claude/orbit/SKILLS.md          (every skill listed)
+  Onboarding:  ~/Claude/orbit/docs/onboarding-by-role.md
+  All agents:  ~/.claude/agents/00-cto.md … 09-docs.md
+  All skills:  ~/Claude/orbit/SKILLS.md
 
-  Update later:    /orbit-update
-  Open the menu:   /orbit
+  Update later:    /orbit-update  (refreshes both agents + skills)
 
 NEXT
 else
   cat <<'NEXTUPDATE'
-  Skill text changes are live immediately — no restart needed.
+  ⚡ Skill text changes: live immediately — no restart needed.
+  🔄 Agent changes:      fully quit Claude Code (Cmd+Q) and reopen.
 
   Verify:        /orbit
   See changes:   git -C ~/Claude/orbit log --oneline -10
+
+  Agents active (~/.claude/agents/):
+    00-cto  01-pm  02-code-reviewer  03-senior-dev  04-dev-designer
+    05-uat  06-performance  07-security  08-release  09-docs
 
 NEXTUPDATE
 fi

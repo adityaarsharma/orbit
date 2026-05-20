@@ -1,14 +1,213 @@
 # Use Cases — Orbit in Real Scenarios
 
-> 25 real-world scenarios organized by role and situation. Each includes the
-> exact command, what output to expect, and what decision to make.
-
-**How to use this doc:** Find your role + situation, copy the commands, use
-the decision rules to ship with confidence.
+> Real-world workflows using Orbit — both the 10-agent agentic system (v3.0) and the direct skill commands (v2.x+). Pick the mode that fits how you work.
 
 ---
 
-## Table of contents
+## Agentic Use Cases (v3.0 — 10-agent team)
+
+These scenarios show how Orbit's agents collaborate through `brain-posimyth`. Each agent reads the shared CTO brain first, does its specialized work, ingests findings, and hands off to the next agent.
+
+**How to invoke an agent in Claude Code:**
+```
+You:  "Run a UAT audit on ~/plugins/nexterwp for v2.5 RC"
+      → 05-UAT agent activates, runs Brain Prime, dispatches 07+06+04 in parallel
+      → Returns severity-triaged bug report + CLEAR/BLOCKED verdict
+
+You:  "Security scan TPA for the new Ajax handler in settings-ajax.php"
+      → 07-Security activates, escalates any Critical immediately
+
+You:  "CTO brief on Elementor's new AI features — should we respond?"
+      → 00-CTO activates, searches all brains, returns CTO BRIEF with recommendation
+```
+
+---
+
+### A1. Full release pipeline — NexterWP v2.5
+
+**Situation:** v2.5 is feature-complete. Time to gate, test, and ship.
+
+**Agent sequence:**
+```
+you → 01-PM    "NexterWP v2.5 is dev-complete. Run release prep."
+01-PM          Checks open RICE items. Confirms v2.5 scope. Routes work:
+               → 05-UAT: full audit
+               → 09-Docs: freshness check (parallel)
+
+05-UAT         Brain Prime: loads v2.4 bug history, known flaky tests from orbit/05
+               Spins Docker WP 6.8 env. Playwright E2E. Dispatches in parallel:
+               → 07-Security: full code scan
+               → 06-Performance: benchmark vs v2.4 baseline
+               → 04-DevDesigner: accessibility + RTL check
+               All pass → UAT CLEAR for v2.5
+
+08-Release     you → "Run release gate for NexterWP v2.5"
+               7 checks in order. All pass:
+               ✓ pre-commit  ✓ metadata  ✓ plugin-check
+               ✓ changelog   ✓ version   ✓ zip  ✓ i18n
+               → Release gate PASSED
+               → Release notes drafted (POSIMYTH voice)
+               → you: approve → cross-channel announce (blog + email + social + Discord)
+
+09-Docs        Freshness audit done during UAT.
+               New scroll-animation block documented. Hook reference updated.
+               you: approve → publishes same day as release.
+```
+
+**Total agent involvement:** 01-PM → 05-UAT (+ 07 + 06 + 04 parallel) → 08-Release → 09-Docs
+
+---
+
+### A2. Critical XSS found — emergency patch flow
+
+**Situation:** Security scan found unescaped output in TPA settings page.
+
+```
+you → 07-Security  "Scan TPA v6.3 settings-ajax.php"
+
+07-Security    Brain Prime: loads past TPA findings from orbit/07, WP XSS patterns from orbit/00-cto
+               Scans.
+               → CRITICAL: wp-content/plugins/tpa/includes/settings-ajax.php:142
+                 echo $_GET['search'] — unescaped output in admin context.
+               → ESCALATING CRITICAL to 01-PM immediately.
+               Ingests: [security, tpa, Critical, xss-settings-page, settings-ajax.php:142, v6.3]
+
+01-PM          Receives escalation. Blocks sprint. Routes to 03-SrDev: Priority 0.
+               Notifies 08-Release: release gate halted.
+
+you → 03-SrDev  "Fix the XSS in settings-ajax.php:142. Security report attached."
+
+03-SrDev       Brain Prime: loads orbit/00-cto XSS hard rule, past TPA fix patterns from orbit/03
+               Fix: echo esc_html( sanitize_text_field( $_GET['search'] ?? '' ) );
+               Runs /orbit-wp-standards. Clean.
+               Routes to 07-Security for re-scan.
+
+07-Security    Re-scans settings-ajax.php. Clean.
+               Ingests: [security, tpa, fixed, xss-settings-page, v6.3.1]
+
+you → 08-Release  "Emergency patch release — TPA v6.3.1"
+08-Release     7-step gate. PASS. Ships.
+```
+
+**Time from escalation to patch release:** 2–4 hours with the brain context loaded.
+
+---
+
+### A3. WP.org rejection → the brain learns forever
+
+**Situation:** TPA v6.2.0 rejected. "Plugin is loading scripts on all admin pages."
+
+```
+08-Release     Receives WP.org rejection notice.
+               Ingests: [release, tpa, wp-org-rejection, scripts-all-admin-pages, v6.2.0]
+               Routes to 00-CTO: "This may be a pattern across all plugins."
+
+00-CTO         Brain Prime fan-out: checks orbit/02-code-reviewer for same pattern.
+               Found: NexterWP has same issue in enqueue.php.
+               Decision: promote to hard rule.
+               Ingests to orbit/00-cto/hard-rules/:
+               [cto, hard-rule, enqueue-on-specific-pages-only, wp-org-requirement, 2026-05-20]
+
+Next sprint:   02-CodeReviewer's Brain Prime loads this rule automatically.
+               Any PR that enqueues on all admin pages → REQUEST CHANGES, before WP.org ever sees it.
+
+Next release:  08-Release's Brain Prime loads this rule.
+               Checks enqueue pattern in 7-step gate.
+
+Outcome:       One rejection → zero repeats across all 3 plugins, indefinitely.
+```
+
+---
+
+### A4. Performance regression caught before users notice
+
+**Situation:** NexterWP v2.5 shows DB query spike in benchmark.
+
+```
+you → 06-Performance  "Benchmark NexterWP v2.5 vs v2.4 baseline"
+
+06-Performance  Brain Prime: loads v2.4 baseline from orbit/06/nexterwp/budget
+                Benchmarks v2.5:
+                → REGRESSION HIGH: DB queries 11 (baseline: 4) — exceeds 5-query threshold
+                → REGRESSION MEDIUM: Bundle +38KB (baseline: +12KB allowed)
+                → REGRESSION HIGH: Lighthouse 71 (baseline: 83) — 12pt drop
+                Ingests: [perf, regression, nexterwp, v2.5, db-queries-11, lighthouse-71]
+                Routes to 01-PM with report.
+
+01-PM           Creates fix ticket. Routes to 03-SrDev with orbit/06 context attached.
+
+you → 03-SrDev  "Fix the performance regressions in NexterWP v2.5. Perf report attached."
+
+03-SrDev        Brain Prime: loads orbit/06 regression + orbit/03 past perf fixes
+                Diagnoses: N+1 in scroll-animation block → WP_Query post__in[]
+                           Bundle: lodash imported wholesale → cherry-pick only needed methods
+                Routes to 06-Performance for validation.
+
+06-Performance  Re-benchmark: DB queries 3, bundle +4KB, Lighthouse 85. All pass.
+                Updates orbit/06/nexterwp/budget for v2.5.
+                Clears for 05-UAT.
+```
+
+---
+
+### A5. Competitor intelligence → product decision
+
+**Situation:** Elementor Kit ships AI Copilot. Should POSIMYTH respond?
+
+```
+you → 00-CTO  "Elementor Kit just shipped an AI block generator. CTO brief."
+
+00-CTO          Brain Prime: fan-out reads orbit/00-cto (decisions) + orbit/01-pm (roadmap)
+                + orbit/07-security (any implications) + orbit/08-release (release health)
+                Research via /deep-research + /orbit-pm-competitor-pulse
+                Checks orbit/00-cto for prior competitor intel on Kit.
+
+CTO BRIEF — Elementor Kit AI Copilot
+Date: 2026-05-20
+Signal:         Kit shipped in-editor AI block generation. WP.org reviews up 320 this week.
+                NexterWP support board: 14 requests for "AI block help" in last 30 days.
+Assessment:     Medium threat. High opportunity.
+Recommendation: Differentiate — not copy. Our angle: AI block configuration assistant
+                (help users configure existing blocks, not generate new ones). Lower effort,
+                better fit for our user base (power users, not no-coders).
+Owner:          01-PM runs RICE. 03-SrDev estimates effort. CTO revisits in 30 days.
+Confidence:     Medium
+
+00-CTO          Ingests: [cto, competitor, elementorkit, ai-copilot, differentiate-with-config, 2026-05]
+
+you → 01-PM   "Assess the CTO brief on Elementor Kit AI. RICE it."
+
+01-PM           RICE: Reach 9 / Impact 7 / Confidence 5 / Effort 7 = 45.
+                Q3 roadmap. Monitors competitor reviews monthly via /orbit-pm-competitor-pulse.
+```
+
+---
+
+### A6. New developer onboarded — no cold start
+
+**Situation:** New WordPress developer joins the team. First day.
+
+```
+# Their Claude Code already has the Team key configured.
+# Brain is seeded (40 drawers in orbit/00-cto/hard-rules/).
+
+Developer types:  "What are the WP coding standards for this team?"
+00-CTO brain:     Immediately surfaces: escaping rules, nonce patterns, capability checks,
+                  approved patterns from past reviews, WP.org hard rules.
+
+Developer types:  "What bugs does NexterWP v2.4 have that I should know about?"
+05-UAT brain:     Surfaces v2.4 bug history, known flaky tests, severity-triaged open issues.
+
+Developer types:  "Show me how code review works here."
+02-CodeReviewer:  Runs a Brain Prime → shows approved patterns + redlines from past reviews.
+                  "These are the patterns that got blocked in the last 3 audits."
+```
+
+**No onboarding doc needed.** The brain IS the onboarding.
+
+---
+
+## Table of contents (direct skill use cases — v2.x+)
 
 - [For Developers (10 scenarios)](#for-developers)
 - [For QA Engineers (5 scenarios)](#for-qa-engineers)

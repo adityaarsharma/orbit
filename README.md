@@ -2,13 +2,13 @@
 
 # 🪐 Orbit
 
-### **Complete UAT for WordPress Plugins**
+### **Complete UAT for WordPress Plugins — Now Agentic**
 
-*A Claude Code plugin · **115 runtime-evergreen `/orbit-*` skills** · Dev → QA → PM → Designer → Release Ops*
+*A Claude Code plugin · **116 runtime-evergreen `/orbit-*` skills** · **10-agent QA team** · CTO → PM → Dev → QA → Security → Release*
 
-**Skills are never snapshots.** Every skill fetches its canonical sources at runtime — WP make blog, Elementor changelog, Stripe docs, NVD/Patchstack/WPScan feeds — derives current rules from today's docs, and cites the live URL + fetch timestamp in every finding.
+**v3.0 — Orbit Agentic.** Orbit is no longer just a skill suite. It's a 10-agent QA team connected to a shared brain (`brain-posimyth`). CTO's brain is the team's constitution — every agent reads it first. Approved patterns get remembered. Cold starts become warm starts.
 
-**The brainless one-command audit:**
+**The one-command audit:**
 
 ```bash
 /orbit-do-it ~/plugins/my-plugin
@@ -23,15 +23,16 @@ Auto-detects plugin type. Picks the right pipeline. Runs core audits + UAT + per
 ![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)
 ![Stagehand](https://img.shields.io/badge/Stagehand-AI%20UAT-7C3AED?style=for-the-badge)
 ![Lighthouse](https://img.shields.io/badge/Lighthouse-Performance-F44B21?style=for-the-badge&logo=lighthouse&logoColor=white)
-![Claude Code](https://img.shields.io/badge/Claude%20Code-115%20Skills-CC785C?style=for-the-badge)
+![Claude Code](https://img.shields.io/badge/Claude%20Code-116%20Skills-CC785C?style=for-the-badge)
+![Agentic](https://img.shields.io/badge/v3.0-Orbit%20Agentic-6366F1?style=for-the-badge)
 
 <br />
 
 **👨‍💻 Dev** · zero-regression releases &nbsp;·&nbsp; **🧪 QA** · structured coverage + auto-generated specs &nbsp;·&nbsp; **📊 PM** · flow maps + RICE backlog + release notes &nbsp;·&nbsp; **🎨 Designer** · visual diffs + token audits + dark mode &nbsp;·&nbsp; **🚀 Release Ops** · WP.org gates + EU CRA compliance &nbsp;·&nbsp; **👤 End User** · real browser, real flows, AI-resolved tests
 
-📖 **[VISION.md](VISION.md)** &nbsp;·&nbsp; 🚀 **[Skills Reference](SKILLS.md)** &nbsp;·&nbsp; 🌱 **[Runtime-Evergreen Pattern](EVERGREEN.md)** &nbsp;·&nbsp; 🛡️ **[Evergreen Security](docs/21-evergreen-security.md)** &nbsp;·&nbsp; 📓 **[Changelog](CHANGELOG.md)**
+📖 **[VISION.md](VISION.md)** &nbsp;·&nbsp; 🚀 **[Skills Reference](SKILLS.md)** &nbsp;·&nbsp; 🌱 **[Runtime-Evergreen Pattern](EVERGREEN.md)** &nbsp;·&nbsp; 🛡️ **[Evergreen Security](docs/21-evergreen-security.md)** &nbsp;·&nbsp; 🤖 **[Orbit Agentic](docs/BLUEPRINT-ORBIT-V3.md)** &nbsp;·&nbsp; 📓 **[Changelog](CHANGELOG.md)**
 
-[Install in 60s](#install-in-60-seconds) · [The brainless agent](#the-brainless-team-agent) · [The 115 skills](#the-115-orbit-skills) · [Runtime-evergreen, explained](#runtime-evergreen-the-philosophy) · [Role guide](docs/onboarding-by-role.md) · [GitHub](https://github.com/adityaarsharma/orbit)
+[Install in 60s](#install-in-60-seconds) · [Orbit Agentic — v3.0](#orbit-agentic--v30) · [The brainless agent](#the-brainless-team-agent) · [The 116 skills](#the-116-orbit-skills) · [Runtime-evergreen, explained](#runtime-evergreen-the-philosophy) · [Role guide](docs/onboarding-by-role.md) · [GitHub](https://github.com/adityaarsharma/orbit)
 
 </div>
 
@@ -41,11 +42,295 @@ Auto-detects plugin type. Picks the right pipeline. Runs core audits + UAT + per
 
 A **Claude Code plugin** that gives a WordPress plugin team — dev, QA, PM, designer, release ops — a single command (`/orbit-do-it`) that audits everything that matters before a release: code standards, security, performance, accessibility, UAT, visual regression, hosting compatibility, EU CRA compliance, and 100+ other concerns.
 
-It's **not a SaaS**. Runs locally via Docker (`wp-env`) + Claude Code. No accounts, no subscriptions, no cloud. The whole stack — 115 skills, all the scripts, the installer, this README — lives in one Git repo.
+It's **not a SaaS**. Runs locally via Docker (`wp-env`) + Claude Code. No accounts, no subscriptions, no cloud. The whole stack — 116 skills, all the scripts, the installer, this README — lives in one Git repo.
 
 It's **runtime-evergreen**. When a skill runs, it fetches the canonical source-of-truth doc (e.g. Elementor's changelog, NVD's CVE feed, Kinsta's banned-plugins page) and applies *today's rules* — not a snapshot from when the skill was written. The same `/orbit-elementor-compat` SKILL.md handles V4 today, V5 next year, V6 the year after. Without anyone editing it.
 
 It **composes with `WordPress/agent-skills`** — WP core's official AI agent skills (Brandon Payton, January 2026). Orbit's installer chains `npx openskills install WordPress/agent-skills`, so users get both: WP core's runtime/Playground primitives + Orbit's QA/UAT/audit suite.
+
+---
+
+## How it works — 3 layers
+
+```
+YOU
+ │  "UAT audit NexterWP v2.5"          ← natural language in Claude Code
+ ▼
+AGENT  (05-uat.md)
+ │  Step 1: Brain Prime                 ← 5 searches on brain-posimyth
+ │    "What did the last UAT find?"
+ │    "Are there known flaky tests?"
+ │    "What WP standards apply here?"
+ │  Step 2: Spin Docker WP env
+ │  Step 3: Playwright E2E
+ │  Step 4: Dispatch 07-Security + 06-Perf + 04-Designer in parallel
+ │  Step 5: Severity triage → CLEAR or BLOCKED
+ │  Step 6: Ingest findings to brain   ← [uat, bug, nexterwp, High, ...]
+ ▼
+SKILLS  invoked by the agent automatically
+ │  /orbit-playwright      → runs E2E browser tests
+ │  /orbit-visual-regression → screenshots, diffs
+ │  /orbit-wp-security     → XSS/CSRF/SQLi scan (via 07-Security)
+ │  /orbit-lighthouse      → Lighthouse score (via 06-Performance)
+ ▼
+MCP + TOOLS  that skills use
+    brain-posimyth          ← read history, write findings
+    wp-env (Docker)         ← clean WP install for testing
+    Playwright + Chrome     ← real browser, real flows
+    gh CLI                  ← open issues, create PRs
+```
+
+**The brain is what makes it a team, not just a tool.** Every finding is ingested. Every approved pattern is remembered. Every redline is surfaced the next time the same task runs. The agents get smarter every sprint — without you changing any files.
+
+---
+
+## Orbit Agentic — v3.0
+
+> "Skills are easy. Process is harder. Brain is evergrowing — like onboarding a new person who's however smart, but still needs to learn YOUR products."
+
+**v3.0 turns Orbit into a 10-agent QA team** where each agent has a defined role, written SOPs, a dedicated brain collection, and the MCP access to act on what they find. The more you use it, the smarter the whole team gets.
+
+---
+
+### The 10-Agent Team
+
+| # | Agent | Role in one line |
+|---|---|---|
+| **00** | **CTO** | Strategic advisor. Reads all 10 brains. Sets direction — never executes. Sole writer to the shared brain. |
+| **01** | **PM** | Daily coordinator. RICE scoring, feedback mining, sprint health. Routes every task to the right specialist. |
+| **02** | **Code Reviewer** | Senior + skeptical. PHP, Gutenberg, Elementor, compat. APPROVE / REQUEST CHANGES / NITPICK — with file:line. |
+| **03** | **Senior Dev** | Builds features, fixes UAT bugs. Runs WP standards before done. Never self-merges. |
+| **04** | **Dev Designer** | WCAG 2.2 AA, RTL, dark mode, empty/error states. Writes design specs — 03 implements them. |
+| **05** | **UAT** | Docker WP env, Playwright E2E, visual regression. Orchestrates 06 + 07 + 04 in parallel. Severity gates releases. |
+| **06** | **Performance** | Hook weight, DB queries, bundle analysis, Lighthouse. Sets perf budgets. Enforces regression thresholds. |
+| **07** | **Security** | XSS, SQLi, CSRF, supply chain, CVE, Stripe/EDD/Freemius, GDPR, PCI, premium gating. NEVER tests production. |
+| **08** | **Release** | 7-step gate, WP.org Plugin Check, zip hygiene, release notes (POSIMYTH voice), cross-channel announce. |
+| **09** | **Docs** | README, feature docs, hook reference, in-code comments, changelog language. Ships with release — never after. |
+
+---
+
+### The shared brain — CTO is the head
+
+`orbit/00-cto` is the team's constitution. Every agent reads it **first** — before their own collection. The CTO agent is the only one that writes to it. What lives there:
+
+```
+brain-posimyth
+└── orbit/
+    ├── 00-cto/
+    │   ├── hard-rules/       ← WP coding standards, security patterns, release rules
+    │   ├── decisions/        ← Technology + product direction decisions
+    │   ├── competitor-intel/ ← Competitor moves, market signals
+    │   ├── risks/            ← Unstable APIs, CVE trends, deprecation warnings
+    │   └── approved-patterns/← Patterns promoted from any agent to team-wide
+    │
+    ├── 01-pm/        ← Roadmap, RICE decisions, sprint history
+    ├── 02-code-reviewer/ ← Review patterns, approvals, redlines
+    ├── 03-senior-dev/    ← Build patterns, fix history
+    ├── 04-dev-designer/  ← WCAG findings, RTL patterns, token decisions
+    ├── 05-uat/           ← Bug reports, UAT results, flaky test registry
+    ├── 06-performance/   ← Benchmarks, perf budgets, regression history
+    ├── 07-security/      ← CVE findings, vuln patterns, payment audit history
+    ├── 08-release/       ← Release history, WP.org rejections, announce templates
+    └── 09-docs/          ← Freshness tracking, API doc history, voice patterns
+```
+
+```bash
+# First install — seed 40 knowledge drawers into orbit/00-cto/hard-rules/
+bash brain/seed-brain.sh --key <your-orbit-admin-key>
+```
+
+Day-one intelligence in the CTO brain: WP escaping rules, block.json required fields, WCAG 2.2 AA checklist, Stripe webhook security, readme.txt rejection patterns, N+1 DB query patterns, and 34 more. No cold starts for any agent.
+
+**Two keys:**
+- **Team key** — read `orbit/00-cto` + own collection. Agents recall past findings, approved patterns, known issues.
+- **Admin key** — full read + write. Ingest findings, promote patterns, announce cross-channel. EDD ops: Admin only.
+
+---
+
+### Brain Prime — what every agent does first
+
+Before touching any code or producing any output, every agent runs 5 brain searches and writes a **Brain Prime block**:
+
+```
+BRAIN PRIME — NexterWP v2.5 (UAT)
+• CTO rules:   Never ship unescaped output. RTL mandatory. Lighthouse target ≥ 85.
+• Bug history: v2.4 block reorder crash (orbit/05-uat/nexterwp). Fixed in v2.4.1.
+• Patterns that worked: Docker WP 6.8 + Gutenberg 18.x env. Playwright --project=chromium first.
+• Patterns to avoid: waitForTimeout() — caused 3 flaky tests in v2.3 audit.
+• Open question:  Is scroll-animation block new in v2.5? (brain silent — will check changelog)
+```
+
+This block is pinned before any skill invocation. The agent never re-asks for context that's already in brain.
+
+---
+
+### The approval loop
+
+Every `approve` and `revise` from the operator teaches the brain:
+
+```
+you: approve              → agent asks "Save as approved pattern?" → ingests to own collection
+you: revise: <why>        → agent auto-ingests redline → surfaces this FIRST next time same task runs
+you: skip                 → ingests as deprioritised — agent won't suggest it again
+```
+
+**CTO promotes team-wide:** When a pattern is strong enough for the whole team (not just one agent), Admin runs:
+```bash
+# Example: promote a new nonce pattern to team-wide hard rule
+# Admin ingests to orbit/00-cto with [cto, hard-rule, ...] tag
+# Every agent picks it up on next Brain Prime
+```
+
+---
+
+### How agents collaborate — 5 real scenarios
+
+#### Scenario 1 — New feature, end-to-end
+
+A feature request ("Add scroll animation block to NexterWP") flows through the whole team:
+
+```
+01-PM        → RICE score: Impact 8 / Confidence 7 / Effort 5 → score 112 → APPROVED
+               Routes to: 03-SrDev (build) + 04-DevDesigner (spec first)
+
+04-DevDesigner → Brain Prime: loads WCAG rules from orbit/00-cto, past RTL findings from orbit/04
+               → DESIGN SPEC: RTL mirror required. Reduced motion variant required. Touch target ≥ 44px.
+               → Routes spec to: 03-SrDev
+
+03-SrDev      → Brain Prime: loads WP standards from orbit/00-cto, past build patterns from orbit/03
+               → Builds. Runs /orbit-wp-standards before PR.
+               → Handoff brief to: 02-CodeReviewer (via 01-PM)
+
+02-CodeReviewer → Brain Prime: loads PHP hard rules, past TPA redlines from orbit/02
+               → Reviews PHP + block.json + Gutenberg + compat
+               → REQUEST CHANGES: "save() uses SSR — must declare RenderCallback in block.json"
+               → 03-SrDev fixes → re-review → APPROVE
+
+05-UAT        → Brain Prime: loads severity rules, v2.4 bug history from orbit/05
+               → Playwright E2E + visual regression. Dispatches 07-Security + 06-Perf + 04-Designer in parallel.
+               → All pass → UAT CLEAR. Routes to: 08-Release
+
+08-Release    → 7-step gate. All pass.
+               → Release notes drafted. Cross-channel announce.
+               → Routes to: 09-Docs (same day publish)
+
+09-Docs       → Freshness audit. Feature documented. API hook reference updated. Publish same day as release.
+```
+
+#### Scenario 2 — Critical security found mid-sprint
+
+```
+07-Security   → Scanning NexterWP v2.5 RC
+               → CRITICAL: Settings page — /wp-admin/admin.php?page=nxtwp echoes ?search= without esc_html()
+               → ESCALATING CRITICAL immediately to 01-PM. Stopping scan.
+               → Ingests to orbit/07-security/nexterwp: [security, nexterwp, Critical, xss-settings-page, v2.5-rc]
+
+01-PM         → Receives escalation. Blocks sprint. Routes to 03-SrDev as Priority 0.
+               → Notifies 08-Release: release gate will not run until Critical is resolved.
+
+03-SrDev      → Fixes: esc_html( sanitize_text_field( $_GET['search'] ) )
+               → Routes back to 07-Security for re-scan.
+
+07-Security   → Re-scans. Clean. Confirms fix.
+               → Ingests: [security, nexterwp, fixed, xss-settings-page, v2.5]
+               → Routes to 05-UAT for regression test.
+
+05-UAT → 08-Release → 09-Docs  (normal flow resumes)
+```
+
+#### Scenario 3 — WP.org rejection: the brain learns forever
+
+```
+08-Release    → Submitted NexterWP v2.4.0 to WP.org.
+               → REJECTED: "Plugin is loading scripts/styles on all admin pages"
+
+08-Release    → Ingests rejection to orbit/08-release:
+                 [release, nexterwp, wp-org-rejection, scripts-all-admin-pages, v2.4.0]
+               → Routes to 00-CTO: "This may be a team-wide pattern issue"
+
+00-CTO        → Checks orbit/02-code-reviewer — same pattern in TPA code too.
+               → Decision: promote to hard rule.
+               → Ingests to orbit/00-cto/hard-rules/:
+                 [cto, hard-rule, no-scripts-all-admin-pages, wp-org-requirement, 2026-05-20]
+
+From now on:  Every agent reads this rule on Brain Prime.
+               02-CodeReviewer blocks any PR that loads scripts on all admin pages.
+               08-Release checks for it in the 7-step gate.
+               One rejection — zero repeats, across all 3 plugins, forever.
+```
+
+#### Scenario 4 — Performance regression caught before release
+
+```
+06-Performance → Benchmark NexterWP v2.5 vs v2.4 baseline (orbit/06-performance/nexterwp/budget)
+               → REGRESSION: DB queries 11 (was 4). Bundle +38KB. Lighthouse 71 (was 83). All HIGH.
+
+06-Performance → Routes to 01-PM with regression report.
+
+01-PM         → Creates ticket. Routes to 03-SrDev with context from orbit/06.
+
+03-SrDev      → Brain Prime: loads orbit/06 regression context + orbit/03 past performance fixes
+               → Fixes: N+1 in get_posts() loop → single WP_Query with post__in
+               → Fixes: tree-shaking config for scroll-animation bundle
+               → Routes back to 06-Performance
+
+06-Performance → Re-run. DB queries: 3. Bundle: +2KB. Lighthouse: 86. All pass.
+               → Updates orbit/06-performance/nexterwp/budget for v2.5 baseline
+               → Routes to 05-UAT
+```
+
+#### Scenario 5 — Competitor ships a feature → CTO brief → PM decision
+
+```
+00-CTO        → Monthly competitor pulse (via /orbit-pm-competitor-pulse)
+               → Elementor Kit shipped: "AI Copilot inside block editor"
+               → Assesses: High opportunity — our users want this too.
+
+00-CTO BRIEF — Elementor Kit AI Copilot
+  Signal:     Kit shipped AI block generation inside editor. WP.org reviews +320 this week.
+  Assessment: Medium threat — users already asking in NexterWP support.
+  Recommendation: Differentiate, not copy. Our angle: AI block config, not AI block generation.
+  Owner:      01-PM runs RICE. 03-SrDev estimates effort.
+  Confidence: Medium
+
+00-CTO        → Ingests to orbit/00-cto:
+                 [cto, competitor, elementorkit, ai-copilot, differentiate-with-config, 2026-05]
+
+01-PM         → RICE: Reach 9 / Impact 7 / Confidence 5 / Effort 7 → score 45 → Q3 roadmap
+               → Routes to backlog. Monitors competitor reviews monthly.
+```
+
+---
+
+### Skills → agents — who uses what
+
+Every agent invokes specific Orbit skills. The routing is declared in `routes/routes.yaml`. Quick reference:
+
+| Agent | Key skills they invoke |
+|---|---|
+| **02 — Code Reviewer** | `/orbit-wp-standards` `/orbit-elementor-compat` `/orbit-gutenberg-dev` `/orbit-compat-matrix` |
+| **03 — Senior Dev** | `/orbit-wp-standards` `/orbit-scaffold-tests` `/orbit-block-json-validate` `/orbit-i18n` |
+| **04 — Dev Designer** | `/orbit-accessibility` `/orbit-designer-rtl` `/orbit-designer-dark-mode` `/orbit-designer-empty-error` |
+| **05 — UAT** | `/orbit-playwright` `/orbit-visual-regression` `/orbit-user-flow` `/orbit-uat-gutenberg` `/orbit-uat-elementor` `/orbit-qa-regression-pack` |
+| **06 — Performance** | `/orbit-lighthouse` `/orbit-db-profile` `/orbit-bundle-analysis` `/orbit-editor-perf` `/orbit-perf-stress-test` |
+| **07 — Security** | `/orbit-wp-security` `/orbit-broken-access-control` `/orbit-sec-secrets-leak` `/orbit-cve-check` `/orbit-pay-stripe` `/orbit-gdpr` |
+| **08 — Release** | `/orbit-release-gate` `/orbit-plugin-check` `/orbit-release-meta` `/orbit-zip-hygiene` `/orbit-changelog-test` `/orbit-version-compare` |
+| **09 — Docs** | `/orbit-release-meta` `/orbit-i18n` `/orbit-pm-release-notes` `/orbit-abilities-api` `/api-documentation` |
+
+Full routing: `routes/routes.yaml`
+
+---
+
+### Always-on agents (Phase 2)
+
+Agent files support two operating modes:
+
+- **Mode A (now)** — Operator-invoked in Claude Code. Open an agent, describe the task, it runs its SOP.
+- **Mode B (Phase 2)** — API runner (Dora + PM2). 9 AM–6 PM IST. Autonomous scheduled dispatch. No agent file changes needed.
+
+When Phase 2 activates, 5 always-on agents will run on schedule: 00-CTO (competitor pulse weekly), 01-PM (daily sprint routing), 06-Performance (benchmark on every commit), 07-Security (CVE feed daily), 08-Release (release gate on tag push).
+
+→ Full architecture: [docs/BLUEPRINT-ORBIT-V3.md](docs/BLUEPRINT-ORBIT-V3.md)
 
 ---
 
@@ -58,32 +343,45 @@ curl -fsSL https://raw.githubusercontent.com/adityaarsharma/orbit/main/install.s
 That installs:
 
 1. Orbit cloned to `~/Claude/orbit`
-2. **115 `/orbit-*` skills** symlinked into `~/.claude/skills/` (so they autocomplete in Claude Code)
-3. **WordPress/agent-skills** via `npx openskills install WordPress/agent-skills` (WP core's official skills — composes alongside Orbit)
-4. Power tools: PHPCS + WPCS + VIP + PHPCompatibility, PHPStan, Playwright + Chromium/Firefox/WebKit, Lighthouse, axe-core, WP-CLI, wp-env, wp-now, source-map-explorer, PurgeCSS
+2. **10 AI agents** symlinked into `~/.claude/agents/` — available in every Claude Code session
+3. **116 `/orbit-*` skills** symlinked into `~/.claude/skills/` — agents invoke these automatically
+4. **WordPress/agent-skills** via `npx openskills install WordPress/agent-skills` (WP core's official skills)
+5. Power tools: PHPCS + WPCS + VIP + PHPCompatibility, PHPStan, Playwright + Chromium/Firefox/WebKit, Lighthouse, axe-core, WP-CLI, wp-env, wp-now, source-map-explorer, PurgeCSS
 
 After install:
 
 ```bash
-# Quit Claude Code (Cmd+Q on macOS) and reopen — slash commands register
-# Then onboard your first plugin:
-/orbit-setup
+# 1. Quit Claude Code fully (Cmd+Q) and reopen — agents + skills register
 
-# Or jump straight to the brainless agent:
+# 2. Seed the starter brain (one-time, requires Admin key):
+bash brain/seed-brain.sh --key <orbit-admin-key>
+
+# 3. Talk to an agent:
+"UAT audit ~/plugins/my-plugin for v2.5"
+"Security scan the new AJAX handler in settings.php"
+"Run release gate for my-plugin v2.5"
+
+# Or use skills directly (no brain key needed):
 /orbit-do-it ~/plugins/my-plugin
 ```
+
+### What's the difference — agents vs skills?
+
+| | Agents | Skills |
+|---|---|---|
+| **What they are** | SOP-driven specialists. Read brain, follow process, ingest findings. | Markdown instructions — Claude runs bash/PHP/Playwright |
+| **How you invoke** | Natural language: "UAT audit this plugin" | Slash command: `/orbit-playwright` |
+| **Skills vs agents** | Agents invoke skills automatically | Skills are tools — you or an agent calls them |
+| **Brain access** | Yes — reads history, ingests findings | No — stateless per invocation |
+| **When to use** | When you want the full workflow done right | When you want one specific check |
+
+**Use agents for releases.** Use skills for quick one-off checks during development.
 
 ### Update later
 
 ```bash
-# In Claude Code:
-/orbit-update
-
-# Or via shell:
-bash ~/Claude/orbit/update.sh
+/orbit-update          # refreshes both agents + skills, ~20 seconds
 ```
-
-Zero questions. Refreshes skill symlinks, removes deprecated entries, ~20 seconds. Skill text changes are live immediately (symlinks); MCP-server changes need a Claude Code restart.
 
 ### From a clone (offline-capable)
 
@@ -182,7 +480,7 @@ Full pattern: [EVERGREEN.md](EVERGREEN.md). Drift-checks across the suite: `/orb
 
 ---
 
-## The 115 Orbit skills
+## The 116 Orbit skills
 
 | Category | Count | Sample |
 |---|---|---|

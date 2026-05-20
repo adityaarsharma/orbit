@@ -40,7 +40,7 @@ Required fields:
  * Requires at least: 6.0                         ← required for WP.org
  * Requires PHP:      7.4                         ← required for WP.org
  * Author:            Aditya Sharma                ← required
- * Author URI:        https://adityaarsharma.com  ← required
+ * Author URI:        https://yoursite.com  ← required
  * License:           GPL-2.0-or-later            ← MUST be GPL-compatible
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       my-plugin                   ← MUST match folder name

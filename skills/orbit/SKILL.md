@@ -213,7 +213,7 @@ Day-of-release:
 
 Before running any audit:
 
-- Search `aditya-brain` for prior context on this plugin (`search "<plugin name> orbit"`).
+- Search `brain-posimyth` for prior context on this plugin (`search "<plugin name> orbit"`).
 - Check if there's a `qa.config.json` in the repo — if not, point them at `/orbit-init` first.
 - Check if `wp-env` is running on the configured port (`docker ps | grep wp-env`). If not, point them at `/orbit-docker-site`.
 

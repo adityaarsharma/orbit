@@ -59,7 +59,6 @@ brain-posimyth
 **Service operations:**
 - `wp_nexterwp_*` — publish release notes to NexterWP site
 - `wp_tpae_*` — publish to The Plus Addons site
-- Slack notifications via `slack-posimyth`
 - n8n workflow triggers
 - FluentCRM release email drafts
 - GitHub write (create PRs, close issues, push tags)

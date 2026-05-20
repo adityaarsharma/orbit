@@ -168,7 +168,6 @@ See full spec at `docs/mcp-library.md`.
 **POSIMYTH team additionally:**
 7. `wp-nexterwp` / `wp-theplusaddons` / `wp-posimyth` — WP publish
 8. `n8n-mcp` — workflow automation
-9. `slack-posimyth` — team notifications
 10. `fluentcrm` — release email drafts
 
 ---

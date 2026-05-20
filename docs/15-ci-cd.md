@@ -1021,7 +1021,7 @@ jobs:
 
       - name: Notify Slack on failure
         if: failure()
-        uses: 8398a7/action-slack@v3
+        # Notify ClickUp via brain-posimyth instead
         with:
           status: failure
           text: "Nightly audit FAILED on `${{ github.repository }}`. Check reports: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
@@ -1102,7 +1102,6 @@ These commands add secrets to your repository using the GitHub CLI. You only nee
 ```bash
 # Using GitHub CLI
 gh secret set ANTHROPIC_API_KEY --body "sk-ant-..."
-gh secret set SLACK_WEBHOOK_URL --body "https://hooks.slack.com/..."
 
 # Set for all repos in an org (requires org admin)
 gh secret set ANTHROPIC_API_KEY --org yourorg --body "sk-ant-..."

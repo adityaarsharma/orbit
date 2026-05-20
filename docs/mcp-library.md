@@ -152,7 +152,6 @@ These are not for public Orbit users. Internal POSIMYTH team only (Admin key).
 |---|---|---|
 | `wp-posimyth` / `wp-nexterwp` / `wp-theplusaddons` | Publish release notes, docs, changelogs | 08-release, 09-docs |
 | `fluentcrm` (via brain-posimyth) | Release email announcements | 08-release |
-| `slack-posimyth` | Team notifications on audit completion | 05-uat, 08-release |
 | `n8n-mcp` | CI/CD automation, scheduled audits | 05-uat |
 
 ---

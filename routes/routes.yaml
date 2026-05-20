@@ -506,7 +506,7 @@ routes:
   - name: context7-auto-research
     source: global-skills
     category: research
-    used_by: [00-cto, 03-senior-dev, 09-docs]
+    used_by: [00-cto, 02-code-reviewer, 03-senior-dev, 07-security, 09-docs]
     notes: Auto-fetch live library/framework docs via Context7 MCP.
            Use before writing any WP/React/PHP code to get accurate, version-current APIs.
            No API key needed. Requires context7 MCP (already active).
@@ -524,3 +524,18 @@ routes:
     category: code-quality
     used_by: [03-senior-dev]
     notes: PHP/OOP design patterns for WP plugin architecture
+
+  - name: docker-expert
+    source: global-skills
+    category: devops
+    used_by: [03-senior-dev, 05-uat, 06-performance]
+    notes: Docker containerization — Dockerfile optimization, multi-stage builds, security hardening,
+           compose orchestration. wp-env runs on Docker; use this for troubleshooting, custom images,
+           CI container setup, and production-grade container patterns.
+
+  - name: docker-development
+    source: global-skills
+    category: devops
+    used_by: [03-senior-dev, 05-uat]
+    notes: Docker Compose orchestration, layer caching, image size reduction, container security.
+           Pair with orbit-docker-site for WP test environment setup.

@@ -127,7 +127,6 @@ NEVER ingest:
 |---|---|---|
 | `brain-posimyth` | Fan-out read across all orbit/* collections + ingest decisions | Admin |
 | Apify via brain | Competitor changelog scraping, WP.org review trends | Admin |
-| DataForSEO via brain | SERP competitor analysis, keyword positioning | Admin |
 | Context7 | Live WP core roadmap, block editor direction, Elementor docs | — |
 | `gh` CLI | Read source across repos for cross-plugin patterns | Team |
 

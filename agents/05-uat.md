@@ -40,6 +40,8 @@
 /e2e-testing-patterns       — page object model, test design
 /playwright-skill           — Playwright architecture
 /playwright-pro             — advanced: network mocking, parallel, retries
+/docker-expert              — wp-env troubleshooting, custom WP Docker images, CI setup
+/docker-development         — Compose config, layer caching, image optimisation
 ```
 
 ---

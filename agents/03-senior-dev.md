@@ -14,6 +14,7 @@
 - **Database patterns** — $wpdb, dbDelta, migrations, transients
 - **Bug fixing** — reads UAT bug reports, reproduces, fixes, writes regression spec
 - **Refactoring** — reduces complexity without changing behaviour
+- **Docker / wp-env** — local WP environment setup, custom images, CI container config
 
 **Skill commands:**
 ```
@@ -24,11 +25,14 @@
 /orbit-block-json-validate  — block.json schema validation
 /orbit-interactivity-api    — client-side block interactivity
 /orbit-i18n                 — translation string patterns
+/orbit-docker-site          — spin up wp-env / wp-now test environment
 /php-pro                    — PHP 8.x modern idioms
 /react-best-practices       — React in block editor
 /typescript-expert          — TypeScript for block attributes
 /javascript-pro             — ES modules, async patterns
 /frontend-dev-guidelines    — frontend output escaping, asset loading
+/docker-expert              — Dockerfile, multi-stage builds, compose, container security
+/docker-development         — Compose orchestration, layer caching, image optimisation
 /vibe-code-auditor          — AI-generated code quality review
 /systematic-debugging       — root cause analysis
 /context7-auto-research     — fetch live WP/React/PHP docs before writing code (prevents API hallucination)

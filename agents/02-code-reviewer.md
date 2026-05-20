@@ -35,6 +35,7 @@
 /php-pro                        — PHP 8.x patterns, type safety
 /react-best-practices           — React in block editor
 /git-pr-review                  — PR review methodology
+/context7-auto-research         — fetch live WP/Elementor/block API docs before reviewing (prevents stale-API false positives)
 ```
 
 ---

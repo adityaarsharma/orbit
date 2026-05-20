@@ -26,6 +26,7 @@
 /wiki-changelog             — changelog docs standards
 /app-store-changelog        — WP.org changelog language
 /orbit-abilities-api        — WP Abilities API discoverability
+/context7-auto-research     — fetch live WP.org readme.txt spec + hook docs before writing
 ```
 
 ---

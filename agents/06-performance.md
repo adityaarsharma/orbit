@@ -31,6 +31,7 @@
 /web-performance-optimization — Core Web Vitals, WP performance patterns
 /performance-profiling      — profiling methodology, hotspot identification
 /k6-load-testing            — k6 load test scripts
+/docker-expert              — clean container setup for reproducible benchmarks
 ```
 
 ---
@@ -171,7 +172,6 @@ ON approve:
 |---|---|---|
 | `brain-posimyth` | Benchmark history, budgets, ingest new baselines | Admin |
 | `wp-env` via Bash | Clean install for measurement | — |
-| DataForSEO via brain | PageSpeed Insights API | Admin |
 | `Claude in Chrome` | Lighthouse visual profiling | — |
 
 ---

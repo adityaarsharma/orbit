@@ -8,6 +8,23 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.2.0] — 2026-05-21
+
+### Changed
+
+- **`install-connectors.sh` — 2-tier model (team + admin only)**: Removed `readonly` tier. Orbit now has exactly two keys — `team` (read access to all 7 MCPs) and `admin` (read + write, enforced server-side). All 7 endpoints are available to both tiers; write gating happens at the server, not the installer.
+- **All 7 Orbit MCPs now accessible to `team` tier**: Previously `ga4-posi`, `gsc-posi`, `wp-tpae-posi`, `wp-nexterwp-posi` required `admin`. All are now `team` minimum so every Orbit user gets full MCP coverage on install.
+
+### Fixed
+
+- **Claude Desktop startup glitch — absolute npx path**: Ported `detect_npx()` from Golden Circle v1.2.9. Detects absolute path across macOS (Apple Silicon + Intel Homebrew), Linux apt, and nvm. Desktop config now writes the absolute path instead of bare `npx`, which fails silently when macOS GUI apps don't inherit the shell PATH.
+- **mcp-remote pre-warm**: Cache mcp-remote on install so Claude Desktop MCPs connect instantly instead of blocking 5–15s on first use.
+- **Bridge smoke-test**: Post-install check confirms the mcp-remote binary is functional before user restarts. Catches missing Node.js environments before they become a silent failure.
+- **Stale cleanup edge cases**: Added explicit guards for `-orbit` suffix MCPs and `brain-orbit` umbrella — neither is removed by the Orbit installer. Combined with the existing `-posi` guard, this means running either installer (Orbit or Golden Circle) never touches the other product's MCPs.
+- **Invalid tier guard**: Installer now exits with a clear error if the key returns an unrecognized tier (e.g. old `readonly` keys), rather than silently registering zero MCPs.
+
+---
+
 ## [3.1.3] — 2026-05-20
 
 ### Fixed

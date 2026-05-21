@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Orbit Connector Installer — brain-posimyth sub-endpoints (v3.2.2)
+# Orbit Connector Installer — brain-posimyth sub-endpoints (v3.3.0)
 #
 # Usage:
 #   bash install-connectors.sh <BRAIN_KEY>
@@ -74,7 +74,7 @@ fi
 KEY="${1:-}"
 if [[ -z "$KEY" ]]; then
   cat <<EOF
-Orbit Connector Installer (v3.2.2)
+Orbit Connector Installer (v3.3.0)
 ─────────────────────────────────────────────────────────
 Usage:  bash install-connectors.sh <BRAIN_KEY>
 
@@ -91,10 +91,11 @@ fi
 POSIMYTH_BASE="https://brain.posimyth.com"
 
 # ─── Orbit MCPs: name:path:min_tier ──────────────────────────────────────────
-# 9 QA-relevant endpoints. Smoke-tested 2026-05-21 — 9/9 healthy.
-# Both team and admin get all 10 — write access is enforced server-side, not here.
+# 9 MCPs — no umbrella, no duplicate tools.
+# brain-posi (/brain/mcp) replaces brain-posimyth (/connectors) — memory only, no duplication.
+# Both team and admin get all 9 — write access is enforced server-side, not here.
 SERVICES=(
-  "brain-posimyth:/connectors:team"
+  "brain-posi:/brain/mcp:team"
   "fluentsupport-posi:/fluentsupport/mcp:team"
   "apify-posi:/apify/mcp:team"
   "wp-tpae-posi:/wp-tpae/mcp:team"
@@ -189,13 +190,15 @@ path, key, base, client, label = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv
 personal = set(n for n in sys.argv[6].split(',') if n)
 services  = sys.argv[7:]
 
-# Known stale stdio MCPs from pre-posi era — the ONLY names safe to remove
+# Names safe to remove — pre-posi era stdio MCPs + legacy umbrella
+# brain-posimyth (/connectors) duplicates every per-service tool — removed in v3.3.0
 STALE_OLD_NAMES = {
     "fluentcrm", "wp-theplusaddons", "wp-nexterwp", "wp-uichemy",
     "ga4", "gsc", "dataforseo", "apify", "snov", "ocoya",
     "generatebanners", "meta-ads", "clickup-dora", "discord-guti",
     "fluentsupport", "plausible", "edd-store", "sproutai-blog",
     "wp-tpae", "wp-nexter", "wp-store",
+    "brain-posimyth",   # legacy umbrella — duplicates all per-service tools
 }
 
 with open(path) as f:
@@ -292,7 +295,7 @@ for s in "${ALLOWED[@]}"; do
     -H "Authorization: Bearer $KEY" \
     -H "Content-Type: application/json" \
     "$url" \
-    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"orbit-installer","version":"3.2.2"}}}' \
+    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"orbit-installer","version":"3.3.0"}}}' \
     | python3 -c "import json,sys; d=json.load(sys.stdin); print('yes' if d.get('result',{}).get('serverInfo') else 'no')" \
     2>/dev/null || echo "no")
 

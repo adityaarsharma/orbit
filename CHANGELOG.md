@@ -8,6 +8,18 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.3.0] — 2026-05-21
+
+### Changed
+
+- **`brain-posimyth` umbrella removed — replaced with `brain-posi`**: The `/connectors` umbrella (32 tools) duplicated every tool already exposed by the 8 per-service MCPs. Replaced with `brain-posi` (`/brain/mcp`, 4 tools) which provides only brain memory tools — `posimyth_brain_search`, `posimyth_brain_wake_up`, `posimyth_brain_list_drawers`, `whoami`. No more duplicate tools in Claude's context.
+
+### Fixed
+
+- **Auto-cleanup `brain-posimyth` from existing configs**: Upgrading users who already have the umbrella registered will have it removed automatically on next install run.
+
+---
+
 ## [3.2.2] — 2026-05-21
 
 ### Removed

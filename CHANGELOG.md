@@ -8,6 +8,14 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.2.2] — 2026-05-21
+
+### Removed
+
+- **`clickup-dora-posi`** — removed from Orbit MCP set. ClickUp Dora is Golden Circle only.
+
+---
+
 ## [3.2.1] — 2026-05-21
 
 ### Added

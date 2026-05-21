@@ -8,6 +8,21 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.2.1] — 2026-05-21
+
+### Added
+
+- **10 Orbit MCPs** (up from 7) — expanded to full QA-relevant set, smoke-tested 10/10 healthy, 58 tools total:
+  - `apify-posi` — CVE scraping, WP.org review mining (07-security, 01-pm)
+  - `sproutai-blog-posi` — publish release notes + docs to Sprout site (08-release, 09-docs)
+  - `discord-guti-posi` — release announcements to Discord community (08-release)
+
+### Changed
+
+- All 10 MCPs set to `team` minimum tier — every Orbit user gets full MCP coverage on install
+
+---
+
 ## [3.2.0] — 2026-05-21
 
 ### Changed

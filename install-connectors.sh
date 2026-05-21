@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Orbit Connector Installer — brain-posimyth sub-endpoints (v3.2.0)
+# Orbit Connector Installer — brain-posimyth sub-endpoints (v3.2.1)
 #
 # Usage:
 #   bash install-connectors.sh <BRAIN_KEY>
@@ -74,7 +74,7 @@ fi
 KEY="${1:-}"
 if [[ -z "$KEY" ]]; then
   cat <<EOF
-Orbit Connector Installer (v3.2.0)
+Orbit Connector Installer (v3.2.1)
 ─────────────────────────────────────────────────────────
 Usage:  bash install-connectors.sh <BRAIN_KEY>
 
@@ -91,16 +91,19 @@ fi
 POSIMYTH_BASE="https://brain.posimyth.com"
 
 # ─── Orbit MCPs: name:path:min_tier ──────────────────────────────────────────
-# All 7 QA-relevant endpoints.
-# Both team and admin get all 7 — write access is enforced server-side, not here.
+# All 10 QA-relevant endpoints. Smoke-tested 2026-05-21 — 10/10 healthy, 58 tools.
+# Both team and admin get all 10 — write access is enforced server-side, not here.
 SERVICES=(
   "brain-posimyth:/connectors:team"
   "fluentsupport-posi:/fluentsupport/mcp:team"
-  "clickup-dora-posi:/clickup-dora/mcp:team"
-  "ga4-posi:/ga4/mcp:team"
-  "gsc-posi:/gsc/mcp:team"
+  "apify-posi:/apify/mcp:team"
   "wp-tpae-posi:/wp-tpae/mcp:team"
   "wp-nexterwp-posi:/wp-nexterwp/mcp:team"
+  "sproutai-blog-posi:/sproutai-blog/mcp:team"
+  "ga4-posi:/ga4/mcp:team"
+  "gsc-posi:/gsc/mcp:team"
+  "clickup-dora-posi:/clickup-dora/mcp:team"
+  "discord-guti-posi:/discord-guti/mcp:team"
 )
 
 # ─── Personal/general MCPs — NEVER touched ───────────────────────────────────
@@ -290,7 +293,7 @@ for s in "${ALLOWED[@]}"; do
     -H "Authorization: Bearer $KEY" \
     -H "Content-Type: application/json" \
     "$url" \
-    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"orbit-installer","version":"3.2.0"}}}' \
+    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"orbit-installer","version":"3.2.1"}}}' \
     | python3 -c "import json,sys; d=json.load(sys.stdin); print('yes' if d.get('result',{}).get('serverInfo') else 'no')" \
     2>/dev/null || echo "no")
 

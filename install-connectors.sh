@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Orbit Connector Installer — brain-posimyth sub-endpoints (v3.3.0)
+# Orbit Connector Installer — brain-posimyth sub-endpoints (v3.3.1)
 #
 # Usage:
 #   bash install-connectors.sh <BRAIN_KEY>
@@ -74,7 +74,7 @@ fi
 KEY="${1:-}"
 if [[ -z "$KEY" ]]; then
   cat <<EOF
-Orbit Connector Installer (v3.3.0)
+Orbit Connector Installer (v3.3.1)
 ─────────────────────────────────────────────────────────
 Usage:  bash install-connectors.sh <BRAIN_KEY>
 
@@ -91,9 +91,9 @@ fi
 POSIMYTH_BASE="https://brain.posimyth.com"
 
 # ─── Orbit MCPs: name:path:min_tier ──────────────────────────────────────────
-# 9 MCPs — no umbrella, no duplicate tools.
+# 10 MCPs — no umbrella, no duplicate tools.
 # brain-posi (/brain/mcp) replaces brain-posimyth (/connectors) — memory only, no duplication.
-# Both team and admin get all 9 — write access is enforced server-side, not here.
+# Both team and admin get all 10 — write access is enforced server-side, not here.
 SERVICES=(
   "brain-posi:/brain/mcp:team"
   "fluentsupport-posi:/fluentsupport/mcp:team"
@@ -104,6 +104,7 @@ SERVICES=(
   "ga4-posi:/ga4/mcp:team"
   "gsc-posi:/gsc/mcp:team"
   "discord-guti-posi:/discord-guti/mcp:team"
+  "gplvault-cache-posi:/gplvault-cache/mcp:team"
 )
 
 # ─── Personal/general MCPs — NEVER touched ───────────────────────────────────

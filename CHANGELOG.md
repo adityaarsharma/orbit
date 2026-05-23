@@ -8,6 +8,19 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.3.1] — 2026-05-23
+
+### Added
+
+- **`gplvault-cache-posi`** — 10th Orbit MCP, connecting to the GPLVault premium plugin cache on `brain.posimyth.com`. Provides 3 tools:
+  - `gplvault_list_cached` — list all cached plugin zips (Perfmatters, SEOPress Pro, WP Rocket)
+  - `gplvault_get_download_url` — get 5-minute presigned download URL for a cached zip
+  - `gplvault_sync_cache` — pull fresh zips from GPLVault API into the central cache
+
+  Used by `orbit-wp-env-matrix` to inject real premium plugins into compatibility test stacks without storing plugin zips in the repo.
+
+---
+
 ## [3.3.0] — 2026-05-21
 
 ### Changed

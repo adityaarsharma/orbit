@@ -47,19 +47,20 @@ if [ $UPDATE_MODE -eq 0 ]; then
   🪐  Orbit — WordPress Plugin QA Framework
 ════════════════════════════════════════════════════
 
-  Installing 10 AI agents + 116 /orbit-* skills:
+  Installing 11 AI agents + 116 /orbit-* skills:
 
   Agents (talk to these in Claude Code):
-    00-cto          Strategic advisor — tech direction, competitor intel
-    01-pm           Coordinator — RICE, routing, sprint health
-    02-code-reviewer PHP + Gutenberg + Elementor + compat review
-    03-senior-dev   Builds features, fixes bugs
-    04-dev-designer WCAG, RTL, dark mode, empty states
-    05-uat          Playwright E2E, visual regression, severity triage
-    06-performance  Hook weight, DB queries, Lighthouse budgets
-    07-security     XSS/SQLi/CSRF, CVE, payments, GDPR
-    08-release      7-step gate, WP.org, zip hygiene, announce
-    09-docs         README, API hooks, freshness, changelog
+    orbit-cto           Strategic advisor — tech direction, competitor intel
+    orbit-pm            Coordinator — RICE, routing, sprint health
+    orbit-code-reviewer PHP + Gutenberg + Elementor + compat review
+    orbit-senior-dev    Builds features, fixes bugs
+    orbit-dev-designer  WCAG, RTL, dark mode, empty states
+    orbit-uat           Playwright E2E, visual regression, severity triage
+    orbit-perf          Hook weight, DB queries, Lighthouse budgets
+    orbit-security      XSS/SQLi/CSRF, CVE, payments, GDPR
+    orbit-release       7-step gate, WP.org, zip hygiene, announce
+    orbit-docs          README, API hooks, freshness, changelog
+    orbit-runner        Automated shell runner — WP-CLI, Docker matrix, auto-fix
 
   Key skills (agents invoke these automatically):
     /orbit-wp-standards     /orbit-wp-security    /orbit-lighthouse
@@ -130,11 +131,11 @@ echo "   ✓ Linked $INSTALLED skills"
 
 # ── Install agents (symlinks for live updates) ──────────────────
 echo ""
-echo "⏳ [2b] Installing 10 Orbit agents to ~/.claude/agents/..."
+echo "⏳ [2b] Installing 11 Orbit agents to ~/.claude/agents/..."
 mkdir -p "$AGENTS_DIR"
 
 AGENTS_INSTALLED=0
-for agent_path in "$ORBIT_HOME/agents/"[0-9]*.md; do
+for agent_path in "$ORBIT_HOME/agents/"orbit-*.md; do
   agent=$(basename "$agent_path")
   [ -f "$agent_path" ] || continue
 
@@ -148,14 +149,20 @@ for agent_path in "$ORBIT_HOME/agents/"[0-9]*.md; do
   AGENTS_INSTALLED=$((AGENTS_INSTALLED + 1))
 done
 
-echo "   ✓ Linked $AGENTS_INSTALLED agents (00-cto through 09-docs)"
+echo "   ✓ Linked $AGENTS_INSTALLED agents (orbit-cto through orbit-runner)"
 
-# ── Remove old 12-agent model symlinks (v2.x → v3.0 migration) ──
+# ── Remove old agent symlinks (v2.x 12-agent model + v3.x numeric prefix) ──
 OLD_ORBIT_AGENTS=(
+  # v2.x 12-agent model
   "01-qa-lead.md"   "02-security.md"   "03-performance.md"
   "04-gutenberg.md" "05-elementor.md"  "06-designer.md"
   "07-release.md"   "08-compat.md"     "09-test-auto.md"
   "10-pm.md"        "11-compliance.md" "12-seo-docs.md"
+  # v3.x numeric-prefix names (renamed to orbit-* in v3.4.0)
+  "00-cto.md"       "01-pm.md"         "02-code-reviewer.md"
+  "03-senior-dev.md" "04-dev-designer.md" "05-uat.md"
+  "06-performance.md" "07-security.md"  "08-release.md"
+  "09-docs.md"
 )
 AGENTS_REMOVED=0
 for old_agent in "${OLD_ORBIT_AGENTS[@]}"; do
@@ -345,7 +352,7 @@ if [ $UPDATE_MODE -eq 0 ]; then
      /orbit-release-gate     7-step release gate
 
   Onboarding:  ~/Claude/orbit/docs/onboarding-by-role.md
-  All agents:  ~/.claude/agents/00-cto.md … 09-docs.md
+  All agents:  ~/.claude/agents/orbit-cto.md … orbit-runner.md
   All skills:  ~/Claude/orbit/SKILLS.md
 
   Update later:    bash install.sh --update  (refreshes agents + skills + MCPs)
@@ -360,8 +367,8 @@ else
   See changes:   git -C ~/Claude/orbit log --oneline -10
 
   Agents active (~/.claude/agents/):
-    00-cto  01-pm  02-code-reviewer  03-senior-dev  04-dev-designer
-    05-uat  06-performance  07-security  08-release  09-docs
+    orbit-cto  orbit-pm  orbit-code-reviewer  orbit-senior-dev  orbit-dev-designer
+    orbit-uat  orbit-perf  orbit-security  orbit-release  orbit-docs  orbit-runner
 
 NEXTUPDATE
 fi

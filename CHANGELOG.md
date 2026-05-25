@@ -8,6 +8,32 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.4.0] — 2026-05-25
+
+### Added
+
+- **`orbit-runner`** — 11th agent: automated shell execution engine. Handles WP-CLI, bash scripts, PHP test suites (PHPUnit, PHPCS), wp-env Docker matrix (multi-PHP × multi-WP), Playwright E2E, conflict detection across themes and page builders (Elementor, Bricks, Beaver Builder, Astra, Kadence), and auto-fix loops. Other agents delegate all execution here — no more manual terminal steps.
+  - New skill commands: `/orbit-wp-env-matrix`, `/orbit-conflict-scan`, `/orbit-wpcli`, `/orbit-test-gate`
+  - Brain collection: `orbit/10-runner`
+
+### Changed
+
+- **All agents renamed `orbit-*`** (was numeric prefix `00-cto`, `01-pm`, …, `09-docs`). Agents now appear as `/orbit-cto`, `/orbit-pm`, etc. in Claude Code — consistent with the `/orbit-*` skill namespace.
+  - `00-cto` → `orbit-cto`
+  - `01-pm` → `orbit-pm`
+  - `02-code-reviewer` → `orbit-code-reviewer`
+  - `03-senior-dev` → `orbit-senior-dev`
+  - `04-dev-designer` → `orbit-dev-designer`
+  - `05-uat` → `orbit-uat`
+  - `06-performance` → `orbit-perf`
+  - `07-security` → `orbit-security`
+  - `08-release` → `orbit-release`
+  - `09-docs` → `orbit-docs`
+
+- **`install.sh` updated** — agent glob changed from `[0-9]*.md` to `orbit-*.md`. Old numeric-prefix symlinks are automatically removed on `--update`. Count updated to 11 agents.
+
+---
+
 ## [3.3.1] — 2026-05-23
 
 ### Added

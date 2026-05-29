@@ -558,3 +558,189 @@ Content:
 - Pantheon: read-only filesystem except /files. No file writes to plugin dir.
 - Shared hosting: sftp only, no shell exec. Low PHP memory. WP-Cron unreliable — use Action Scheduler.
 ```
+
+### ⚠️ WP Runtime Traps (14 drawers — patterns that pass static review and break only on live install)
+
+> **The bug class that pass every linter, every unit test, and every code review — and only manifest when WordPress runtime contracts bite (host config, plugin load order, Settings API null-coalescing, third-party plugin token resolution).** Plugin-agnostic patterns. Code Reviewer §10 enforces these; `/orbit-code-quality` §6 detects them with grep recipes.
+
+**TRAP-01: Settings API cross-nulling**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, settings-api]
+Content:
+- register_setting($GROUP, $OPT) adds $OPT to WP's allowed_options[$GROUP]
+- ANY form posting to options.php for $GROUP nulls every registered option not in $_POST
+- sanitize_on_off(null)='off' → silent feature regression on save
+- Rule: every option registered to a group must appear in every form posting to that group,
+  as visible control OR hidden preservation row: <input type="hidden" name="$OPT" value="<?php echo esc_attr(get_option($OPT,$default)); ?>" />
+- Severity: Critical (silent disable)
+```
+
+**TRAP-02: DISABLE_WP_CRON assumption**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, cron]
+Content:
+- wp_schedule_single_event / wp_schedule_event assumes wp-cron will fire
+- Kinsta, WP Engine, Cloudways, Pantheon and any system-cron site set DISABLE_WP_CRON=true
+- Jobs queue in cron_array forever, never execute
+- Fix: expose direct synchronous run_now() trigger via admin/REST/WP-CLI
+- Add admin notice if DISABLE_WP_CRON detected
+- Consider Action Scheduler as fallback
+- Severity: High (broken on common managed hosts)
+```
+
+**TRAP-03: Conditional add_rewrite_rule at init**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, rewrite]
+Content:
+- if (get_option('feature')=='on') { add_rewrite_rule(...); } inside init hook
+- Toggling option in admin doesn't add the rule for this request (init already fired)
+- flush_rewrite_rules() flushes nothing — rule not in array yet
+- Result: persistent 404 on the new route until next init
+- Fix: in toggle handler, call add_rewrite_rule() directly THEN flush_rewrite_rules(false)
+- OR inject rule into rewrite_rules option directly
+- Severity: Critical (user thinks feature broken)
+```
+
+**TRAP-04: Bulk option restore wipes user data**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, options]
+Content:
+- "Reset to defaults" / "first-run install" loops update_option($opt, $defaults[$opt])
+- Doesn't check whether option already has non-default value
+- Common in onboarding wizards. Wipes power-user config silently.
+- Fix: if (get_option($opt, $SENTINEL) === $SENTINEL) update_option($opt, $default);
+- Severity: High (silent overwrite)
+```
+
+**TRAP-05: Auto-gen hook only on publish_post**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, hooks]
+Content:
+- add_action('publish_post', 'generate_summary') only fires on initial publish
+- Pre-existing posts never trigger generation
+- Re-edits never re-trigger generation
+- Fix: hook save_post or post_updated AND add idempotency guard via content-hash meta
+- Confirm generation is idempotent before allowing the broader hook
+- Severity: High (feature appears non-functional on existing content)
+```
+
+**TRAP-06: Superglobal reads without wp_unslash**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, superglobals]
+Content:
+- $x = $_POST['key']; or if ($_GET['key']==='value') — WP slash-escapes superglobals on load
+- Raw reads leave stray backslashes in saved data
+- Trips WP.org Plugin Check / phpcs ValidatedSanitizedInput warning
+- Fix: sanitize_text_field(wp_unslash($_POST['key'] ?? ''))
+- Bare isset() / empty() checks are safe (don't read the value)
+- Severity: High (WP.org gate warning + data corruption)
+```
+
+**TRAP-07: Meta value type drift (JSON string vs PHP array)**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, meta]
+Content:
+- Writers use wp_json_encode() → meta stored as string
+- Readers do is_array() / count() / foreach → silent fail
+- Pick one canonical shape per meta key and enforce
+- Recommended: pass array directly to update_post_meta(), let WP serialize
+- If JSON needed for portability: every reader must json_decode($v ?: '[]', true) first
+- Severity: High (silent data loss in features consuming meta)
+```
+
+**TRAP-08: %currentyear% literals in third-party SEO meta**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, seo-tokens]
+Content:
+- Rank Math / Yoast / SEOPress resolve their %token% syntax only on user-typed save
+- Programmatic update_post_meta() writes the token as literal
+- Resolver never runs on programmatic insertion
+- Result: SERP shows "Title for %currentyear%"
+- Fix: resolve before writing — str_replace('%currentyear%', wp_date('Y'), $v)
+- OR call the SEO plugin's replacement filter: apply_filters('rank_math/replacements', $v)
+- Yoast: wpseo_replace_vars($v, $post)
+- Severity: High (user-visible SERP regression)
+```
+
+**TRAP-09: Text-stats miscount Gutenberg block delimiters**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, gutenberg]
+Content:
+- Em-dash counter, readability scorer, banned-phrase check on raw post_content
+- Gutenberg delimiters <!-- wp:foo {"bar":"…"} --> contain characters that get miscounted
+- Result: false positives — every Gutenberg post fails the check
+- Fix: strip block delimiters first
+  preg_replace('/<!--\s*\/?wp:[^>]+-->/', '', $content)
+- BETTER: render via apply_filters('the_content', $c) then wp_strip_all_tags()
+- Severity: Medium (false positives only)
+```
+
+**TRAP-10: Tab / REST route slug mismatch**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, routing]
+Content:
+- Admin links to ?page=plugin&tab=content-ai
+- Router only switches on tab=content → falls through to dashboard
+- OR JS posts to myplugin/v1/foos but route registered as myplugin/v1/foo
+- Silent navigation failure
+- Fix: single source of truth for slugs (const TAB_SLUGS = [...])
+- Audit: collect every tab=$slug link AND every register_rest_route path
+- Cross-ref every case '$slug': in router. Diff. Broken links surface immediately.
+- Severity: Medium (broken UX, no error surfaced)
+```
+
+**TRAP-11: Cache invalidation forgets new bucket**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, cache]
+Content:
+- v1.1 adds new transient/object-cache key
+- flush_all_caches() still only deletes v1.0 keys
+- Stale cache wins after upgrade — new feature appears broken
+- Fix: every set_transient("$prefix_*") must have matching delete_transient in central flush
+- Upgrade routine must call flush when DB schema or option shape changes
+- Audit: list all cache set sites, list all cache delete sites, diff
+- Severity: High (silent feature regression after upgrade)
+```
+
+**TRAP-12: Free/Pro dual-class shadow conflict**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, dual-class]
+Content:
+- Free defines class Plugin_Foo; Pro defines class Plugin_Foo
+- PSR-4 autoloader: fatal on redeclaration
+- require_once: silently wrong class wins (load-order dependent)
+- Fix: both files must use class_exists() guards
+- BETTER: Pro extends Free under different name (Plugin_Foo_Pro extends Plugin_Foo)
+- Pro hooks itself into a filter Free exposes
+- Audit: intersect class names across Free and Pro codebases
+- Severity: Critical (fatal OR silently wrong behavior)
+```
+
+**TRAP-13: Cross-plugin filter timing (consumer before producer)**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, filter-timing]
+Content:
+- Free reads apply_filters('myplugin_is_pro', false) at plugins_loaded priority 10
+- Pro registers callback at plugins_loaded priority 10
+- Plugin load order = alphabetical by folder name
+- If Free folder sorts first, reader fires before Pro can hook in
+- Pro features stay locked even when Pro active
+- Fix: reader priority ≥20 on plugins_loaded, OR on init / later
+- Cross-check reader priority vs producer priority for every cross-plugin filter
+- Severity: Critical (paying customers see locked features)
+```
+
+**TRAP-14: Activation hook references unloaded constants/classes**
+```
+Tag: [orbit, knowledge, wp-runtime-traps, activation]
+Content:
+- Bootstrap defines MYPLUGIN_VERSION, requires class files, then registers activation hook
+- register_activation_hook can fire callback before bootstrap fully loads in:
+  network-activate, WP-CLI bulk-activate, upload-and-activate flows
+- Callback that uses MYPLUGIN_VERSION or MyPlugin_Welcome::flag_activation() fatals
+- Fix: every plugin-namespaced reference must be guarded
+  if (defined('MYPLUGIN_VERSION')) { ... }
+  if (class_exists('MyPlugin_Welcome')) MyPlugin_Welcome::flag_activation();
+- Same rule for register_deactivation_hook and register_uninstall_hook
+- Severity: High (activation fatal on a subset of WP environments)
+```

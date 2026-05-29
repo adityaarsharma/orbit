@@ -384,3 +384,341 @@ add_action( 'elementor/widgets/register', 'register_my_widgets' );
 | No cleanup on uninstall | `/wordpress-plugin-development` | Pre-release checklist |
 | Missing block.json | `/wordpress-plugin-development` | Code review |
 | Elementor wrong hook | Playwright editor test | `/wordpress-plugin-development` |
+
+---
+
+## WordPress Runtime Traps
+
+> **The bugs that pass every linter, every unit test, and every code review — and only break when the WordPress runtime contract bites.** Static analysis can't catch most of these because they depend on hosting config (DISABLE_WP_CRON), plugin load order (alphabetical), the Settings API's null-coalescing behavior, or the way a third-party plugin resolves its own tokens. These are the patterns to watch for in any non-trivial WP plugin.
+
+### 18. Settings API Cross-Nulling
+
+```php
+// BAD — option registered but no form input renders for it
+register_setting( 'my_group', 'my_option', [
+    'sanitize_callback' => 'sanitize_on_off', // returns 'off' on null input
+] );
+
+// Form for a DIFFERENT option in the same group:
+?>
+<form action="options.php" method="post">
+    <?php settings_fields( 'my_group' ); ?>
+    <input type="checkbox" name="my_OTHER_option" />
+    <?php submit_button(); ?>
+</form>
+<?php
+// Saving this form posts only `my_OTHER_option`. WP iterates every option
+// registered to `my_group` and calls update_option( 'my_option', null )
+// because $_POST['my_option'] is absent. sanitize_on_off(null) returns 'off'
+// — silently disabling `my_option` on every save.
+
+// GOOD — preserve every option registered to the group, in every form
+?>
+<form action="options.php" method="post">
+    <?php settings_fields( 'my_group' ); ?>
+    <input type="checkbox" name="my_OTHER_option" />
+    <!-- Preserve all other options registered to my_group -->
+    <input type="hidden" name="my_option"
+           value="<?php echo esc_attr( get_option( 'my_option', 'on' ) ); ?>" />
+    <?php submit_button(); ?>
+</form>
+```
+
+**Caught by:** `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.1
+
+---
+
+### 19. Scheduling Work That Never Runs (DISABLE_WP_CRON)
+
+```php
+// BAD — assumes wp-cron will fire
+wp_schedule_single_event( time() + 60, 'my_generate_summary', [ $post_id ] );
+
+// Managed hosts (Kinsta, WP Engine, Cloudways, Pantheon) and any site with
+// system cron set DISABLE_WP_CRON=true. Job queues forever, never runs.
+
+// GOOD — expose a direct synchronous trigger
+function my_generate_summary( $post_id ) { /* ... */ }
+add_action( 'my_generate_summary', 'my_generate_summary' );
+
+// Admin UI / REST / WP-CLI can run it directly:
+public static function run_now( $post_id ) {
+    my_generate_summary( $post_id );
+}
+
+// And show a notice if DISABLE_WP_CRON is set:
+add_action( 'admin_notices', function () {
+    if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+        echo '<div class="notice notice-warning"><p>WP-Cron is disabled. Configure system cron OR use the Run Now button.</p></div>';
+    }
+} );
+```
+
+**Caught by:** `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.2
+
+---
+
+### 20. Conditional `add_rewrite_rule()` Toggle Trap
+
+```php
+// BAD — rule only registers if option is on, but toggling the option
+// after init has fired doesn't add the rule for THIS request
+add_action( 'init', function () {
+    if ( get_option( 'my_feature' ) === 'on' ) {
+        add_rewrite_rule( '^my-feature/?$', 'index.php?my_feature=1', 'top' );
+    }
+} );
+
+// User toggles option on, clicks Save, hits /my-feature → 404. The rule
+// won't exist until the NEXT init runs. flush_rewrite_rules() in the toggle
+// handler flushes nothing — the rule isn't there to flush.
+
+// GOOD — when the toggle flips on, register the rule AND flush
+add_action( 'update_option_my_feature', function ( $old, $new ) {
+    if ( $new === 'on' ) {
+        add_rewrite_rule( '^my-feature/?$', 'index.php?my_feature=1', 'top' );
+        flush_rewrite_rules( false );
+    }
+}, 10, 2 );
+```
+
+**Caught by:** `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.3
+
+---
+
+### 21. Bulk Option Restore Wipes User Data
+
+```php
+// BAD — "reset to defaults" loop overwrites existing user values
+$defaults = [
+    'enable_feature_a' => 'on',
+    'enable_feature_b' => 'off',
+    'api_key'          => '',
+];
+foreach ( $defaults as $opt => $default ) {
+    update_option( "myplugin_$opt", $default );
+}
+// User's API key is now wiped.
+
+// GOOD — guard with existence check
+foreach ( $defaults as $opt => $default ) {
+    $key      = "myplugin_$opt";
+    $sentinel = '__myplugin_unset__';
+    if ( get_option( $key, $sentinel ) === $sentinel ) {
+        update_option( $key, $default );
+    }
+}
+```
+
+**Caught by:** `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.4
+
+---
+
+### 22. Auto-Generation Hook Only on `publish_post`
+
+```php
+// BAD — only generates on initial publish. Pre-existing posts and re-edits
+// never trigger generation.
+add_action( 'publish_post', 'myplugin_generate_summary' );
+
+// GOOD — handle re-edits + idempotent re-run
+add_action( 'save_post', function ( $post_id, $post ) {
+    if ( wp_is_post_revision( $post_id ) ) return;
+    if ( $post->post_status !== 'publish' ) return;
+
+    // Idempotent guard: only regenerate if content changed
+    $hash    = md5( $post->post_content );
+    $old     = get_post_meta( $post_id, '_myplugin_content_hash', true );
+    if ( $hash === $old ) return;
+
+    myplugin_generate_summary( $post_id );
+    update_post_meta( $post_id, '_myplugin_content_hash', $hash );
+}, 10, 2 );
+```
+
+**Caught by:** `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.5
+
+---
+
+### 23. Superglobal Reads Without `wp_unslash()`
+
+```php
+// BAD — WP slash-escapes superglobals on load; raw reads leave stray backslashes
+$title = sanitize_text_field( $_POST['post_title'] );
+
+// GOOD
+$title = sanitize_text_field( wp_unslash( $_POST['post_title'] ?? '' ) );
+
+// Safe — bare isset/empty don't read the value
+if ( isset( $_GET['key'] ) ) { /* ok */ }
+```
+
+**Caught by:** `phpcs WordPress.Security.ValidatedSanitizedInput`, `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.6
+
+---
+
+### 24. Meta Value Type Drift (JSON String vs PHP Array)
+
+```php
+// BAD — writer stores JSON string, reader expects array
+update_post_meta( $id, '_myplugin_faq', wp_json_encode( $faq_array ) );
+// ...later...
+$faq = get_post_meta( $id, '_myplugin_faq', true );
+if ( is_array( $faq ) && count( $faq ) > 0 ) { // ← always false: $faq is string
+    /* render FAQ */
+}
+
+// GOOD — pick one shape and enforce
+// Option A: let WP serialize the array (recommended)
+update_post_meta( $id, '_myplugin_faq', $faq_array );
+$faq = get_post_meta( $id, '_myplugin_faq', true ); // returns array
+
+// Option B: JSON everywhere — every reader must decode
+$faq = json_decode( get_post_meta( $id, '_myplugin_faq', true ) ?: '[]', true );
+```
+
+**Caught by:** `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.7
+
+---
+
+### 25. `%currentyear%` Stored as Literal in Third-Party SEO Meta
+
+```php
+// BAD — Rank Math / Yoast resolve %token% only when the user typed it.
+// Programmatic writes bypass the resolver; the SERP shows the literal.
+update_post_meta( $id, 'rank_math_title', 'Best Tools for %currentyear%' );
+
+// GOOD — resolve before writing
+$title = str_replace( '%currentyear%', wp_date( 'Y' ), $title );
+update_post_meta( $id, 'rank_math_title', $title );
+
+// OR — call the SEO plugin's own replacement filter
+$title = apply_filters( 'rank_math/replacements', $title, get_post( $id ) );
+// Yoast:  $title = wpseo_replace_vars( $title, get_post( $id ) );
+update_post_meta( $id, 'rank_math_title', $title );
+```
+
+**Caught by:** `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.8
+
+---
+
+### 26. Text-Statistics That Miscount Gutenberg Block Delimiters
+
+```php
+// BAD — counts em-dashes inside <!-- wp:foo --> comments as content
+$em_dash_count = substr_count( $post->post_content, '—' );
+
+// GOOD — strip block delimiters first
+$clean = preg_replace( '/<!--\s*\/?wp:[^>]+-->/', '', $post->post_content );
+$em_dash_count = substr_count( $clean, '—' );
+
+// BETTER — render through the_content filter, then strip HTML
+$rendered = apply_filters( 'the_content', $post->post_content );
+$em_dash_count = substr_count( wp_strip_all_tags( $rendered ), '—' );
+```
+
+**Caught by:** `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.9
+
+---
+
+### 27. Tab / REST Route Slug Mismatch
+
+```php
+// BAD — link goes to a tab the router doesn't recognize
+?>
+<a href="<?php echo esc_url( admin_url( 'admin.php?page=myplugin&tab=content-ai' ) ); ?>">Open</a>
+<?php
+// ...router...
+$tab = sanitize_key( $_GET['tab'] ?? 'dashboard' );
+switch ( $tab ) {
+    case 'content':   /* never matches 'content-ai' */ break;
+    default:          render_dashboard(); break; // silently falls through
+}
+
+// GOOD — single source of truth for slugs
+const TAB_SLUGS = [ 'dashboard', 'content', 'crawlers', 'settings' ];
+// Link only to slugs in the constant; router only switches on slugs in the constant.
+```
+
+**Caught by:** `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.10
+
+---
+
+### 28. Pro / Free Filter Timing — Reader Fires Before Producer Registers
+
+```php
+// BAD — Free reads the filter at same priority Pro registers it.
+// Plugin load order is alphabetical: if Free folder sorts first,
+// the reader runs before Pro can hook in. Pro features stay locked.
+
+// In Free (folder: a-myplugin):
+add_action( 'plugins_loaded', function () {
+    $is_pro = apply_filters( 'myplugin_is_pro', false );
+    if ( $is_pro ) { /* unlock Pro features */ }
+}, 10 );
+
+// In Pro (folder: b-myplugin-pro):
+add_action( 'plugins_loaded', function () {
+    add_filter( 'myplugin_is_pro', '__return_true' );
+}, 10 );
+// Free's reader fires first → always sees false → Pro stays locked
+
+// GOOD — reader runs at priority ≥20 OR on a later hook
+add_action( 'plugins_loaded', function () {
+    $is_pro = apply_filters( 'myplugin_is_pro', false );
+    /* ... */
+}, 20 );
+// OR
+add_action( 'init', function () {
+    $is_pro = apply_filters( 'myplugin_is_pro', false );
+    /* ... */
+} );
+```
+
+**Caught by:** `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.13
+
+---
+
+### 29. Activation Hook References Unloaded Constants/Classes
+
+```php
+// BAD — register_activation_hook can fire before bootstrap fully loads
+// in network-activate / WP-CLI bulk-activate / upload-and-activate scenarios
+register_activation_hook( __FILE__, function () {
+    MyPlugin_Welcome::flag_activation();        // ← fatal: class not loaded
+    update_option( 'version', MYPLUGIN_VERSION ); // ← fatal: constant not defined
+} );
+
+// GOOD — guard every plugin-namespaced reference
+register_activation_hook( __FILE__, function () {
+    if ( defined( 'MYPLUGIN_VERSION' ) ) {
+        update_option( 'version', MYPLUGIN_VERSION );
+    }
+    if ( class_exists( 'MyPlugin_Welcome' ) ) {
+        MyPlugin_Welcome::flag_activation();
+    }
+} );
+```
+
+**Caught by:** `/orbit-code-quality` §6, `/orbit-code-reviewer` §10.14
+
+---
+
+### How runtime-trap checks fit the QA pipeline
+
+| Trap | Static analysis | Runtime check | Owner |
+|---|---|---|---|
+| Settings API cross-nulling | grep + form-input cross-ref | `/orbit-code-quality` §6.1 | Code Reviewer §10.1 |
+| DISABLE_WP_CRON | grep `wp_schedule_*` + manual trigger check | `/orbit-code-quality` §6.2 | Code Reviewer §10.2 |
+| Conditional `add_rewrite_rule` | grep + flow analysis | `/orbit-code-quality` §6.3 | Code Reviewer §10.3 |
+| Bulk option restore wipe | grep `foreach` over defaults map | `/orbit-code-quality` §6.4 | Code Reviewer §10.4 |
+| Hook only on `publish_post` | grep `add_action('publish_post')` | `/orbit-code-quality` §6.5 | Code Reviewer §10.5 |
+| `$_GET/$_POST` w/o `wp_unslash` | phpcs `ValidatedSanitizedInput` | `/orbit-code-quality` §6.6 | Code Reviewer §10.6 |
+| Meta type drift | cross-ref every write/read site | `/orbit-code-quality` §6.7 | Code Reviewer §10.7 |
+| `%token%` literals in SEO meta | grep `update_post_meta` to SEO keys | `/orbit-code-quality` §6.8 | Code Reviewer §10.8 |
+| Block-delimiter miscount | grep text-stats over raw `post_content` | `/orbit-code-quality` §6.9 | Code Reviewer §10.9 |
+| Tab / REST slug mismatch | diff links vs router switch | `/orbit-code-quality` §6.10 | Code Reviewer §10.10 |
+| Cache invalidation gap | diff set sites vs delete sites | `/orbit-code-quality` §6.11 | Code Reviewer §10.11 |
+| Free/Pro shadow class | intersect class names across codebases | `/orbit-code-quality` §6.12 | Code Reviewer §10.12 |
+| Cross-plugin filter timing | priority cross-check | `/orbit-code-quality` §6.13 | Code Reviewer §10.13 |
+| Activation hook unloaded refs | grep callback for plugin namespace | `/orbit-code-quality` §6.14 | Code Reviewer §10.14 |

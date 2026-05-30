@@ -8,6 +8,17 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.4.4] — 2026-05-30
+
+### Fixed
+
+- **orbit-runner missing from brain spec and routes** — three consistency gaps closed:
+  1. `brain/orbit-brain-spec.md` — added `orbit/10-runner` to the collection tree, read/write rules table, and tag prefix table
+  2. `routes/routes.yaml` — all `used_by` fields updated from old numeric names (`01-pm`, `02-code-reviewer`, etc.) to `orbit-*` convention (`orbit-pm`, `orbit-code-reviewer`, etc.); `orbit-runner` added to orbit-core `used_by` list
+  3. `routes/routes.yaml` — orbit-runner specific MCP entry added (`gplvault-cache-posi` for premium plugin inject into wp-env); `docker-expert` and `docker-development` skills mapped to `orbit-runner`
+
+---
+
 ## [3.4.3] — 2026-05-30
 
 ### Changed

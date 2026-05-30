@@ -16,16 +16,17 @@ routes:
     update_mode: track-main
     install_cmd: "bash install.sh"
     used_by:
-      - 00-cto
-      - 01-pm
-      - 02-code-reviewer
-      - 03-senior-dev
-      - 04-dev-designer
-      - 05-uat
-      - 06-performance
-      - 07-security
-      - 08-release
-      - 09-docs
+      - orbit-cto
+      - orbit-pm
+      - orbit-code-reviewer
+      - orbit-senior-dev
+      - orbit-dev-designer
+      - orbit-uat
+      - orbit-perf
+      - orbit-security
+      - orbit-release
+      - orbit-docs
+      - orbit-runner
     primary_commands:
       # Pipeline
       - /orbit-gauntlet
@@ -158,355 +159,355 @@ routes:
   - name: vibe-code-auditor
     source: global-skills
     category: code-quality
-    used_by: [05-uat, 02-code-reviewer]
+    used_by: [orbit-uat, orbit-code-reviewer]
     notes: AI-generated code risks, vibe coding patterns, hallucination radar
 
   - name: codebase-audit-pre-push
     source: global-skills
     category: code-quality
-    used_by: [02-code-reviewer, 03-senior-dev]
+    used_by: [orbit-code-reviewer, orbit-senior-dev]
     notes: Pre-push quality gate, diff-based review
 
   - name: production-code-audit
     source: global-skills
     category: code-quality
-    used_by: [02-code-reviewer]
+    used_by: [orbit-code-reviewer]
     notes: Production-readiness checks
 
   - name: php-pro
     source: global-skills
     category: language
-    used_by: [02-code-reviewer, 03-senior-dev]
+    used_by: [orbit-code-reviewer, orbit-senior-dev]
     notes: PHP 8.x patterns, type safety, modern idioms
 
   - name: systematic-debugging
     source: global-skills
     category: debugging
-    used_by: [03-senior-dev]
+    used_by: [orbit-senior-dev]
     notes: Root cause analysis, debugging methodology
 
   # ── Security (07) ──────────────────────────────────────────
   - name: security-auditor
     source: global-skills
     category: security
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: General PHP security, OWASP Top 10
 
   - name: security-scanning-security-sast
     source: global-skills
     category: security
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: Static analysis security testing
 
   - name: vulnerability-scanner
     source: global-skills
     category: security
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: CVE matching, known vulnerability database
 
   - name: web-security-testing
     source: global-skills
     category: security
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: Web security testing methodology
 
   - name: api-security-testing
     source: global-skills
     category: security
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: REST endpoint security, auth, rate limiting, IDOR
 
   - name: api-security-best-practices
     source: global-skills
     category: security
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: API security design patterns
 
   - name: xss-html-injection
     source: global-skills
     category: security
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: XSS deep dive, output escaping audit
 
   - name: sql-injection-testing
     source: global-skills
     category: security
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: SQL injection in $wpdb queries
 
   - name: file-path-traversal
     source: global-skills
     category: security
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: Path traversal, file inclusion vulnerabilities
 
   - name: broken-authentication
     source: global-skills
     category: security
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: Auth bypass, session management, nonce issues
 
   # ── Performance (06) ───────────────────────────────────────
   - name: web-performance-optimization
     source: global-skills
     category: performance
-    used_by: [06-performance]
+    used_by: [orbit-perf]
     notes: General WP performance, Core Web Vitals
 
   - name: performance-profiling
     source: global-skills
     category: performance
-    used_by: [06-performance]
+    used_by: [orbit-perf]
     notes: PHP/JS profiling, hotspot identification
 
   - name: k6-load-testing
     source: global-skills
     category: performance
-    used_by: [06-performance]
+    used_by: [orbit-perf]
     notes: k6 load test scripts for endpoint benchmarks
 
   # ── Code Reviewer (02) / Senior Dev (03) ──────────────────
   - name: react-best-practices
     source: global-skills
     category: frontend
-    used_by: [02-code-reviewer, 03-senior-dev]
+    used_by: [orbit-code-reviewer, orbit-senior-dev]
     notes: React component patterns in block editor
 
   - name: react-patterns
     source: global-skills
     category: frontend
-    used_by: [02-code-reviewer, 03-senior-dev]
+    used_by: [orbit-code-reviewer, orbit-senior-dev]
     notes: Component composition, hooks patterns
 
   - name: javascript-pro
     source: global-skills
     category: language
-    used_by: [02-code-reviewer, 03-senior-dev]
+    used_by: [orbit-code-reviewer, orbit-senior-dev]
     notes: Modern JS/ES modules, async patterns
 
   - name: typescript-expert
     source: global-skills
     category: language
-    used_by: [02-code-reviewer, 03-senior-dev]
+    used_by: [orbit-code-reviewer, orbit-senior-dev]
     notes: TypeScript for block attributes and APIs
 
   # ── Dev Designer (04) ──────────────────────────────────────
   - name: accessibility-compliance-accessibility-audit
     source: global-skills
     category: accessibility
-    used_by: [04-dev-designer]
+    used_by: [orbit-dev-designer]
     notes: Comprehensive WCAG 2.2 AA audit
 
   - name: fixing-accessibility
     source: global-skills
     category: accessibility
-    used_by: [04-dev-designer]
+    used_by: [orbit-dev-designer]
     notes: Actionable fixes for accessibility issues
 
   - name: wcag-audit-patterns
     source: global-skills
     category: accessibility
-    used_by: [04-dev-designer]
+    used_by: [orbit-dev-designer]
     notes: WCAG audit methodology
 
   - name: antigravity-design-expert
     source: global-skills
     category: design
-    used_by: [04-dev-designer]
+    used_by: [orbit-dev-designer]
     notes: 44px touch targets, spacing, motion, micro-interactions
 
   - name: ui-review
     source: global-skills
     category: design
-    used_by: [04-dev-designer]
+    used_by: [orbit-dev-designer]
     notes: UI quality review, visual consistency
 
   - name: screen-reader-testing
     source: global-skills
     category: accessibility
-    used_by: [04-dev-designer]
+    used_by: [orbit-dev-designer]
     notes: Screen reader compatibility (NVDA, JAWS, VoiceOver)
 
   # ── Release Manager (08) ───────────────────────────────────
   - name: git-pr-review
     source: global-skills
     category: git
-    used_by: [08-release]
+    used_by: [orbit-release]
     notes: PR review for release merges
 
   - name: git-pr-workflows-pr-enhance
     source: global-skills
     category: git
-    used_by: [08-release]
+    used_by: [orbit-release]
     notes: PR description quality for release PRs
 
   - name: app-store-changelog
     source: global-skills
     category: release
-    used_by: [08-release]
+    used_by: [orbit-release]
     notes: Changelog writing, user-friendly language
 
   - name: wiki-changelog
     source: global-skills
     category: release
-    used_by: [08-release, 09-docs]
+    used_by: [orbit-release, orbit-docs]
     notes: Changelog documentation standards
 
   - name: commit
     source: global-skills
     category: git
-    used_by: [08-release]
+    used_by: [orbit-release]
     notes: Commit message quality and conventions
 
   - name: create-pr
     source: global-skills
     category: git
-    used_by: [08-release]
+    used_by: [orbit-release]
     notes: Create release PR with proper description
 
   # ── Senior Dev (03) / Code Reviewer (02) ──────────────────
   - name: database-migrations-sql-migrations
     source: global-skills
     category: database
-    used_by: [03-senior-dev, 02-code-reviewer]
+    used_by: [orbit-senior-dev, orbit-code-reviewer]
     notes: DB migration patterns for activation/upgrade
 
   # ── UAT (05) ───────────────────────────────────────────────
   - name: playwright-skill
     source: global-skills
     category: testing
-    used_by: [05-uat]
+    used_by: [orbit-uat]
     notes: Playwright testing patterns, test architecture
 
   - name: playwright-pro
     source: global-skills
     category: testing
-    used_by: [05-uat]
+    used_by: [orbit-uat]
     notes: Advanced Playwright: network mocking, parallel, retries
 
   - name: e2e-testing-patterns
     source: global-skills
     category: testing
-    used_by: [05-uat]
+    used_by: [orbit-uat]
     notes: E2E test design patterns, page object model
 
   - name: javascript-testing-patterns
     source: global-skills
     category: testing
-    used_by: [05-uat]
+    used_by: [orbit-uat]
     notes: JS unit test patterns for block editor code
 
   # ── PM (01) ────────────────────────────────────────────────
   - name: product-manager
     source: global-skills
     category: product
-    used_by: [01-pm]
+    used_by: [orbit-pm]
     notes: PM methodology, user story writing
 
   - name: product-manager-toolkit
     source: global-skills
     category: product
-    used_by: [01-pm]
+    used_by: [orbit-pm]
     notes: PM tools, frameworks, templates
 
   - name: task-intelligence
     source: global-skills
     category: product
-    used_by: [01-pm, 03-senior-dev]
+    used_by: [orbit-pm, orbit-senior-dev]
     notes: Task decomposition, effort estimation
 
   - name: competitive-landscape
     source: global-skills
     category: product
-    used_by: [00-cto, 01-pm]
+    used_by: [orbit-cto, orbit-pm]
     notes: Market positioning analysis
 
   - name: ux-audit
     source: global-skills
     category: design
-    used_by: [01-pm, 04-dev-designer]
+    used_by: [orbit-pm, orbit-dev-designer]
     notes: UX design review, flow analysis
 
   # ── Security (07) / Compliance ─────────────────────────────
   - name: gdpr-data-handling
     source: global-skills
     category: compliance
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: GDPR technical implementation patterns
 
   - name: pci-compliance
     source: global-skills
     category: compliance
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: PCI DSS card data rules, scoping
 
   - name: stripe-integration
     source: global-skills
     category: payments
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: Stripe best practices, SCA/3DS, error handling
 
   - name: payment-integration
     source: global-skills
     category: payments
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: General payment security patterns
 
   - name: privacy-by-design
     source: global-skills
     category: compliance
-    used_by: [07-security]
+    used_by: [orbit-security]
     notes: Privacy-first design patterns
 
   # ── Docs (09) ──────────────────────────────────────────────
   - name: seo-schema
     source: global-skills
     category: seo
-    used_by: [09-docs]
+    used_by: [orbit-docs]
     notes: Structured data best practices, rich results
 
   - name: schema-markup
     source: global-skills
     category: seo
-    used_by: [09-docs]
+    used_by: [orbit-docs]
     notes: Schema markup implementation
 
   - name: documentation
     source: global-skills
     category: docs
-    used_by: [09-docs]
+    used_by: [orbit-docs]
     notes: Documentation quality, completeness, freshness
 
   - name: api-documentation
     source: global-skills
     category: docs
-    used_by: [09-docs]
+    used_by: [orbit-docs]
     notes: API docs for plugin REST endpoints
 
   # ── CTO (00) ───────────────────────────────────────────────
   - name: orbit-mcp-discover
     source: orbit-core
     category: discovery
-    used_by: [00-cto, 01-pm]
+    used_by: [orbit-cto, orbit-pm]
     notes: Search glama.ai (23k) + smithery + mcp-get + npm + GitHub simultaneously.
            Find any MCP or Claude Code skill. Returns install commands. No auth needed.
 
   - name: deep-research
     source: global-skills
     category: research
-    used_by: [00-cto]
+    used_by: [orbit-cto]
     notes: In-depth technology landscape research, WP ecosystem analysis
 
   - name: technology-radar
     source: global-skills
     category: research
-    used_by: [00-cto]
+    used_by: [orbit-cto]
     notes: Evaluate new technologies and APIs for WP ecosystem fit
 
   - name: context7-auto-research
     source: global-skills
     category: research
-    used_by: [00-cto, 02-code-reviewer, 03-senior-dev, 07-security, 09-docs]
+    used_by: [orbit-cto, orbit-code-reviewer, orbit-senior-dev, orbit-security, orbit-docs]
     notes: Auto-fetch live library/framework docs via Context7 MCP.
            Use before writing any WP/React/PHP code to get accurate, version-current APIs.
            No API key needed. Requires context7 MCP (already active).
@@ -516,19 +517,19 @@ routes:
   - name: clean-code-principles
     source: global-skills
     category: code-quality
-    used_by: [03-senior-dev, 02-code-reviewer]
+    used_by: [orbit-senior-dev, orbit-code-reviewer]
     notes: Clean code principles, refactoring methodology
 
   - name: design-patterns
     source: global-skills
     category: code-quality
-    used_by: [03-senior-dev]
+    used_by: [orbit-senior-dev]
     notes: PHP/OOP design patterns for WP plugin architecture
 
   - name: docker-expert
     source: global-skills
     category: devops
-    used_by: [03-senior-dev, 05-uat, 06-performance]
+    used_by: [orbit-senior-dev, orbit-uat, orbit-perf, orbit-runner]
     notes: Docker containerization — Dockerfile optimization, multi-stage builds, security hardening,
            compose orchestration. wp-env runs on Docker; use this for troubleshooting, custom images,
            CI container setup, and production-grade container patterns.
@@ -536,7 +537,7 @@ routes:
   - name: docker-development
     source: global-skills
     category: devops
-    used_by: [03-senior-dev, 05-uat]
+    used_by: [orbit-senior-dev, orbit-uat, orbit-runner]
     notes: Docker Compose orchestration, layer caching, image size reduction, container security.
            Pair with orbit-docker-site for WP test environment setup.
 
@@ -552,7 +553,7 @@ routes:
     source: brain-posimyth
     endpoint: https://brain.posimyth.com/fluentsupport/mcp
     category: support
-    used_by: [01-pm]
+    used_by: [orbit-pm]
     notes: Mine support tickets for user pain points + feature feedback patterns.
            4 tools. Admin key required.
 
@@ -561,7 +562,7 @@ routes:
     source: brain-posimyth
     endpoint: https://brain.posimyth.com/ga4/mcp
     category: analytics
-    used_by: [06-performance]
+    used_by: [orbit-perf]
     notes: Real user performance data — Core Web Vitals, bounce rate, session time.
            2 tools. Admin key required.
 
@@ -569,7 +570,7 @@ routes:
     source: brain-posimyth
     endpoint: https://brain.posimyth.com/gsc/mcp
     category: analytics
-    used_by: [06-performance, 09-docs]
+    used_by: [orbit-perf, orbit-docs]
     notes: Google Search Console — CWV field data, indexing status, docs search performance.
            2 tools. Admin key required.
 
@@ -578,7 +579,7 @@ routes:
     source: brain-posimyth
     endpoint: https://brain.posimyth.com/wp-tpae/mcp
     category: wordpress
-    used_by: [08-release, 09-docs]
+    used_by: [orbit-release, orbit-docs]
     notes: Publish release notes + docs to theplusaddons.com.
            3 tools. Admin key required.
 
@@ -586,7 +587,7 @@ routes:
     source: brain-posimyth
     endpoint: https://brain.posimyth.com/wp-nexterwp/mcp
     category: wordpress
-    used_by: [08-release, 09-docs]
+    used_by: [orbit-release, orbit-docs]
     notes: Publish release notes + docs to nexterwp.com. Live endpoint.
            2 tools. Admin key required.
 
@@ -594,6 +595,29 @@ routes:
     source: brain-posimyth
     endpoint: https://brain.posimyth.com/clickup-dora/mcp
     category: project-management
-    used_by: [01-pm, 08-release]
+    used_by: [orbit-pm, orbit-release]
     notes: Post to ClickUp chat channels as Dora Agent. Release announcements, sprint updates.
            2 tools. Admin key required.
+
+  # ── Runner (10) ────────────────────────────────────────────
+  - name: gplvault-cache-posi
+    source: brain-posimyth
+    endpoint: https://brain.posimyth.com/gplvault/mcp
+    category: testing
+    used_by: [orbit-runner]
+    notes: Fetch cached premium plugin ZIPs (WP Rocket, SEOPress Pro, Perfmatters, etc.)
+           for injection into wp-env test containers. Presigned URL, 5-min TTL.
+           3 tools (list_cached, sync_cache, get_download_url). Team key required.
+
+  - name: docker-expert
+    source: global-skills
+    category: devops
+    used_by: [orbit-runner]
+    notes: wp-env runs on Docker — orbit-runner uses this for custom images,
+           multi-PHP matrix containers, and CI container troubleshooting.
+
+  - name: docker-development
+    source: global-skills
+    category: devops
+    used_by: [orbit-runner]
+    notes: Compose orchestration, layer caching, image optimisation for wp-env stacks.

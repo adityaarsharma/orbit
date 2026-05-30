@@ -29,7 +29,8 @@ brain-posimyth
     ├── 06-performance/  ← Benchmarks, perf budgets, regression history
     ├── 07-security/     ← CVE findings, vuln patterns, payment/GDPR history
     ├── 08-release/      ← Release history, WP.org rejections, announce templates
-    └── 09-docs/         ← Freshness tracking, API doc history, voice patterns
+    ├── 09-docs/         ← Freshness tracking, API doc history, voice patterns
+    └── 10-runner/       ← wp-env matrix results, conflict maps, auto-fix confirmations, known-good configs
 ```
 
 ---
@@ -38,9 +39,10 @@ brain-posimyth
 
 | Agent | Reads | Writes |
 |---|---|---|
-| **00 — CTO** | `orbit/00-cto` + all `orbit/01`→`orbit/09` | `orbit/00-cto` only |
+| **00 — CTO** | `orbit/00-cto` + all `orbit/01`→`orbit/10` | `orbit/00-cto` only |
 | **01 — PM** | `orbit/00-cto` first, then `orbit/01-pm`, then `orbit/02`→`orbit/09` | `orbit/01-pm` only |
 | **02–09 Specialists** | `orbit/00-cto` first, then own collection | Own collection only |
+| **10 — Runner** | `orbit/00-cto` (hard rules) + `orbit/10-runner` (execution history) | `orbit/10-runner` only |
 | **POSIMYTH-Admin** | All collections | All collections |
 | **Customer-Team key** | `orbit/00-cto` (read), own session only | Own local session (not persisted) |
 
@@ -91,6 +93,7 @@ All Orbit notes tagged by agent: `[<agent-id>, <type>, <plugin-or-area>, ...]`
 | Security | `[security, <plugin>, ...]` |
 | Release | `[release, <plugin>, ...]` |
 | Docs | `[docs, <plugin>, ...]` |
+| Runner | `[runner, matrix, ...]` / `[runner, conflict, ...]` / `[runner, fix-confirmed, ...]` |
 
 **Examples:**
 ```

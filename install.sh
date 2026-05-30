@@ -10,25 +10,31 @@
 #    bash install.sh
 #
 #  Flags:
-#    --update      Refresh symlinks + remove deprecated, no prompts
-#    --skills-only Skip the power-tools install (just symlink skills)
-#    --help        Print this help
+#    --update        Refresh symlinks + remove deprecated, no prompts
+#    --agents-only   Install agents only — skip all skill symlinks (saved as preference)
+#    --skills-only   Skip the power-tools install (just symlink skills)
+#    --help          Print this help
 # ══════════════════════════════════════════════════════════════
 set -e
 
 # ── Args ────────────────────────────────────────────────────────
 UPDATE_MODE=0
 SKILLS_ONLY=0
+AGENTS_ONLY=0
 for arg in "$@"; do
   case "$arg" in
     --update) UPDATE_MODE=1 ;;
     --skills-only) SKILLS_ONLY=1 ;;
+    --agents-only) AGENTS_ONLY=1 ;;
     --help|-h)
       head -25 "$0" | grep -E '^#' | sed 's/^# //;s/^#//'
       exit 0
       ;;
   esac
 done
+
+# Load saved agents-only preference (set once via --agents-only, persists across --update runs)
+[ -f "$HOME/.orbit/.agents-only" ] && AGENTS_ONLY=1
 
 # ── Constants ───────────────────────────────────────────────────
 SKILLS_DIR="$HOME/.claude/skills"
@@ -107,27 +113,38 @@ fi
 ORBIT_VERSION=$(git -C "$ORBIT_HOME" describe --tags --always 2>/dev/null || echo "main")
 echo "$ORBIT_VERSION" > "$ORBIT_HOME/.orbit_version"
 
+# ── Save agents-only preference ─────────────────────────────────
+if [ $AGENTS_ONLY -eq 1 ]; then
+  mkdir -p "$HOME/.orbit"
+  touch "$HOME/.orbit/.agents-only"
+fi
+
 # ── Install skills (symlinks for live updates) ──────────────────
-echo ""
-echo "⏳ [2/4] Installing /orbit-* skills to ~/.claude/skills/..."
-mkdir -p "$SKILLS_DIR"
-
 INSTALLED=0
-for skill_path in "$ORBIT_HOME/skills/"orbit*; do
-  skill=$(basename "$skill_path")
-  [ -f "$skill_path/SKILL.md" ] || continue
+if [ $AGENTS_ONLY -eq 0 ]; then
+  echo ""
+  echo "⏳ [2/4] Installing /orbit-* skills to ~/.claude/skills/..."
+  mkdir -p "$SKILLS_DIR"
 
-  # Remove existing entry (symlink or directory) so we can re-link cleanly
-  if [ -L "$SKILLS_DIR/$skill" ] || [ -d "$SKILLS_DIR/$skill" ]; then
-    rm -rf "$SKILLS_DIR/$skill"
-  fi
+  for skill_path in "$ORBIT_HOME/skills/"orbit*; do
+    skill=$(basename "$skill_path")
+    [ -f "$skill_path/SKILL.md" ] || continue
 
-  # Symlink so /orbit-update gets fresh content automatically
-  ln -s "$skill_path" "$SKILLS_DIR/$skill"
-  INSTALLED=$((INSTALLED + 1))
-done
+    # Remove existing entry (symlink or directory) so we can re-link cleanly
+    if [ -L "$SKILLS_DIR/$skill" ] || [ -d "$SKILLS_DIR/$skill" ]; then
+      rm -rf "$SKILLS_DIR/$skill"
+    fi
 
-echo "   ✓ Linked $INSTALLED skills"
+    # Symlink so /orbit-update gets fresh content automatically
+    ln -s "$skill_path" "$SKILLS_DIR/$skill"
+    INSTALLED=$((INSTALLED + 1))
+  done
+
+  echo "   ✓ Linked $INSTALLED skills"
+else
+  echo ""
+  echo "⏳ [2/4] Agents-only mode — skipping /orbit-* skill symlinks"
+fi
 
 # ── Install agents (symlinks for live updates) ──────────────────
 echo ""
@@ -182,20 +199,22 @@ find "$SKILLS_DIR" -maxdepth 1 -name "orbit-*" -xtype l -delete 2>/dev/null || t
 [ "$BROKEN_SKILLS" -gt 0 ] 2>/dev/null && echo "   ✓ Cleaned $BROKEN_SKILLS broken skill symlink(s)" || true
 
 # ── Remove deprecated skills ────────────────────────────────────
-DEPRECATED=(
-  orbit-init           # → orbit-setup (renamed in v2.5)
-)
 REMOVED=0
-for skill in "${DEPRECATED[@]}"; do
-  if [ -L "$SKILLS_DIR/$skill" ] || [ -d "$SKILLS_DIR/$skill" ]; then
-    rm -rf "$SKILLS_DIR/$skill"
-    echo "   ✓ Removed deprecated: $skill"
-    REMOVED=$((REMOVED + 1))
-  fi
-done
+if [ $AGENTS_ONLY -eq 0 ]; then
+  DEPRECATED=(
+    orbit-init           # → orbit-setup (renamed in v2.5)
+  )
+  for skill in "${DEPRECATED[@]}"; do
+    if [ -L "$SKILLS_DIR/$skill" ] || [ -d "$SKILLS_DIR/$skill" ]; then
+      rm -rf "$SKILLS_DIR/$skill"
+      echo "   ✓ Removed deprecated: $skill"
+      REMOVED=$((REMOVED + 1))
+    fi
+  done
+fi
 
 # ── WordPress/agent-skills (official WP core agent skills) ─────
-if [ $UPDATE_MODE -eq 0 ] && [ $SKILLS_ONLY -eq 0 ]; then
+if [ $UPDATE_MODE -eq 0 ] && [ $SKILLS_ONLY -eq 0 ] && [ $AGENTS_ONLY -eq 0 ]; then
   echo ""
   echo "⏳ [3a] Installing WordPress/agent-skills (official WP core skills)..."
   echo "   wp-playground gives AI agents a fast WP feedback loop."
@@ -214,8 +233,8 @@ if [ $UPDATE_MODE -eq 0 ] && [ $SKILLS_ONLY -eq 0 ]; then
   fi
 fi
 
-# ── Power tools (skipped on --update or --skills-only) ──────────
-if [ $UPDATE_MODE -eq 0 ] && [ $SKILLS_ONLY -eq 0 ]; then
+# ── Power tools (skipped on --update, --skills-only, or --agents-only) ──────────
+if [ $UPDATE_MODE -eq 0 ] && [ $SKILLS_ONLY -eq 0 ] && [ $AGENTS_ONLY -eq 0 ]; then
   echo ""
   echo "⏳ [3/4] Installing power tools (PHPCS / Playwright / Lighthouse / wp-env)..."
   echo "   This is the longest step — about 3-5 minutes on first install."
@@ -232,8 +251,11 @@ if [ $UPDATE_MODE -eq 0 ] && [ $SKILLS_ONLY -eq 0 ]; then
     echo "      Run /orbit-install to set up power tools manually."
   fi
 else
+  if [ $UPDATE_MODE -eq 1 ]; then SKIP_REASON="update mode"
+  elif [ $AGENTS_ONLY -eq 1 ]; then SKIP_REASON="agents-only mode"
+  else SKIP_REASON="skills-only mode"; fi
   echo ""
-  echo "⏳ [3/4] Skipping power tools ($([ $UPDATE_MODE -eq 1 ] && echo 'update mode' || echo 'skills-only mode'))"
+  echo "⏳ [3/4] Skipping power tools ($SKIP_REASON)"
 fi
 
 # ── Brain connector install (via install-connectors.sh) ─────────
@@ -317,6 +339,15 @@ fi
 echo ""
 echo "⏳ [4/4] Wrapping up..."
 echo ""
+
+# Pre-compute skills summary line for footer
+if [ $AGENTS_ONLY -eq 0 ]; then
+  SKILLS_SUMMARY="  Skills installed:    $INSTALLED  (~/.claude/skills/)
+  Skills removed:      $REMOVED (deprecated)"
+else
+  SKILLS_SUMMARY="  Skills:              skipped (agents-only mode)"
+fi
+
 cat <<FOOTER
 ════════════════════════════════════════════════════
   ✅  Orbit installed — $ORBIT_VERSION
@@ -324,8 +355,7 @@ cat <<FOOTER
 
   Agents installed:    $AGENTS_INSTALLED  (~/.claude/agents/)
   Agents removed:      $AGENTS_REMOVED (old 12-agent model)
-  Skills installed:    $INSTALLED  (~/.claude/skills/)
-  Skills removed:      $REMOVED (deprecated)
+$SKILLS_SUMMARY
   Repo:                $ORBIT_HOME
 
 ────────────────────────────────────────────────────

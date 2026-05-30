@@ -8,6 +8,24 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.4.2] — 2026-05-30
+
+### Added
+
+- **`--agents-only` flag for install.sh** — installs the 11 Orbit agents to `~/.claude/agents/` and skips all `~/.claude/skills/` symlinks. Preference is saved to `~/.orbit/.agents-only` so subsequent `--update` runs also skip skills automatically. Intended for teams that prefer the conversational-agent workflow and don't want orbit-* skills cluttering the `/` palette.
+
+  **What changes:**
+  - `--agents-only` arg parsed, sets `AGENTS_ONLY=1`
+  - Preference saved to `~/.orbit/.agents-only` (one-time flag, persists across updates)
+  - Preference file auto-loaded on every subsequent run (even plain `--update`)
+  - Orbit skill symlink loop skipped
+  - Deprecated skill cleanup skipped
+  - WordPress/agent-skills (npx openskills) install skipped
+  - Power-tools (PHPCS/Playwright/Lighthouse/wp-env) install skipped
+  - Footer shows `Skills: skipped (agents-only mode)` instead of installed count
+
+---
+
 ## [3.4.1] — 2026-05-29
 
 ### Added

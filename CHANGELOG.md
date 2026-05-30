@@ -8,6 +8,16 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.4.3] — 2026-05-30
+
+### Changed
+
+- **Agents-only mode now actively purges existing orbit-\* skill symlinks** — if any `~/.claude/skills/orbit-*` entries are present when running with `--agents-only` (or when `~/.orbit/.agents-only` preference is set), they are removed. Count is displayed and triggers a Claude Code restart so the palette clears immediately.
+- **Restart reason is now descriptive** — restart message shows exactly what changed: `"updated agents + removed N skill(s)"` or `"removed N skill(s) from palette"`.
+- **Footer shows purge count** — `Skills purged: N (removed from ~/.claude/skills/ — agents-only mode)` when skills were removed.
+
+---
+
 ## [3.4.2] — 2026-05-30
 
 ### Added

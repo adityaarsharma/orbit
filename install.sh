@@ -141,9 +141,24 @@ if [ $AGENTS_ONLY -eq 0 ]; then
   done
 
   echo "   ✓ Linked $INSTALLED skills"
+  SKILLS_PURGED=0
 else
   echo ""
-  echo "⏳ [2/4] Agents-only mode — skipping /orbit-* skill symlinks"
+  echo "⏳ [2/4] Agents-only mode — removing any existing orbit-* skill symlinks..."
+  SKILLS_PURGED=0
+  if [ -d "$SKILLS_DIR" ]; then
+    for existing in "$SKILLS_DIR"/orbit-*; do
+      if [ -L "$existing" ] || [ -d "$existing" ]; then
+        rm -rf "$existing"
+        SKILLS_PURGED=$((SKILLS_PURGED + 1))
+      fi
+    done
+  fi
+  if [ $SKILLS_PURGED -gt 0 ]; then
+    echo "   ✓ Removed $SKILLS_PURGED orbit-* skill symlink(s) from ~/.claude/skills/"
+  else
+    echo "   ✓ No orbit-* skills found — palette already clean"
+  fi
 fi
 
 # ── Install agents (symlinks for live updates) ──────────────────
@@ -318,21 +333,29 @@ fi
 NEEDS_RESTART=0
 [ $AGENTS_INSTALLED -gt 0 ] && NEEDS_RESTART=1
 [ $BRAIN_JUST_INSTALLED -eq 1 ] && NEEDS_RESTART=1
+[ $SKILLS_PURGED -gt 0 ] && NEEDS_RESTART=1
+
+# Build restart reason for messaging
+RESTART_REASON="updated agents"
+[ $SKILLS_PURGED -gt 0 ] && [ $AGENTS_INSTALLED -gt 0 ] && RESTART_REASON="updated agents + removed $SKILLS_PURGED skill(s)"
+[ $SKILLS_PURGED -gt 0 ] && [ $AGENTS_INSTALLED -eq 0 ] && RESTART_REASON="removed $SKILLS_PURGED skill(s) from palette"
 
 if [ $NEEDS_RESTART -eq 1 ] && [[ "$OSTYPE" == "darwin"* ]]; then
   # Check if Claude Code is actually running
   if pgrep -x "Claude" > /dev/null 2>&1; then
     echo ""
-    echo "🔄 Restarting Claude Code to load updated agents + MCP connector..."
+    echo "🔄 Restarting Claude Code ($RESTART_REASON)..."
     osascript -e 'quit app "Claude"' 2>/dev/null || pkill -x "Claude" 2>/dev/null || true
     sleep 3
     open -a "Claude" 2>/dev/null && echo "   ✓ Claude Code restarted" || \
       echo "   ⚠  Couldn't relaunch — open Claude Code manually"
   else
-    echo "   ℹ  Claude Code not running — open it now to load agents + MCP"
+    echo ""
+    echo "   ℹ  Open Claude Code now to pick up changes ($RESTART_REASON)"
   fi
 elif [ $NEEDS_RESTART -eq 1 ]; then
-  echo "   ℹ  Restart Claude Code to load the updated agents + MCP connector"
+  echo ""
+  echo "   ℹ  Restart Claude Code to apply changes ($RESTART_REASON)"
 fi
 
 # ── Closing ─────────────────────────────────────────────────────
@@ -344,8 +367,10 @@ echo ""
 if [ $AGENTS_ONLY -eq 0 ]; then
   SKILLS_SUMMARY="  Skills installed:    $INSTALLED  (~/.claude/skills/)
   Skills removed:      $REMOVED (deprecated)"
+elif [ $SKILLS_PURGED -gt 0 ]; then
+  SKILLS_SUMMARY="  Skills purged:       $SKILLS_PURGED (removed from ~/.claude/skills/ — agents-only mode)"
 else
-  SKILLS_SUMMARY="  Skills:              skipped (agents-only mode)"
+  SKILLS_SUMMARY="  Skills:              none (agents-only mode)"
 fi
 
 cat <<FOOTER

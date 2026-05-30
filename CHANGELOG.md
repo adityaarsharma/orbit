@@ -8,6 +8,38 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.4.1] — 2026-05-29
+
+### Added
+
+- **WordPress runtime-trap detection** — 14 plugin-agnostic bug patterns added across four touchpoints. These are bugs that pass every linter, unit test, and static review, and only break when the WordPress runtime contract bites (host config, plugin load order, Settings API null-coalescing, third-party token resolution, etc.).
+
+  **Patterns covered:**
+  - Settings API cross-nulling (options in a group missing from form → silently nulled on save)
+  - `DISABLE_WP_CRON` assumption (`wp_schedule_*` never fires on managed hosts)
+  - Conditional `add_rewrite_rule()` at init (persistent 404 on feature toggle)
+  - Bulk option restore wipes user config
+  - Auto-gen hook only on `publish_post` (skips pre-existing posts + re-edits)
+  - Superglobal reads without `wp_unslash()` (gate warning + data corruption)
+  - Meta value type drift (JSON string vs PHP array)
+  - `%currentyear%` literals in Rank Math / Yoast / SEOPress meta (renders literally in H1)
+  - Text-stats over raw `post_content` miscounts Gutenberg block delimiters
+  - Tab / REST route slug mismatch (silent navigation failure)
+  - Cache invalidation forgets new bucket on upgrade
+  - Free/Pro dual-class shadow conflict (fatal or silently wrong class wins)
+  - Cross-plugin filter timing (reader fires before producer registers)
+  - Activation hook references unloaded constants/classes (fatal on bulk/network activate)
+
+  **Touchpoints updated:**
+  - `agents/orbit-code-reviewer.md` — new §10 with detection recipe per pattern + two new Guardrails added to Step 3 mandatory checks
+  - `skills/orbit-code-quality/SKILL.md` — new §6 with grep recipes, severity mapping, runtime-trap tag, self-improvement rule
+  - `docs/common-wp-mistakes.md` — 12 new BAD/GOOD code examples (#18–#29) + trap-to-pipeline crosswalk table
+  - `brain/starter-brain.md` — 14 new starter drawers under `wp-runtime-traps` tag, seeded into every Orbit install
+
+  **Self-improvement rule:** if a future audit finds a new class of runtime trap not in §6/§10, the agent must add it back to documentation before closing — skill + agent learn together.
+
+---
+
 ## [3.4.0] — 2026-05-25
 
 ### Added

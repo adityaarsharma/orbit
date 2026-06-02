@@ -8,6 +8,37 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.5.0] — 2026-06-02
+
+### Added
+
+- **🔴 Rule 0 — Smart-Agentic Mandate** — every Orbit agent now runs **every skill in its skill list end-to-end on every invocation**, instead of cherry-picking "the check that obviously applies." Conditional branches inside an agent's Process are escalation cues (run with extra depth), not gates that let the agent skip the baseline.
+  - New canonical rule file `agents/_SMART-AGENTIC-MANDATE.md` (7 sections: end-to-end execution, opt-out via brain note only, mandatory `TaskCreate` on spawn, end-of-run Coverage Report, aggressive-not-conservative posture, cross-references, verification gate).
+  - All 11 agents (`orbit-cto`, `orbit-pm`, `orbit-code-reviewer`, `orbit-senior-dev`, `orbit-dev-designer`, `orbit-uat`, `orbit-perf`, `orbit-security`, `orbit-release`, `orbit-runner`, `orbit-docs`) carry a Rule 0 block referencing the mandate.
+  - `orbit-uat`: targeted mode no longer skips skills — it narrows the report format only; full sweep + parallel multi-agent dispatch is now the default.
+  - `orbit-pm`: every cycle dispatches Security + UAT + CodeReviewer + Performance for continuous coverage, even with no PR open.
+  - `orbit-runner`: forbidden from silently skipping queued skills; logs start failures and continues.
+  - **Opt-out** requires a brain note in the agent's own collection with a grep-verified reason. Banned reasons: "PR is small", "didn't apply last time", "to save time."
+
+- **Runtime / data-flow i18n coverage** — three new skills + two strengthened, closing the bug classes that the gettext-only `orbit-i18n` audit could not see:
+  - `orbit-i18n-runtime` — flags `wp_json_encode` / `json_encode` missing `JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES` on any path that stores post_meta / options / transients, returns a REST body, or posts to an external API; verifies REST `Content-Type` charset; checks `wp_unslash` before encoding; detects missing legacy-repair migrations.
+  - `orbit-i18n-js-parity` — diffs PHP `wp_localize_script` emitted keys against JS reads of the same object; reports orphan keys (JS reads, PHP never emits) that cause silent English fallback; verifies `wp_set_script_translations` coverage for every JS handle using `wp.i18n.__()`.
+  - `orbit-i18n-translator-currency` — runs `msgmerge` for every shipped `.po` against the current `.pot`, reports per-locale drift % (untranslated + fuzzy), `.mo` staleness, charset and `Plural-Forms` header correctness; blocks release when an active locale exceeds 10% drift.
+  - `orbit-compat-polylang` §7 — language-aware custom endpoints: every custom REST / rewrite / AJAX handler returning post content must resolve `pll_current_language()` / `?lang` / `Accept-Language` and translate via `pll_get_post()`; includes response-header and caching guidance.
+  - `orbit-compat-wpml` — same §7 language-aware-endpoint pattern via `wpml_current_language` / `wpml_object_id`, plus a `wpml-config.xml` currency check (new meta keys must be reflected for the translation editor).
+
+### Changed
+
+- **`/orbit-gauntlet`** — `--mode full` and `--mode release` now run every step end-to-end (no cherry-picking); `--skip` is debug-only and requires a brain note on any release-track run. New Steps 5a–5d (i18n runtime, JS parity, translator currency, Polylang+WPML endpoint awareness) are mandatory in `full` and `release`.
+- **`routes/routes.yaml`** — orbit-core primary command block extended with `/orbit-i18n-runtime`, `/orbit-i18n-js-parity`, `/orbit-i18n-translator-currency`.
+- **Agent skill lists** — `orbit-code-reviewer` (+ runtime, js-parity, polylang, wpml), `orbit-dev-designer` (+ the 3 i18n skills), `orbit-release` (+ the 3 i18n skills), `orbit-docs` (+ translator-currency).
+
+### Why
+
+- Orbit shipped five RankReady i18n bugs (May 30 – Jun 1, 2026) that the conservative "run only the obviously-applicable check" pattern let through: `wp_json_encode` Unicode corruption in post_meta, Elementor FAQ JS labels missing from `wp_localize_script`, `.md` endpoint ignoring Polylang language switching, and a translator `.po` anchored to a stale POT causing ~30% silent English fallback. Rule 0 + the five i18n deltas close those classes. All checks are plugin-agnostic — no plugin name is hardcoded.
+
+---
+
 ## [3.4.4] — 2026-05-30
 
 ### Fixed

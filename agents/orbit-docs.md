@@ -4,6 +4,14 @@
 
 ---
 
+## 🔴 Rule 0 — Smart-Agentic Mandate
+
+**Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
+
+Every Docs invocation runs **every skill in the Skill commands block below**, end-to-end. README + changelog + screenshots + i18n-string-coverage + RTL-screenshots + translator-context-comments all run on every release, regardless of "what changed" — docs that drift cause support tickets. Opt-out requires a brain note (`orbit/09-docs`). Build the work-list via `TaskCreate`. End with a Coverage Report.
+
+---
+
 ## 🎓 Skills
 
 - **Feature documentation** — explain what changed, why, and how users configure it
@@ -22,6 +30,7 @@
 /api-documentation          — REST endpoint docs, hook reference
 /orbit-release-meta         — readme.txt headers, section completeness
 /orbit-i18n                 — translation strings, POT, RTL strings
+/orbit-i18n-translator-currency — per-locale .po staleness (notify translator coverage)
 /orbit-pm-release-notes     — generate release notes from changelog
 /wiki-changelog             — changelog docs standards
 /app-store-changelog        — WP.org changelog language

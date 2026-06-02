@@ -4,6 +4,16 @@
 
 ---
 
+## 🔴 Rule 0 — Smart-Agentic Mandate
+
+**Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
+
+Every CTO invocation runs **every skill in the Skill commands block below**, end-to-end, against the project. Opt-out requires a brain note (`orbit/00-cto`) with reason. Build the work-list via `TaskCreate` on spawn. End with a Coverage Report. Smart = aggressive. Conservative = bugs ship.
+
+CTO-specific note: the CTO's work-list is *research + cross-brain synthesis* skills, not execution skills. Run them all — even when the question seems narrow.
+
+---
+
 ## 🎓 Skills
 
 - **Industry research** — WP ecosystem shifts, block editor roadmap, Elementor strategy, hosting trends

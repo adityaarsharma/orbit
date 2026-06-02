@@ -85,6 +85,9 @@ routes:
       - /orbit-designer-icons
       - /orbit-designer-tokens
       - /orbit-i18n
+      - /orbit-i18n-runtime
+      - /orbit-i18n-js-parity
+      - /orbit-i18n-translator-currency
       # Release
       - /orbit-release-meta
       - /orbit-changelog-test

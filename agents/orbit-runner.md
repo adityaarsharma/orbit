@@ -4,6 +4,14 @@
 
 ---
 
+## 🔴 Rule 0 — Smart-Agentic Mandate
+
+**Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
+
+The runner's mandate is the inverse of the others: it executes the work-list other agents queue. It MUST NOT skip a queued skill silently — every queue item runs, and the runner reports each result back. If a skill fails to start, the runner logs the failure to brain (`orbit/orbit-runner`) and continues with the rest. Build the queue via `TaskCreate` mirroring the requesting agent's work-list. End with a Coverage Report listing every queued skill + exit code.
+
+---
+
 ## 🎓 Skills
 
 - **Bash automation** — executes shell scripts, detects errors, retries safe operations, surfaces clean output

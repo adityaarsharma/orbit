@@ -8,6 +8,8 @@ argument-hint: --plugin <path> --mode quick|full|release
 
 The flagship Orbit command. One invocation, every quality angle.
 
+> **Smart-agentic mandate.** `--mode full` and `--mode release` run **every step end-to-end**, no cherry-picking. `--skip N` is debug-only — using it for any release-track run requires a brain note (`orbit/08-release`) recording the reason. Smart-agentic = aggressive; conservative shipped 5 RankReady i18n bugs. See `agents/_SMART-AGENTIC-MANDATE.md`.
+
 ---
 
 ## Quick start
@@ -37,7 +39,11 @@ Exit code: **0** = release ready · **1** = blockers found.
 | 2. PHPCS (WPCS + VIP) | ✓ | ✓ | ✓ |
 | 3. PHPStan level 5 | ✓ | ✓ | ✓ |
 | 4. Asset weight | ✓ | ✓ | ✓ |
-| 5. i18n + POT | — | ✓ | ✓ |
+| 5. i18n + POT (gettext) | — | ✓ | ✓ |
+| 5a. i18n runtime (UNESCAPED_UNICODE) | — | ✓ | ✓ |
+| 5b. i18n JS parity (wp_localize_script) | — | ✓ | ✓ |
+| 5c. i18n translator currency (.po drift) | — | ✓ | ✓ |
+| 5d. Polylang + WPML endpoint awareness | — | ✓ | ✓ |
 | 6. Playwright (smoke) | ✓ | full suite | full suite |
 | 7. Lighthouse | — | ✓ | ✓ |
 | 8. DB profiling | — | ✓ | ✓ |
@@ -120,6 +126,10 @@ Step 2   PHPCS              → WordPress + VIP coding standards (~30s)
 Step 3   PHPStan            → static analysis (level 5) (~45s)
 Step 4   Asset Weight       → JS/CSS bundle sizes (~5s)
 Step 5   i18n / POT         → translatable strings + text domain check (~20s)
+Step 5a  i18n runtime       → JSON_UNESCAPED_UNICODE in storage + REST charset (~10s)
+Step 5b  i18n JS parity     → PHP wp_localize_script keys vs JS reads (~10s)
+Step 5c  i18n translator    → per-locale .po staleness vs current POT (~15s)
+Step 5d  Multilingual compat→ Polylang + WPML language-aware custom endpoints (~20s)
 Step 6   Playwright Tests   → functional + visual regression + flow videos (~3 min)
 Step 7   Lighthouse         → Core Web Vitals scores (~1 min)
 Step 8   DB Profiling       → query count + slow query log + memory + cron + GDPR (~2 min)
@@ -140,7 +150,12 @@ Step 12  PM UX Audit        → spell-check + guided experience score + label be
 | Performance | `/orbit-wp-performance` |
 | Database | `/orbit-wp-database` |
 | Accessibility | `/orbit-accessibility` |
-| i18n | `/orbit-i18n` |
+| i18n (gettext) | `/orbit-i18n` |
+| i18n runtime (Unicode encoding) | `/orbit-i18n-runtime` |
+| i18n JS parity (silent English fallback) | `/orbit-i18n-js-parity` |
+| i18n translator currency (.po drift) | `/orbit-i18n-translator-currency` |
+| Polylang compat (incl. custom endpoints) | `/orbit-compat-polylang` |
+| WPML compat (incl. wpml-config.xml currency) | `/orbit-compat-wpml` |
 | Playwright | `/orbit-playwright` |
 | Lighthouse | `/orbit-lighthouse` |
 | Editor perf | `/orbit-editor-perf` |

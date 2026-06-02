@@ -102,6 +102,71 @@ If you generate sitemaps, generate one per language. WPML provides hooks.
 
 ---
 
+## Language-aware custom endpoints (REST, rewrite, AJAX)
+
+**The bug that ships when this check is missing:** plugin exposes `/{slug}.md` or `/wp-json/myplugin/v1/foo`. User has WPML active with EN→ES translation. Request hits the ES URL — endpoint returns EN content because the handler never consulted WPML.
+
+### Required checks
+
+For every custom REST route, rewrite rule, or AJAX handler that returns post content:
+
+#### 1. Resolve current language
+
+```php
+$lang = apply_filters( 'wpml_current_language', null );
+if ( ! $lang ) {
+    $lang = isset( $_GET['lang'] ) ? sanitize_key( wp_unslash( $_GET['lang'] ) ) : 'en';
+}
+```
+
+#### 2. Translate the target post to the requested language
+
+```php
+$translated_id = apply_filters( 'wpml_object_id', $post_id, get_post_type( $post_id ), false, $lang );
+
+if ( ! $translated_id || $translated_id === $post_id ) {
+    // No translation exists OR translation === source. Decide: fall back or 404.
+}
+```
+
+#### 3. Set response headers
+
+```php
+header( 'Content-Type: text/markdown; charset=utf-8' );
+header( 'Content-Language: ' . $lang );
+header( 'Vary: Accept-Language' );
+```
+
+### Detection grep
+
+```bash
+# Custom REST routes
+grep -rn 'register_rest_route' --include='*.php' . | grep -v 'tests/'
+
+# Rewrite rules
+grep -rn 'add_rewrite_rule\|template_redirect' --include='*.php' . | grep -v 'tests/'
+
+# AJAX handlers
+grep -rn "add_action.*wp_ajax" --include='*.php' . | grep -v 'tests/'
+```
+
+For each handler that returns post content, search its body for `wpml_current_language\|wpml_object_id\|apply_filters.*wpml\|?lang=\|Accept-Language`. If absent → multilingual gap. **High severity** when WPML is in the plugin's compatibility matrix.
+
+### wpml-config.xml currency
+
+Every new option, post-meta key, term-meta key, or custom field shipped in the release must be reflected in `wpml-config.xml` so WPML's translation editor picks it up. Run after every release-touching commit:
+
+```bash
+diff <(grep '<custom-field\|<custom-type\|<admin-text' wpml-config.xml | sort) \
+     <(grep -rh 'update_post_meta\|register_post_type\|update_option' --include='*.php' . | sort -u)
+```
+
+Any new meta key in code that isn't listed in `wpml-config.xml` → translators can't translate it. **High severity** on customer-facing keys.
+
+### Caching gotcha
+
+WPML's URL modes (`/es/`, `?lang=es`, subdomain) affect cache key shape. If the endpoint is cacheable, document which WPML URL mode the cache plan assumes. If `Vary: Accept-Language` is the strategy, note that Cloudflare APO ignores it.
+
 ## Sources & Evergreen References
 
 ### Canonical docs
@@ -111,4 +176,4 @@ If you generate sitemaps, generate one per language. WPML provides hooks.
 - [String Translation API](https://wpml.org/documentation/support/wpml-coding-api/wpml-hooks-reference/) — hooks reference
 
 ### Last reviewed
-- 2026-04-29 — re-fetch hook reference quarterly (WPML adds APIs each major release)
+- 2026-04-29 (original) · 2026-06-02 (added §7 language-aware custom endpoints + wpml-config.xml currency)

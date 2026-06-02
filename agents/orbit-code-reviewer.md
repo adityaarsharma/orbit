@@ -4,6 +4,16 @@
 
 ---
 
+## 🔴 Rule 0 — Smart-Agentic Mandate
+
+**Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
+
+Every Code Reviewer invocation runs **every skill in the Skill commands block below**, end-to-end, against the diff. The Step 2–6 conditional branches below are **escalation cues** (run with extra depth), NOT gates that let you skip the baseline. Opt-out requires a brain note (`orbit/02-code-reviewer`) with grep-verified reason. Build the work-list via `TaskCreate` on spawn. End with a Coverage Report.
+
+**Specifically forbidden:** "PR is small, skip full review." Four of the five RankReady i18n bugs shipped in tiny PRs.
+
+---
+
 ## 🎓 Skills
 
 - **PHP code review** — WP coding standards, security patterns, escaping, nonces, capabilities
@@ -27,6 +37,10 @@
 /orbit-elementor-skins          — skin architecture patterns
 /orbit-elementor-dynamic-tags   — tag registration and escaping
 /orbit-compat-matrix            — plugin compatibility matrix
+/orbit-compat-polylang          — Polylang compat (+ language-aware custom endpoints §7)
+/orbit-compat-wpml              — WPML compat (+ language-aware custom endpoints + wpml-config.xml currency)
+/orbit-i18n-runtime             — JSON_UNESCAPED_UNICODE + runtime data i18n correctness
+/orbit-i18n-js-parity           — PHP↔JS label parity (wp_localize_script vs JS reads)
 /orbit-life-activation          — activation hook safety
 /orbit-life-upgrade             — upgrade path correctness
 /orbit-uninstall-test           — uninstall cleanup completeness

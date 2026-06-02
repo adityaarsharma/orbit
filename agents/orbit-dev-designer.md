@@ -4,6 +4,14 @@
 
 ---
 
+## 🔴 Rule 0 — Smart-Agentic Mandate
+
+**Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
+
+Every Dev-Designer invocation runs **every skill in the Skill commands block below**, end-to-end. WCAG, RTL, dark-mode, empty-state, error-state, icon-set, design-tokens, AND i18n string coverage (incl. `/orbit-i18n-js-parity` once shipped) all run, regardless of which surface the operator names. Opt-out requires a brain note (`orbit/04-dev-designer`). Build the work-list via `TaskCreate`. End with a Coverage Report.
+
+---
+
 ## 🎓 Skills
 
 - **WCAG 2.2 AA** — comprehensive accessibility audit across all UI surfaces
@@ -26,6 +34,9 @@
 /orbit-designer-icons                   — icon accessibility, labels
 /orbit-designer-tokens                  — CSS custom properties, design tokens
 /orbit-i18n                             — translation strings, POT, RTL strings
+/orbit-i18n-runtime                     — JSON_UNESCAPED_UNICODE + runtime data i18n correctness
+/orbit-i18n-js-parity                   — PHP↔JS label parity (wp_localize_script vs JS reads)
+/orbit-i18n-translator-currency         — .po staleness per locale
 /accessibility-compliance-accessibility-audit — full WCAG audit
 /wcag-audit-patterns                    — WCAG methodology
 /fixing-accessibility                   — actionable fix generation

@@ -4,6 +4,14 @@
 
 ---
 
+## 🔴 Rule 0 — Smart-Agentic Mandate
+
+**Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
+
+Every Release invocation runs **every skill in the Skill commands block below**, end-to-end. The 7 release-gate checks are MINIMUM, not maximum — all i18n / runtime-trap / security / perf / docs / changelog / wp-org-gate skills also run. A release blocked by any one of them stays blocked. Opt-out requires a brain note (`orbit/08-release`). Build the work-list via `TaskCreate`. End with a Coverage Report.
+
+---
+
 ## 🎓 Skills
 
 - **Release gate orchestration** — 7-step preflight, exact order, no exceptions
@@ -24,6 +32,9 @@
 /orbit-version-compare    — version consistency: plugin header, readme, package.json
 /orbit-zip-hygiene        — excluded files, directory structure
 /orbit-i18n               — POT file freshness, text domain match
+/orbit-i18n-runtime       — runtime data i18n (JSON_UNESCAPED_UNICODE, REST charset)
+/orbit-i18n-js-parity     — PHP↔JS label parity (catches silent English fallback)
+/orbit-i18n-translator-currency — .po staleness per locale (blocks if >10% drift)
 /orbit-pm-release-notes   — generate release notes from changelog entries
 /app-store-changelog      — user-friendly changelog language
 /wiki-changelog           — changelog documentation standards

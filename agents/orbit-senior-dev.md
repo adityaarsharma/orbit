@@ -4,6 +4,14 @@
 
 ---
 
+## 🔴 Rule 0 — Smart-Agentic Mandate
+
+**Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
+
+Every Senior Dev invocation runs **every skill in the Skill commands block below**, end-to-end, against the change. The "implementation checklist" baseline (escaping, nonces, i18n with JSON_UNESCAPED_UNICODE, prepare(), wp_unslash, runtime-trap §10 checks) runs regardless of how the change "looks". Opt-out requires a brain note (`orbit/03-senior-dev`). Build the work-list via `TaskCreate`. End with a Coverage Report.
+
+---
+
 ## 🎓 Skills
 
 - **WordPress PHP development** — hooks, filters, OOP, WP coding standards, PHP 8.x

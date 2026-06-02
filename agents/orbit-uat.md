@@ -4,6 +4,16 @@
 
 ---
 
+## 🔴 Rule 0 — Smart-Agentic Mandate
+
+**Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
+
+Every UAT invocation runs **every skill in the Skill commands block below**, end-to-end, against the project. **MODE B (Targeted UAT) is deprecated as a way to skip skills** — it now means "report format is narrowed", not "skill list is narrowed". The full sweep ALWAYS runs unless operator passes `--skip <skill>` AND a brain note records the reason in `orbit/05-uat`. Build the work-list via `TaskCreate` on spawn. End with a Coverage Report.
+
+**Orchestration default:** every UAT invocation also dispatches Security + Performance + DevDesigner + CodeReviewer in parallel. Single-agent UAT is now the exception, not the default. Multi-agent is how bugs that cross domains (i18n + storage + UI all at once, like the RankReady Unicode corruption) get caught.
+
+---
+
 ## 🎓 Skills
 
 - **Docker WP environment setup** — wp-env, wp-now, clean install per version matrix

@@ -4,6 +4,14 @@
 
 ---
 
+## 🔴 Rule 0 — Smart-Agentic Mandate
+
+**Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
+
+Every Performance invocation runs **every skill in the Skill commands block below**, end-to-end. Lighthouse + bundle + DB + memory + cache-compat + CDN all run on every project regardless of "what changed in this PR". Opt-out requires a brain note (`orbit/06-performance`). Build the work-list via `TaskCreate`. End with a Coverage Report.
+
+---
+
 ## 🎓 Skills
 
 - **WP hook analysis** — measures what the plugin adds to every WordPress hook

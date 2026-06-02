@@ -94,6 +94,67 @@ If your plugin generates URLs from slugs, it must handle Pro's slug translation.
 
 ---
 
+## 7. Language-aware custom endpoints (REST, rewrite, AJAX)
+
+**The bug that ships when this check is missing:** plugin exposes a custom URL like `/{slug}.md` or `/wp-json/myplugin/v1/foo`. User has Polylang active with EN/ES translations linked. Request comes in for the ES translation — endpoint returns the EN content because the handler never consulted Polylang.
+
+### Required checks
+
+For every custom REST route, rewrite rule, or AJAX handler that returns post content:
+
+#### 7.1 Resolve current language
+
+```php
+$lang = function_exists( 'pll_current_language' )
+    ? pll_current_language()
+    : ( isset( $_GET['lang'] ) ? sanitize_key( wp_unslash( $_GET['lang'] ) ) : 'en' );
+```
+
+Sources of truth, in order:
+1. `pll_current_language()` (Polylang's resolved language)
+2. `?lang=xx` query parameter
+3. `Accept-Language` request header (parse via `WP::parse_request()` or manual)
+
+#### 7.2 Translate the target post to the requested language
+
+```php
+$translated_id = function_exists( 'pll_get_post' )
+    ? pll_get_post( $post_id, $lang )
+    : $post_id;
+
+if ( ! $translated_id ) {
+    // No translation exists for this language → fall back to source, OR 404
+    // Document the choice in the endpoint's response headers
+}
+```
+
+#### 7.3 Set response headers correctly
+
+```php
+header( 'Content-Type: text/markdown; charset=utf-8' );  // charset always
+header( 'Content-Language: ' . $lang );                  // tell client what we served
+header( 'Vary: Accept-Language' );                       // tell caches the response varies by language
+```
+
+### Detection grep
+
+```bash
+# Find custom REST routes
+grep -rn 'register_rest_route' --include='*.php' . | grep -v 'tests/'
+
+# Find rewrite rules
+grep -rn 'add_rewrite_rule\|template_redirect' --include='*.php' . | grep -v 'tests/'
+
+# Find AJAX handlers
+grep -rn "add_action.*wp_ajax" --include='*.php' . | grep -v 'tests/'
+```
+
+For each result, inspect the handler body. If the handler returns content tied to a `$post_id` or a slug, search the handler body for `pll_current_language\|pll_get_post\|wpml_current_language\|wpml_object_id\|Accept-Language\|?lang=`. If none present → multilingual gap. **High severity** when Polylang/WPML is in the plugin's compatibility matrix.
+
+### Caching gotcha
+
+If the endpoint is cacheable (sets `Cache-Control: public, max-age=...`), the cache key MUST include language — either via distinct URL per language (`/es/{slug}.md`) or via `Vary: Accept-Language` (which most CDNs ignore by default; Cloudflare APO ignores Vary entirely). Document the chosen strategy in the endpoint header.
+
 ## Sources & Evergreen References
 
 ### Canonical docs
@@ -102,4 +163,4 @@ If your plugin generates URLs from slugs, it must handle Pro's slug translation.
 - [Functions Reference](https://polylang.pro/doc/category/developers/) — pll_* functions
 
 ### Last reviewed
-- 2026-04-29
+- 2026-04-29 (original) · 2026-06-02 (added §7 language-aware custom endpoints)

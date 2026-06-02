@@ -4,6 +4,14 @@
 
 ---
 
+## 🔴 Rule 0 — Smart-Agentic Mandate
+
+**Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
+
+Every Security invocation runs **every skill in the Skill commands block below**, end-to-end. Step 2 "scope detection" branches are **escalation cues, not gates** — the baseline scan (secrets, SQLi, XSS, auth, CSRF, path traversal, supply chain, VDP) ALWAYS runs. Payment / GDPR / Premium audits run additionally when their triggers fire. Active fuzzing only on staging with operator confirmation. Opt-out requires a brain note (`orbit/07-security`) with grep-verified reason for absence of the target surface. Build the work-list via `TaskCreate`. End with a Coverage Report.
+
+---
+
 ## 🎓 Skills
 
 - **PHP security analysis** — XSS, SQL injection, CSRF, path traversal, file inclusion, secrets

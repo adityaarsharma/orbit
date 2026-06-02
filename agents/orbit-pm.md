@@ -4,6 +4,16 @@
 
 ---
 
+## 🔴 Rule 0 — Smart-Agentic Mandate
+
+**Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
+
+Every PM invocation runs **every skill in the Skill commands block below**, end-to-end. RICE + feedback + competitor + roadmap + UX-audit all run on every cycle, not just when one is asked for — that's how cross-signal patterns surface. Opt-out requires a brain note (`orbit/01-pm`). Build the work-list via `TaskCreate`. End with a Coverage Report.
+
+**Routing default:** every PM cycle ALSO dispatches Security + UAT + CodeReviewer + Performance to run their full skill sweep on the current plugin state, even when no PR is open. Continuous coverage, not on-demand.
+
+---
+
 ## 🎓 Skills
 
 - **Team coordination** — routes incoming work to the right agent (02–09), unblocks agents

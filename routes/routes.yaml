@@ -152,6 +152,18 @@ routes:
       - /orbit-seo-schema
       - /orbit-seo-sitemap
       - /orbit-mcp-discover
+      # Environment & test infra (owner: orbit-uat / orbit-runner)
+      - /orbit-docker-site
+      - /orbit-wp-playground
+      # Runtime audits (owner: orbit-code-reviewer / orbit-security)
+      - /orbit-cron-audit
+      # Meta / lifecycle (owner: orbit-cto / orbit-runner)
+      - /orbit-evergreen-update
+      - /orbit-skill-add
+      - /orbit-skill-improver
+      - /orbit-install
+      - /orbit-setup
+      - /orbit-update
 
 # ─────────────────────────────────────────────────────────────
 # CHERRY-PICKED SKILLS FROM GLOBAL LIBRARY

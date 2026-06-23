@@ -401,6 +401,11 @@ if [ $UPDATE_MODE -eq 0 ]; then
      bash install-connectors.sh <your-brain-key>
      (validates key, detects tier, cleans stale MCPs, verifies live)
 
+  Seed the brain (skill routing + knowledge — brain is the source of truth):
+     bash brain/seed-brain.sh    --key <orbit-admin-key>   # knowledge drawers
+     bash brain/seed-runbooks.sh --key <orbit-admin-key>   # per-agent skill routing
+     (after this, new/moved skills route automatically — no git pull, no .md edit)
+
   Or use skills directly (no brain key needed):
      /orbit-setup            Guided wizard for your first plugin
      /orbit-do-it            Brainless full audit

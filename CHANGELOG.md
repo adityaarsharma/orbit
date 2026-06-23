@@ -8,6 +8,27 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.7.0] — 2026-06-23
+
+### Added
+
+- **Brain-routed skills — brain is now the source of truth for which skills each agent runs (Golden Circle Rule -2, full rollout).** Each of the 11 agents has a canonical `RUNBOOK` drawer in its own orbit brain collection (`orbit/00-cto` … `orbit/10-runner`) listing its **skill set + run order**. Agents read that drawer first on spawn and build their work-list from it. The agent `.md` Skill block is now the **bootstrap copy**; when they disagree, the brain drawer wins.
+  - `brain/seed-runbooks.sh` — seeds all 11 per-agent RUNBOOK drawers (public-safe; the skill lists are already published in the agent `.md` files). Each drawer carries the Rule 0 run-rule (every skill end-to-end, opt-out only via brain note, Coverage Report).
+  - **New/moved skills route automatically** — re-seed the drawer and the routing goes live on the next spawn, with **no git pull and no `.md` edit**. The repo is bootstrap; brain is live state.
+  - `_SMART-AGENTIC-MANDATE.md` Section H documents the source-of-truth rule; propagates to all 11 agents via their Rule 0 reference.
+
+### Changed
+
+- **All 123 skills are now routed** — the 9 previously-unrouted skills are mapped in `routes.yaml`: `orbit-docker-site`, `orbit-wp-playground` (env/test infra → uat/runner), `orbit-cron-audit` (runtime audit → code-reviewer/security), `orbit-evergreen-update`, `orbit-skill-add`, `orbit-skill-improver`, `orbit-install`, `orbit-setup`, `orbit-update` (meta/lifecycle → cto/runner). Zero unrouted skills.
+- `update.sh` — after pulling, re-seeds the brain knowledge + per-agent RUNBOOKs when an `ORBIT_ADMIN_KEY` is present in `~/.orbit/keys.env`; otherwise prints the exact commands to run. This is how an update makes new skill routing live.
+- `install.sh` footer — documents `seed-brain.sh` + `seed-runbooks.sh` as the brain-seeding step.
+
+### Why
+
+- Before this, skill→agent routing lived only in the repo (`routes.yaml` + each agent's `.md`), so adding or moving a skill required a code change + git pull on every machine. With the RUNBOOK drawers, routing lives in brain and updates ship instantly to every agent — the mature Golden Circle model, kept entirely inside the Orbit tenant (`orbit/` namespace), never in the Golden Circle brain.
+
+---
+
 ## [3.6.0] — 2026-06-12
 
 ### Added

@@ -41,6 +41,7 @@ Every Code Reviewer invocation runs **every skill in the Skill commands block be
 /orbit-compat-wpml              — WPML compat (+ language-aware custom endpoints + wpml-config.xml currency)
 /orbit-i18n-runtime             — JSON_UNESCAPED_UNICODE + runtime data i18n correctness
 /orbit-i18n-js-parity           — PHP↔JS label parity (wp_localize_script vs JS reads)
+/orbit-ip-cleanroom             — flag reference-identifier/string/asset leakage in the diff (IP/copyright)
 /orbit-life-activation          — activation hook safety
 /orbit-life-upgrade             — upgrade path correctness
 /orbit-uninstall-test           — uninstall cleanup completeness
@@ -83,6 +84,7 @@ SCOPE DETECTION (auto, from PR diff):
   Has Widget_Base?   → Elementor review
   Has activation hook / uninstall.php? → Lifecycle review
   Has WPML/ACF calls? → Compatibility review
+  Plugin in a competitor's niche / reference studied? → IP clean-room leak flag (Step 6b)
 ```
 
 ### Step 3 — PHP review (all PRs with PHP changes)
@@ -185,6 +187,24 @@ MULTISITE (if get_option / custom tables touched):
   ✓ Site options vs network options correct?
   ✓ Table prefix used consistently?
 → /orbit-multisite
+```
+
+### Step 6b — IP / copyright leak flag (if plugin built in a competitor's niche)
+
+```
+→ /orbit-ip-cleanroom  (flag-only at review time; orbit-security owns the full audit + gate)
+
+Scan the diff for the reference author's EXPRESSION leaking in:
+  ✓ No reference text domain / function-class-namespace prefix
+  ✓ No reference custom hook/filter names, option/transient/meta keys, REST namespace, block name
+  ✓ No verbatim/paraphrased PHP/JS blocks, copied UI strings, readme/changelog wording
+  ✓ No bundled icon/image/font from the reference; no GPL/author header from the reference
+  ✓ WordPress's OWN API names (add_action, wp_enqueue_script, init) are fine — only AUTHOR-invented names are leaks
+
+ANY 🔴 reference identifier/string/asset in the diff →
+  "BLOCKED: IP leak — '<token>' at <file:line> is the reference author's expression.
+   Reimplement with OUR prefix/text-domain. Routing to 07-Security for the full clean-room gate."
+→ hand to orbit-security (owner). Engineering risk-reduction, NOT legal advice.
 ```
 
 ### Step 7 — Test demands

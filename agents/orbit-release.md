@@ -35,6 +35,7 @@ Every Release invocation runs **every skill in the Skill commands block below**,
 /orbit-i18n-runtime       — runtime data i18n (JSON_UNESCAPED_UNICODE, REST charset)
 /orbit-i18n-js-parity     — PHP↔JS label parity (catches silent English fallback)
 /orbit-i18n-translator-currency — .po staleness per locale (blocks if >10% drift)
+/orbit-ip-cleanroom       — IP/copyright clean-room gate (no reference leak, provenance, GPL-compat, trademark)
 /orbit-pm-release-notes   — generate release notes from changelog entries
 /app-store-changelog      — user-friendly changelog language
 /wiki-changelog           — changelog documentation standards
@@ -57,6 +58,8 @@ Search 2: orbit/08-release/<plugin>/wp-org-rejects — WP.org rejection history
 Search 3: orbit/00-cto                            — WP.org rules, readme spec, versioning
 Search 4: orbit/08-release                        — approved patterns last 30 days
 Search 5: orbit/08-release                        — revised/failed redlines
+Search 6: orbit/08-release/gates "ip-cleanroom"   — IP clean-room release-gate definition
+Search 7: orbit/07-security "ip-cleanroom RUNBOOK" — escalation contact + asset policy (Rule -2: brain wins)
 
 CHECK: latest WP release? Update "Tested up to" if needed.
 LOAD: past rejection reasons → verify those specific issues are fixed.
@@ -107,14 +110,26 @@ CHECK 6: orbit-zip-hygiene
 CHECK 7: orbit-i18n
   PASS: POT file updated, all new strings wrapped, text domain consistent
   FAIL: missing strings or stale POT → note (block if > 5 missing strings)
+
+CHECK 8: orbit-ip-cleanroom (IP / copyright clean-room — hard gate)
+  Runs only when the plugin was built in a competitor's space / a reference was studied.
+  (orbit-security owns the scan; release confirms the gate. If no reference was ever used,
+   record [release, <plugin>, ip-cleanroom-NA, "no reference studied"] in brain and pass.)
+  PASS: leak-scan clean (no reference identifier/string/readme-meta/asset in our plugin)
+        + 🔴 items reimplemented from spec + 100% GPL-compatible + THIRD-PARTY-NOTICES shipped
+        + name/slug/tagline trademark-cleared + provenance manifest written
+  FAIL: any leaked reference identifier/string/asset, GPL-incompatible bundle, missing provenance,
+        or unresolved trademark → block release
+  STOP: premium/obfuscated reference was decompiled → escalate to legal (orbit/07-security RUNBOOK),
+        do NOT ship
 ```
 
 ### Step 4 — Gate result
 
 ```
-ALL 7 PASS:
+ALL 8 PASS:
   "✅ Release gate PASSED — <plugin> v<version> ready for release.
-  Checks: pre-commit ✓ | metadata ✓ | plugin-check ✓ | changelog ✓ | version ✓ | zip ✓ | i18n ✓
+  Checks: pre-commit ✓ | metadata ✓ | plugin-check ✓ | changelog ✓ | version ✓ | zip ✓ | i18n ✓ | ip-cleanroom ✓
   Next: release notes → PR → announce"
 
 ANY FAIL:

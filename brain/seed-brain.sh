@@ -895,12 +895,56 @@ ALL HOSTS:
 - Never hardcode absolute paths — use ABSPATH, WP_CONTENT_DIR, plugin_dir_path()
 Source: https://wpengine.com/support/disallowed-functions-wordpress/"
 
+# ── Category 9: IP / Clean-Room (generic, public-safe) ────────────────────────
+# NOTE: only generic engineering knowledge is seeded here (this file is in the
+# public repo). The org-specific RUNBOOK — escalation contact, authorization
+# checklist, internal asset/vendor policy — is seeded SEPARATELY by an admin via
+# the brain MCP into orbit/07-security and is NEVER committed to this file.
+echo ""
+echo "── IP / Clean-Room (4 drawers)"
+
+ingest "IP clean-room — the two copying myths" \
+  '["orbit","knowledge","ip-cleanroom","gpl-myth"]' \
+  "IP clean-room — kill these two myths before touching any reference plugin:
+1. 'WordPress is all GPL so I can copy their code' = FALSE. GPL is a license with conditions, not a transfer of copyright. The author keeps copyright. Copying their GPL PHP into our plugin and shipping as ours (especially after stripping their headers) is BOTH copyright infringement AND a GPL violation. GPL lets us reuse the WP APIs and ideas freely; it does NOT let us lift another author's expression.
+2. 'I'll just rewrite it in my own words' = still a derivative work. Structure/sequence/organization is protected (abstraction-filtration-comparison test). Only clean path for derived logic: rebuild-from-spec by an actor that never saw their code.
+STOP condition: obfuscated/ionCube/encrypted PRO plugin being decompiled/deobfuscated → likely breaches vendor EULA + DMCA anti-circumvention (17 USC 1201), a separate offense. STOP and escalate to legal. Skill: /orbit-ip-cleanroom."
+
+ingest "IP clean-room — WordPress leak signals" \
+  '["orbit","knowledge","ip-cleanroom","leak-signals"]' \
+  "WordPress plugin leak signals (the reference author's expression — reusing them = copy signal):
+🔴 text domain; function/class/namespace prefixes; custom hook/filter names; option/transient/post-meta keys; DB table names; cron event hooks; REST namespace/routes; AJAX actions; nonce action strings; block names (namespace/block); shortcode tags; widget IDs; verbatim/paraphrased PHP/JS blocks; copied UI strings; readme.txt/FAQ wording; bundled images/icons/fonts from the reference.
+🟡 CSS class prefixes; JS/CSS handle names; changelog phrasing; plugin header fields mirroring theirs; error/notice strings.
+🟢 file names mirroring theirs (low weight, still scrub).
+WordPress's OWN names (add_action, wp_enqueue_script, init, the_content) are the platform API — required and fine. Only author-INVENTED names are expression. Triage 🔴 → reimplement from spec with our prefix/text-domain; do NOT rename-and-ship. Skill: /orbit-ip-cleanroom."
+
+ingest "IP clean-room — GPL/licensing & bundling reality" \
+  '["orbit","knowledge","ip-cleanroom","licensing"]' \
+  "Licensing reality for WP plugins:
+- Free WP.org plugins are GPL: studying ideas fine, copying expression not.
+- Commercial/freemium 'pro' plugins are usually GPL on code but distributed under a vendor EULA adding terms (no redistribution of the paid package, license gating). Code license != distribution contract.
+- AGPL/Affero adds a network/SaaS clause — flag on intake. LGPL = weaker copyleft. MPL-2 = file-level copyleft.
+- BUNDLING = redistribution. Most stock-asset licenses forbid extractable redistribution without an extended license. For bundled assets prefer own work / verified-CC0 / permissive icon sets (MIT/ISC/BSD) / OFL fonts self-hosted.
+- Ship THIRD-PARTY-NOTICES/CREDITS listing every bundled lib + license; retain MIT/BSD notices. WP.org requires 100% GPL-compatible. Skill: /orbit-ip-cleanroom reference gpl-and-licensing.md."
+
+ingest "IP clean-room — release gate & provenance" \
+  '["orbit","knowledge","ip-cleanroom","release-gate"]' \
+  "IP clean-room release gate (orbit-release runs as a hard pre-ship gate; orbit-security owns; orbit-code-reviewer flags during PR):
+Block release unless ALL true:
+- leak-scan clean: no reference identifier/string/readme-meta wording/asset in our plugin
+- 🔴 items reimplemented from spec; low similarity to reference
+- 100% GPL-compatible; THIRD-PARTY-NOTICES shipped; bundled assets cleared for redistribution
+- plugin name/slug/tagline trademark-cleared (WP.org slug, USPTO/EUIPO, domain)
+- provenance manifest written (ip-manifest.sh)
+- if a premium/obfuscated plugin was involved → escalated to legal, not silently used
+Engineering risk-reduction, NOT legal advice. The org escalation contact + authorization checklist live in the orbit/07-security ip-cleanroom RUNBOOK (admin-seeded, not in the public repo)."
+
 # ── Done ──────────────────────────────────────────────────────────────────────
 echo ""
 echo "────────────────────────────────────────────"
 echo "✓ Orbit starter brain seeded successfully"
 echo ""
-echo "  40 knowledge drawers ingested:"
+echo "  44 knowledge drawers ingested:"
 echo "  8 × WP Standards"
 echo "  6 × Block Editor"
 echo "  4 × Elementor"
@@ -909,6 +953,7 @@ echo "  4 × Performance"
 echo "  5 × Release"
 echo "  4 × Accessibility"
 echo "  4 × Compat"
+echo "  4 × IP / Clean-Room"
 echo ""
 echo "  Namespace: $NAMESPACE"
 echo "  Brain:     $BRAIN_URL"

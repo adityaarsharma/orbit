@@ -36,6 +36,7 @@ Every Security invocation runs **every skill in the Skill commands block below**
 /orbit-ajax-fuzzer              — AJAX endpoint fuzzing (staging only)
 /orbit-rest-fuzzer              — REST endpoint fuzzing (staging only)
 /orbit-vdp                      — VDP compliance (EU Cyber Resilience Act)
+/orbit-ip-cleanroom             — IP/copyright clean-room (reference-leak scan, GPL-compat, provenance, trademark) — security OWNS this
 /orbit-gdpr                     — data handling, consent, deletion, export
 /orbit-premium-audit            — feature gating, license tier correctness
 /orbit-pay-stripe               — Stripe webhook security, SCA, idempotency
@@ -67,6 +68,7 @@ Search 2: orbit/07-security/<plugin>       — supply chain risks, dependency is
 Search 3: orbit/00-cto                    — security patterns, WP vuln signatures
 Search 4: orbit/07-security               — approved patterns last 30 days
 Search 5: orbit/07-security               — revised/failed redlines
+Search 6: orbit/07-security "ip-cleanroom RUNBOOK" — IP clean-room escalation contact + asset policy (Rule -2)
 
 CHECK: has this exact version been scanned before?
   → Yes: load previous findings, flag only what's new or changed
@@ -79,6 +81,7 @@ CHECK: has this exact version been scanned before?
 Does plugin handle payments?  → Run payment audit (Step 4)
 Does plugin store user data?  → Run GDPR audit (Step 5)
 Does plugin have Pro/premium? → Run premium gating audit (Step 6)
+Built in a competitor's space / a reference plugin was studied? → Run IP clean-room (Step 9b)
 Always:                       → Run code security audit (Step 3)
 Always:                       → Run VDP check
 ```
@@ -207,6 +210,30 @@ NEVER run active tests on production. Not even GET requests.
 ✓ Security contact (security@posimyth.com)?
 ✓ Response timeline documented?
 ✓ CVE attribution process defined?
+```
+
+### Step 9b — IP / copyright clean-room (Security OWNS — when a reference was studied)
+
+```
+→ orbit-ip-cleanroom   (read orbit/07-security "ip-cleanroom RUNBOOK" FIRST — escalation contact + asset policy)
+
+TRIGGER: plugin built in a competitor's niche, or a competitor zip/WP.org download/decompiled
+         pro code was studied. If genuinely no reference was ever used, note NA and skip.
+
+PHASES (full detail in /orbit-ip-cleanroom):
+  1. Intake & quarantine the reference (ip-intake-scan.sh) → reserved-identifiers.txt, license class
+  2. Decide: learn the IDEAS (fine) vs need their CODE (derived → reimplement)
+  3. Audit OUR plugin for leakage (ip-leak-scan.sh) → triage 🟢/🟡/🔴
+  4. Reimplement 🔴 from spec with OUR prefix/text-domain (fresh source-denied session)
+  5. Provenance manifest (ip-manifest.sh) + THIRD-PARTY-NOTICES + trademark check
+
+🛑 STOP → escalate (orbit/07-security RUNBOOK contact), do NOT resolve in-skill:
+  - decompiling/deobfuscating an encrypted/ionCube/licensed pro plugin (EULA + DMCA §1201)
+  - any 🔴 leak that can't be cleanly reimplemented
+  - reference from a grey/unauthorized source
+
+Escalate Critical IP exposure to 01-PM immediately, same as a Critical vuln.
+Engineering risk-reduction, NOT legal advice. Hand the gate result to 08-Release (CHECK 8).
 ```
 
 ### Guardrails

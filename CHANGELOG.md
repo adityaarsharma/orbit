@@ -8,6 +8,36 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.6.0] — 2026-06-12
+
+### Added
+
+- **`orbit-ip-cleanroom` — IP / copyright clean-room audit** (owner: `orbit-security`; hard gate at `orbit-release`; flagged by `orbit-code-reviewer`). For the everyday case where a plugin is built in a competitor's niche after a reference (shared zip, WP.org download, decompiled pro code) was studied — makes sure "understanding the flow" never becomes copying the work.
+  - `scripts/ip-intake-scan.sh` — quarantine the reference (never into our tree), classify license (flags AGPL + STOPs on obfuscated/ionCube pro plugins for DMCA §1201), extract the reference's reserved identifiers (text domain, function/class prefixes, custom hooks, option/transient keys, REST namespaces, AJAX actions, shortcodes, block names, handles).
+  - `scripts/ip-leak-scan.sh` — scan OUR plugin for any reference identifier, copied strings/readme/changelog wording, GPL/author headers, and long-string overlap with the reference; triage 🟢/🟡/🔴.
+  - `scripts/ip-manifest.sh` — emit a provenance manifest (`orbit-ip-cleanroom-manifest/v1`).
+  - `references/leak-signals.md` (WP-specific expression vs platform-API signals + severity) and `references/gpl-and-licensing.md` (the "it's GPL so I can copy" myth, AGPL/LGPL/MPL, bundling = redistribution, THIRD-PARTY-NOTICES).
+  - Plugin-agnostic — no plugin or competitor name hardcoded.
+
+- **Release gate CHECK 8 — IP clean-room** in `orbit-release`. The 7-step gate is now an 8-step gate: no reference leak, 🔴 items reimplemented from spec, 100% GPL-compatible, THIRD-PARTY-NOTICES shipped, name/slug/tagline trademark-cleared, provenance manifest written. Block on any miss; STOP + escalate if a premium/obfuscated reference was decompiled.
+
+- **`/orbit-gauntlet` Step 5e** — IP clean-room runs in `--mode full` and `--mode release` (only when a competitor reference was studied).
+
+- **Brain-first architecture (Golden Circle Rule -2 parity).** The detailed clean-room runbook — escalation contact, authorization/EULA checklist, and bundled-asset policy — lives in **brain** (`orbit/07-security` RUNBOOK + `orbit/00-cto` hard-rule + `orbit/08-release` gate), read live on every run. The public repo ships only the generic scan mechanics + the pointer to read the brain runbook first. Generic IP knowledge (4 drawers) added to `brain/seed-brain.sh`; the org-internal runbook is seeded by an admin via a private, gitignored seeder (never committed).
+
+### Changed
+
+- `routes/routes.yaml` — orbit-core security block gains `/orbit-ip-cleanroom`.
+- `orbit-security` — new Step 9b (owns the full clean-room audit + escalation), brain-prime reads the IP runbook first.
+- `orbit-code-reviewer` — new Step 6b (flags reference-identifier leakage in the diff, routes to security).
+- `.gitignore` — ignores `.clean-room/` (quarantined competitor references must never ship) and `*.private.sh` (org-internal brain seeders).
+
+### Why
+
+- A reference competitor plugin handed to a developer is the single most common way IP contamination enters a WordPress plugin — copied identifiers, strings, readme wording, or bundled assets that pass every functional test but create copyright/GPL/trademark exposure. This gate catches it before release. **Engineering risk-reduction, not legal advice** — STOP conditions escalate to the IP owner rather than resolving silently. Internal policy stays in brain (private); only the generic mechanics ship in the public repo.
+
+---
+
 ## [3.5.0] — 2026-06-02
 
 ### Added

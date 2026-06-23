@@ -44,6 +44,7 @@ Exit code: **0** = release ready · **1** = blockers found.
 | 5b. i18n JS parity (wp_localize_script) | — | ✓ | ✓ |
 | 5c. i18n translator currency (.po drift) | — | ✓ | ✓ |
 | 5d. Polylang + WPML endpoint awareness | — | ✓ | ✓ |
+| 5e. IP clean-room (reference leak + provenance) | — | ✓ | ✓ |
 | 6. Playwright (smoke) | ✓ | full suite | full suite |
 | 7. Lighthouse | — | ✓ | ✓ |
 | 8. DB profiling | — | ✓ | ✓ |
@@ -130,6 +131,7 @@ Step 5a  i18n runtime       → JSON_UNESCAPED_UNICODE in storage + REST charset
 Step 5b  i18n JS parity     → PHP wp_localize_script keys vs JS reads (~10s)
 Step 5c  i18n translator    → per-locale .po staleness vs current POT (~15s)
 Step 5d  Multilingual compat→ Polylang + WPML language-aware custom endpoints (~20s)
+Step 5e  IP clean-room      → reference-identifier/string/asset leak scan + GPL-compat + provenance + trademark (~25s; runs only when a competitor reference was studied — owner: orbit-security, hard gate at release)
 Step 6   Playwright Tests   → functional + visual regression + flow videos (~3 min)
 Step 7   Lighthouse         → Core Web Vitals scores (~1 min)
 Step 8   DB Profiling       → query count + slow query log + memory + cron + GDPR (~2 min)
@@ -156,6 +158,7 @@ Step 12  PM UX Audit        → spell-check + guided experience score + label be
 | i18n translator currency (.po drift) | `/orbit-i18n-translator-currency` |
 | Polylang compat (incl. custom endpoints) | `/orbit-compat-polylang` |
 | WPML compat (incl. wpml-config.xml currency) | `/orbit-compat-wpml` |
+| IP / copyright clean-room (reference leak + provenance) | `/orbit-ip-cleanroom` |
 | Playwright | `/orbit-playwright` |
 | Lighthouse | `/orbit-lighthouse` |
 | Editor perf | `/orbit-editor-perf` |

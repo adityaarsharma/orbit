@@ -146,6 +146,7 @@ routes:
       - /orbit-pay-freemius
       - /orbit-gdpr
       - /orbit-premium-audit
+      - /orbit-ip-cleanroom
       - /orbit-rtc-compat
       # SEO
       - /orbit-seo-schema

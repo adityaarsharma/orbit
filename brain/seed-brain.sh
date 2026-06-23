@@ -43,23 +43,26 @@ ingest() {
     return
   fi
 
+  # Brain connectors API: POST /connectors with a JSON-RPC tools/call envelope invoking
+  # posimyth_brain_add_note. Field is `content`; scope is wing+room. wing="orbit" room="knowledge"
+  # keeps all knowledge drawers in the Orbit wing, isolated from the general/GC brain.
   local payload
   payload=$(jq -n \
     --arg body "$body" \
     --argjson tags "$tags" \
-    '{note: $body, tags: $tags}')
+    '{jsonrpc:"2.0",id:1,method:"tools/call",params:{name:"posimyth_brain_add_note",arguments:{content:$body,wing:"orbit",room:"knowledge",tags:$tags}}}')
 
-  local status
-  status=$(curl -s -o /dev/null -w "%{http_code}" \
-    -X POST "$BRAIN_URL/add_note" \
+  local resp
+  resp=$(curl -s -m 25 \
+    -X POST "$BRAIN_URL" \
     -H "Authorization: Bearer $ADMIN_KEY" \
     -H "Content-Type: application/json" \
     -d "$payload")
 
-  if [[ "$status" == "200" || "$status" == "201" ]]; then
+  if echo "$resp" | grep -q 'drawer_id'; then
     echo "  ✓ $label"
   else
-    echo "  ✗ $label (HTTP $status)"
+    echo "  ✗ $label — ${resp:0:160}"
   fi
 }
 
@@ -82,13 +85,13 @@ echo "   Namespace: $NAMESPACE"
 $DRY_RUN && echo "   Mode     : DRY RUN (no writes)"
 echo ""
 
-# Test connectivity + key validity
+# Test connectivity + key validity (whoami is the read-only auth endpoint)
 if ! $DRY_RUN; then
   test_status=$(curl -s -o /dev/null -w "%{http_code}" \
     -H "Authorization: Bearer $ADMIN_KEY" \
-    "$BRAIN_URL/ping" 2>/dev/null || echo "000")
+    "$BRAIN_URL/whoami" 2>/dev/null || echo "000")
   if [[ "$test_status" != "200" ]]; then
-    echo "ERROR: Could not reach $BRAIN_URL (HTTP $test_status)"
+    echo "ERROR: Could not reach $BRAIN_URL/whoami (HTTP $test_status)"
     echo "       Check your Admin key and network connection."
     exit 1
   fi

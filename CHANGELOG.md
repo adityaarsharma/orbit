@@ -8,6 +8,23 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [3.7.1] — 2026-06-23
+
+### Fixed
+
+- **Brain seeders were writing to the wrong place with the wrong field — now corrected and verified live.** The three seeders (`seed-brain.sh`, `seed-runbooks.sh`, `seed-ip-cleanroom.private.sh`) posted `{note, namespace}` to `/connectors/add_note`. The brain connectors API actually expects a **JSON-RPC `tools/call`** to **`POST /connectors`** invoking `posimyth_brain_add_note`, with the field named **`content`** (not `note`) and scope via **`wing` + `room`** (not `namespace`). As written, every drawer would have (a) been created empty and (b) defaulted to `wing=brain, room=general` — i.e. polluted the general / Golden-Circle brain. Fixed all three to emit the correct JSON-RPC envelope with `content` + `wing="orbit"` + `room="<NN-role>"`.
+- `seed-brain.sh` pre-flight connectivity test switched from the non-existent `/ping` to `/whoami`.
+- `_SMART-AGENTIC-MANDATE.md` Section H now states the `wing`/`room` call form explicitly (`orbit/<NN-role>` shorthand = `wing="orbit", room="<NN-role>"`).
+
+### Seeded (live on brain.posimyth.com, `orbit` wing)
+
+- 11 per-agent RUNBOOK drawers (`orbit` wing, rooms `00-cto` … `10-runner`).
+- 3 internal IP clean-room drawers (rooms `00-cto`, `07-security`, `08-release`) via the private seeder.
+- 44 knowledge drawers (room `knowledge`), including the 4 IP clean-room knowledge drawers.
+- **Verified:** `wing=orbit` holds all the drawers; `wing=general` contains **0** `drawer_orbit_*` — physically isolated from the Golden-Circle brain.
+
+---
+
 ## [3.7.0] — 2026-06-23
 
 ### Added

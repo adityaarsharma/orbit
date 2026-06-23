@@ -27,12 +27,16 @@ for dep in curl jq; do command -v "$dep" >/dev/null || { echo "ERROR: $dep requi
 
 ingest() { # namespace label body
   local namespace="$1" label="$2" body="$3"
-  if $DRY_RUN; then echo "  [dry-run] $namespace ← $label"; return; fi
-  local payload; payload=$(jq -n --arg body "$body" --arg ns "$namespace" \
-    '{note: $body, namespace: $ns, tags: ["RUNBOOK","skill-routing","orbit", $ns]}')
-  local status; status=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BRAIN_URL/add_note" \
+  local room="${namespace#orbit/}"   # "orbit/07-security" → room "07-security"; wing is always "orbit"
+  if $DRY_RUN; then echo "  [dry-run] wing=orbit room=$room ← $label"; return; fi
+  # Brain connectors API: POST /connectors with a JSON-RPC tools/call envelope invoking
+  # posimyth_brain_add_note. Field is `content`; scope is wing+room. wing="orbit" keeps every
+  # drawer in the Orbit wing, isolated from the general/GC brain.
+  local payload; payload=$(jq -n --arg body "$body" --arg room "$room" \
+    '{jsonrpc:"2.0",id:1,method:"tools/call",params:{name:"posimyth_brain_add_note",arguments:{content:$body,wing:"orbit",room:$room,tags:["RUNBOOK","skill-routing","orbit",$room]}}}')
+  local resp; resp=$(curl -s -m 25 -X POST "$BRAIN_URL" \
     -H "Authorization: Bearer $ADMIN_KEY" -H "Content-Type: application/json" -d "$payload")
-  [[ "$status" == "200" || "$status" == "201" ]] && echo "  ✓ $namespace ← $label" || echo "  ✗ $label (HTTP $status)"
+  if echo "$resp" | grep -q 'drawer_id'; then echo "  ✓ wing=orbit room=$room ← $label"; else echo "  ✗ $label — ${resp:0:160}"; fi
 }
 
 # Shared preamble injected into every RUNBOOK so the skip-rule travels with the routing.

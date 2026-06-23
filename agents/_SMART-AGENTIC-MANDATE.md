@@ -91,10 +91,12 @@ Before reporting `STATUS: CLEAR` to the operator, the agent must include the Cov
 
 Every agent has a canonical **RUNBOOK drawer** in its own brain collection — `orbit/00-cto`, `orbit/01-pm`, `orbit/02-code-reviewer`, `orbit/03-senior-dev`, `orbit/04-dev-designer`, `orbit/05-uat`, `orbit/06-performance`, `orbit/07-security`, `orbit/08-release`, `orbit/09-docs`, `orbit/10-runner` — tagged `RUNBOOK`. That drawer lists the agent's **skill set + run order**, and it is the **source of truth**, not this file or the agent's `.md`.
 
-**On spawn, the FIRST brain read is your RUNBOOK drawer:**
+**On spawn, the FIRST brain read is your RUNBOOK drawer.** The brain API uses **`wing` + `room`** (no slashes) — so the shorthand `orbit/<NN-role>` used throughout the agents means **`wing="orbit", room="<NN-role>"`** in every actual call:
 ```
-posimyth_brain_search(wing="orbit/<NN-role>", query="RUNBOOK skill-routing")
+posimyth_brain_search(wing="orbit", room="<NN-role>", query="RUNBOOK skill-routing")
+# e.g. security: wing="orbit", room="07-security"   ·   release: wing="orbit", room="08-release"
 ```
+All Orbit drawers live in the dedicated **`orbit`** wing (rooms `00-cto` … `10-runner`, plus `knowledge`), physically isolated from the general / Golden-Circle brain.
 Build the work-list (Section A) from that drawer. The agent `.md` **Skill commands** block is the **bootstrap copy** — what's installed before the first brain read. When the drawer and the `.md` disagree, **the drawer wins** (Rule -2: brain is the live runbook).
 
 **This is how new skills route automatically.** To give an agent a new skill — or move one between agents — re-seed its RUNBOOK drawer (`brain/seed-runbooks.sh`). It goes live on the next spawn with **no git pull and no `.md` edit**. The repo is bootstrap; brain is live state. All 100+ skills route through brain this way.

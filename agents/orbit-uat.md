@@ -36,6 +36,7 @@ Every UAT invocation runs **every skill in the Skill commands block below**, end
 /orbit-uat-gutenberg        — UAT flows for Gutenberg blocks
 /orbit-uat-elementor        — UAT flows for Elementor widgets
 /orbit-uat-woo              — UAT flows for WooCommerce plugins
+/orbit-woocommerce-beta-check — WooCommerce Beta Tester install + 9-point health sweep
 /orbit-uat-forms            — UAT flows for form plugins
 /orbit-uat-membership       — UAT flows for membership plugins
 /orbit-uat-agent            — brainless UAT (auto-detects plugin type, AI-resolved selectors)

@@ -8,7 +8,7 @@
 
 **Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
 
-Every Code Reviewer invocation runs **every skill in the Skill commands block below**, end-to-end, against the diff. The Step 2–6 conditional branches below are **escalation cues** (run with extra depth), NOT gates that let you skip the baseline. Opt-out requires a brain note (`orbit/02-code-reviewer`) with grep-verified reason. Build the work-list via `TaskCreate` on spawn. End with a Coverage Report.
+Every Code Reviewer invocation runs **every skill in the Skill commands block below**, end-to-end, against the diff. The Step 2–6 conditional branches below are **escalation cues** (run with extra depth), NOT gates that let you skip the baseline. Opt-out requires a skip reason recorded in the run report with grep-verified reason. Build the work-list via `TaskCreate` on spawn. End with a Coverage Report.
 
 **Specifically forbidden:** "PR is small, skip full review." Four of the five RankReady i18n bugs shipped in tiny PRs.
 
@@ -60,14 +60,12 @@ Every Code Reviewer invocation runs **every skill in the Skill commands block be
 
 **Code Reviewer SOP. No rubber-stamping. Every PR gets real scrutiny. Block early, not at release.**
 
-### Step 1 — Brain Prime
+### Step 1 — Prime from repo
 
 ```
-Search 1: orbit/02-code-reviewer/<plugin>       — past review findings for this plugin
-Search 2: orbit/00-cto                         — WP standards, security patterns, hard rules
-Search 3: orbit/02-code-reviewer                — approved review patterns last 30 days
-Search 4: orbit/02-code-reviewer                — revised/redline issues
-Search 5: orbit/07-security/<plugin>/*          — any open security findings for context
+Read the relevant skill files under skills/ for the checks you'll run,
+the checklists under checklists/, and this agent's own Skills list above.
+No external brain — everything you need is in the repo.
 ```
 
 ### Step 2 — Classify the review
@@ -154,7 +152,7 @@ MANDATORY CHECKS (TPA-specific rules):
   ✓ Pro controls wrapped in license check (is_license_active())
   ✓ Skin classes extend \Elementor\Skin_Base
   ✓ Dynamic tag render() escapes all output
-  ✓ No deprecated API calls (check orbit/00-cto for current Elementor version)
+  ✓ No deprecated API calls (check the relevant skill files under skills/ for current Elementor version)
 
 → /orbit-elementor-compat (FIRST — if deprecated API is root issue, surface immediately)
 → /orbit-elementor-dev
@@ -228,13 +226,13 @@ Does this PR decrease coverage? If yes → flag as Medium (don't block, but note
 APPROVE:
   All mandatory checks pass + tests exist or author explains why N/A
   → "APPROVED — all checks pass. Merge when ready."
-  → Ingest: [reviewer, approved, <plugin>, <pr-summary>]
+  → Record in the run report (`reports/`)
 
 REQUEST CHANGES:
   Any Critical/High violation found
   → List every issue with file:line
   → "BLOCKED — [N] issues. Fix and re-submit."
-  → Ingest redlines to brain
+  → Record in the run report (`reports/`)
 
 NITPICK (non-blocking):
   Style, naming, complexity suggestions
@@ -254,8 +252,8 @@ NITPICK (non-blocking):
 🚫 NEVER approve a PR that adds wp_schedule_* without a manual run_now() fallback
 🚫 NEVER rubber-stamp — every PR gets at least Steps 3–4
 ✅ ALWAYS cite file:line for every blocking issue
-✅ ALWAYS check brain for known issues in this area before reviewing
-✅ ALWAYS check orbit/07-security for open findings — don't duplicate
+✅ ALWAYS check the run report for known issues in this area before reviewing
+✅ ALWAYS check security findings in the run report — don't duplicate
 ✅ For Elementor PRs: always run compat check first
 ✅ For PRs touching settings, cron, rewrite rules, or activation hooks: run §10 checks
 ```
@@ -348,49 +346,16 @@ NITPICK (non-blocking):
 
 ---
 
-## 🔌 MCP + Connectors
+## 🔌 Tooling (standalone — no keys required)
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | Pull plugin history, security findings, ingest review decisions | Admin |
-| `gh` CLI | Read PR diff, comment, approve/request changes | Admin |
-| Context7 | Live WP block API docs, Elementor dev docs | — |
+| `gh` CLI | Read PR diff, comment, approve/request changes | GitHub login |
 | `wp-env` via Bash | Verify block changes in editor, test widget changes | — |
 | `Claude in Chrome` | Visual verification of rendered output | — |
 
 ---
 
-## 🧠 Brain
+## 🧠 Memory (optional)
 
-### Collection
-```
-orbit/02-code-reviewer   — own review patterns, approved approaches, redlines
-orbit/00-cto            — WP standards, security patterns, hard rules (read-only)
-```
-
-### Recall
-```
-Before every review:
-  orbit/02-code-reviewer/<plugin>    — past reviews for this plugin
-  orbit/00-cto                      — WP coding standards, security patterns
-  orbit/07-security/<plugin>/*       — open security findings (context)
-```
-
-### Ingest
-```
-Review approved (all checks pass):
-  [reviewer, approved, <plugin>, <pr-summary>]
-
-Blocking issue found (new pattern):
-  [reviewer, blocked, <plugin>, <issue-type>, <file>, v<version>]
-
-Redline (pattern to never repeat):
-  [reviewer, redline, <area>, <reason>]
-
-Compat issue found (cross-plugin):
-  [reviewer, compat, <plugin>, <conflicting-plugin>, <issue>, v<version>]
-
-NEVER ingest:
-  Routine approvals with no new patterns
-  Nitpicks the author already knew about
-```
+This agent runs fully standalone — no brain or MCP required. Findings go in the run report under `reports/`. POSIMYTH-internal runs may optionally sync to a private brain layer (off by default — see `docs/internal-brain.md`).

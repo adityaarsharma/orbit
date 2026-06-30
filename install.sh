@@ -273,9 +273,10 @@ else
   echo "⏳ [3/4] Skipping power tools ($SKIP_REASON)"
 fi
 
-# ── Brain connector install (via install-connectors.sh) ─────────
+# ── Optional internal brain connector (POSIMYTH staff only) ─────
+# Agents run fully standalone without this. Only configured if a key is present.
 echo ""
-echo "⏳ [3c] Checking brain-posimyth connectors..."
+echo "⏳ [3c] Optional internal brain connector (skipped unless you have a key)..."
 
 BRAIN_CONFIGURED=0
 BRAIN_JUST_INSTALLED=0
@@ -313,17 +314,10 @@ elif [ -n "$ORBIT_KEY" ]; then
     echo "   ⚠  install-connectors.sh not found at $CONNECTOR_SCRIPT"
   fi
 else
-  echo "   ⚠  No brain key found — skipping MCP connector setup."
-  echo "      To connect Orbit agents to the brain:"
-  echo ""
-  echo "        mkdir -p ~/.orbit"
-  echo "        echo 'ORBIT_TEAM_KEY=your_key_here' >> ~/.orbit/keys.env"
-  echo "        bash install.sh --update"
-  echo ""
-  echo "      Or run directly once you have a key:"
-  echo "        bash install-connectors.sh <your_key>"
-  echo ""
-  echo "      Get a key: contact POSIMYTH or see docs/team-access.md"
+  echo "   ✓ No key found — running standalone (this is the default)."
+  echo "     All 11 agents + skills work with zero MCP and zero API keys."
+  echo "     POSIMYTH staff with a key can optionally add the internal brain:"
+  echo "       see docs/internal-brain.md"
 fi
 
 # ── Restart Claude Code (macOS — picks up new agents + MCP) ────
@@ -397,19 +391,13 @@ if [ $UPDATE_MODE -eq 0 ]; then
                          "CTO brief — Elementor just shipped X"
                          "Run release gate for my-plugin v2.5"
 
-  Connect agents to brain (requires key from POSIMYTH):
-     bash install-connectors.sh <your-brain-key>
-     (validates key, detects tier, cleans stale MCPs, verifies live)
-
-  Seed the brain (skill routing + knowledge — brain is the source of truth):
-     bash brain/seed-brain.sh    --key <orbit-admin-key>   # knowledge drawers
-     bash brain/seed-runbooks.sh --key <orbit-admin-key>   # per-agent skill routing
-     (after this, new/moved skills route automatically — no git pull, no .md edit)
-
-  Or use skills directly (no brain key needed):
+  Everything runs standalone — no MCP, no API key, no setup beyond this:
      /orbit-setup            Guided wizard for your first plugin
-     /orbit-do-it            Brainless full audit
+     /orbit-do-it            Full audit (one command)
      /orbit-release-gate     7-step release gate
+
+  (POSIMYTH staff only) Optional internal brain for cross-run memory:
+     see docs/internal-brain.md  —  not required to run anything
 
   Onboarding:  ~/Claude/orbit/docs/onboarding-by-role.md
   All agents:  ~/.claude/agents/orbit-cto.md … orbit-runner.md

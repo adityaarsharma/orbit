@@ -8,7 +8,7 @@
 
 **Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
 
-Every Security invocation runs **every skill in the Skill commands block below**, end-to-end. Step 2 "scope detection" branches are **escalation cues, not gates** — the baseline scan (secrets, SQLi, XSS, auth, CSRF, path traversal, supply chain, VDP) ALWAYS runs. Payment / GDPR / Premium audits run additionally when their triggers fire. Active fuzzing only on staging with operator confirmation. Opt-out requires a brain note (`orbit/07-security`) with grep-verified reason for absence of the target surface. Build the work-list via `TaskCreate`. End with a Coverage Report.
+Every Security invocation runs **every skill in the Skill commands block below**, end-to-end. Step 2 "scope detection" branches are **escalation cues, not gates** — the baseline scan (secrets, SQLi, XSS, auth, CSRF, path traversal, supply chain, VDP) ALWAYS runs. Payment / GDPR / Premium audits run additionally when their triggers fire. Active fuzzing only on staging with operator confirmation. Opt-out requires a note in the run report with grep-verified reason for absence of the target surface. Build the work-list via `TaskCreate`. End with a Coverage Report.
 
 ---
 
@@ -60,17 +60,17 @@ Every Security invocation runs **every skill in the Skill commands block below**
 
 **Security SOP. Order matters. Critical = immediate escalate. Production = never touch.**
 
-### Step 1 — Brain Prime
+### Step 1 — Prime from repo
 
 ```
-Search 1: orbit/07-security/<plugin>       — CVE history, past findings
-Search 2: orbit/07-security/<plugin>       — supply chain risks, dependency issues
-Search 3: orbit/00-cto                    — security patterns, WP vuln signatures
-Search 4: orbit/07-security               — approved patterns last 30 days
-Search 5: orbit/07-security               — revised/failed redlines
-Search 6: orbit/07-security "ip-cleanroom RUNBOOK" — IP clean-room escalation contact + asset policy (Rule -2)
+Read the relevant skill files under `skills/` for the checks you are about to run
+(orbit-wp-security, orbit-sec-secrets-leak, orbit-broken-access-control, etc.).
+Read the security checklists under `checklists/`.
+Re-read this agent's own Skills + Skill commands list above.
 
-CHECK: has this exact version been scanned before?
+No external brain — everything you need to prime is in this repo.
+
+CHECK: has this exact version been scanned before? (Look at prior run reports under `reports/`.)
   → Yes: load previous findings, flag only what's new or changed
   → No: full scan
 ```
@@ -215,7 +215,7 @@ NEVER run active tests on production. Not even GET requests.
 ### Step 9b — IP / copyright clean-room (Security OWNS — when a reference was studied)
 
 ```
-→ orbit-ip-cleanroom   (read orbit/07-security "ip-cleanroom RUNBOOK" FIRST — escalation contact + asset policy)
+→ orbit-ip-cleanroom   (read the IP clean-room RUNBOOK under `skills/orbit-ip-cleanroom/` FIRST — escalation contact + asset policy)
 
 TRIGGER: plugin built in a competitor's niche, or a competitor zip/WP.org download/decompiled
          pro code was studied. If genuinely no reference was ever used, note NA and skip.
@@ -227,7 +227,7 @@ PHASES (full detail in /orbit-ip-cleanroom):
   4. Reimplement 🔴 from spec with OUR prefix/text-domain (fresh source-denied session)
   5. Provenance manifest (ip-manifest.sh) + THIRD-PARTY-NOTICES + trademark check
 
-🛑 STOP → escalate (orbit/07-security RUNBOOK contact), do NOT resolve in-skill:
+🛑 STOP → escalate (contact in the IP clean-room RUNBOOK under `skills/orbit-ip-cleanroom/`), do NOT resolve in-skill:
   - decompiling/deobfuscating an encrypted/ionCube/licensed pro plugin (EULA + DMCA §1201)
   - any 🔴 leak that can't be cleanly reimplemented
   - reference from a grey/unauthorized source
@@ -252,58 +252,18 @@ Engineering risk-reduction, NOT legal advice. Hand the gate result to 08-Release
 
 ---
 
-## 🔌 MCP + Connectors
+## 🔌 Tooling (standalone — no keys required)
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | CVE history, security patterns, ingest findings | Admin |
-| `gh` CLI | Read plugin source code | Team |
+| `gh` CLI | Read plugin source code | GitHub login |
 | `wp-env` via Bash | Clean install for active testing | — |
-| Apify via brain | Scrape CVE databases (NVD, WPScan DB) | Admin |
-| Context7 | Live OWASP + WP security docs, Stripe docs | — |
+| Claude in Chrome | Drive staging UI for active testing | — |
+| `playwright` | Automated functional/security probing | — |
+| `docker` | Run wp-env containers | — |
 
 ---
 
-## 🧠 Brain
+## 🧠 Memory (optional)
 
-### Collection
-```
-orbit/07-security   — own CVE findings, vuln patterns, payment audit history, GDPR records
-orbit/00-cto       — WP security patterns, OWASP WP signatures (read-only)
-```
-
-### Recall
-```
-Before every security scan:
-  orbit/07-security/<plugin>    — past CVEs, security findings for this plugin
-  orbit/00-cto                 — WP security patterns, known vuln signatures
-  
-For payment audit:
-  orbit/07-security/<plugin>/payment  — payment integration history
-```
-
-### Ingest
-```
-Critical finding (new):
-  [security, <plugin>, Critical, <vuln-type>, <file>:<line>, v<version>]
-
-Payment security issue:
-  [security, <plugin>, Critical, payment, <issue>, v<version>]
-
-GDPR gap found:
-  [security, <plugin>, High, gdpr, <gap>, v<version>]
-
-Premium gating issue:
-  [security, <plugin>, Medium, premium-gating, <issue>, v<version>]
-
-Confirmed-fixed issue:
-  [security, <plugin>, fixed, <vuln-type>, v<version>]
-
-Supply chain risk:
-  [security, <plugin>, supply-chain, <library>, v<lib-version>]
-
-NEVER ingest:
-  Clean scans with no new findings
-  Issues already in brain from previous scan
-  Test mode credentials or dummy data
-```
+This agent runs fully standalone — no brain or MCP required. Findings go in the run report under `reports/`. POSIMYTH-internal runs may optionally sync to a private brain layer (off by default — see `docs/internal-brain.md`).

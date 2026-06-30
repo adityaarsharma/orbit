@@ -123,6 +123,7 @@ routes:
       - /orbit-uat-elementor
       - /orbit-uat-gutenberg
       - /orbit-uat-woo
+      - /orbit-woocommerce-beta-check
       - /orbit-uat-forms
       - /orbit-uat-membership
       - /orbit-uat-compare

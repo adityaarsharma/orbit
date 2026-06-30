@@ -36,7 +36,7 @@ Full pattern: [EVERGREEN.md](EVERGREEN.md).
 
 ---
 
-## All 112 skills, by category
+## All 113 skills, by category
 
 ### 🛠 Setup & Environment (6)
 | Skill | What it does |
@@ -116,7 +116,7 @@ Full pattern: [EVERGREEN.md](EVERGREEN.md).
 | `/orbit-user-flow` | Click depth + onboarding + analytics-event verification |
 | `/orbit-conflict-matrix` | Test against top 20 WP plugins one at a time |
 
-### 🧪 UAT Templates (6) — incl. **v2.7 brainless agent**
+### 🧪 UAT Templates (7) — incl. **v2.7 brainless agent**
 | Skill | What it does |
 |---|---|
 | **`/orbit-uat-agent`** | **Stagehand-style natural-language UAT — write tests in English, no selectors** |
@@ -125,6 +125,7 @@ Full pattern: [EVERGREEN.md](EVERGREEN.md).
 | `/orbit-uat-woo` | WooCommerce extension UAT — incl. HPOS + Block Checkout |
 | `/orbit-uat-forms` | Form plugin UAT — validation, anti-spam, GDPR consent |
 | `/orbit-uat-membership` | LMS / membership UAT — paywall, drip, certificate, billing |
+| `/orbit-woocommerce-beta-check` | Install WC Beta Tester, switch to latest beta channel, run 9-point site health sweep |
 
 ### 🧪 QA Specialised (5) — **NEW v2.6**
 | Skill | What it does |

@@ -66,6 +66,7 @@ Match the user's request to one of these intent buckets. Be generous with synony
 | "visual regression", "pixel diff", "screenshot diff", "responsive layout" | `/orbit-visual-regression` |
 | "user flow", "click depth", "onboarding test", "first-time UX" | `/orbit-user-flow` |
 | "plugin conflicts", "test against Yoast / WooCommerce / Elementor" | `/orbit-conflict-matrix` |
+| "woocommerce beta", "test woo beta", "switch woo to beta", "latest woo beta", "beta tester woo", "check beta release" | `/orbit-woocommerce-beta-check` |
 
 ### Performance deep-dive
 | User says... | Dispatch to |

@@ -8,7 +8,7 @@
 
 **Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
 
-The runner's mandate is the inverse of the others: it executes the work-list other agents queue. It MUST NOT skip a queued skill silently — every queue item runs, and the runner reports each result back. If a skill fails to start, the runner logs the failure in the run report and continues with the rest. Build the queue via `TaskCreate` mirroring the requesting agent's work-list. End with a Coverage Report listing every queued skill + exit code.
+The runner's mandate is the inverse of the others: it executes the work-list other agents queue. It MUST NOT skip a queued skill silently — every queue item runs, and the runner reports each result back. If a skill fails to start, the runner logs the failure to brain (`orbit/orbit-runner`) and continues with the rest. Build the queue via `TaskCreate` mirroring the requesting agent's work-list. End with a Coverage Report listing every queued skill + exit code.
 
 ---
 
@@ -41,15 +41,14 @@ The runner's mandate is the inverse of the others: it executes the work-list oth
 
 **Runner mode: execute, verify, report. Never plan. If a command is unclear, ask the caller agent — not the operator.**
 
-### Step 1 — Prime from repo
+### Step 1 — Brain Prime
 
 ```
-Runner primes from the repo before executing any task:
-  → Read the relevant skill files under skills/ for the commands it will run
-  → Read the checklists under checklists/ that apply to the queued work
-  → Re-read this agent's own Skills list above for command syntax and constraints
+Runner checks two brain collections before executing any task:
+  Search 1: orbit/00-cto     — hard rules (PHP version floors, banned CLI flags, WP standards)
+  Search 2: orbit/10-runner  — own execution history, known-good wp-env configs, matrix results
 
-No external brain — everything needed is in the repo.
+Runner does NOT read all agent collections — fan-out is CTO privilege only.
 ```
 
 ### Step 2 — Identify the command type
@@ -106,19 +105,19 @@ Full output: <attached or truncated at 200 lines>
 Next: [what the caller agent should do with this result]
 ```
 
-### Step 4 — Record (execution outcomes + matrix results)
+### Step 4 — Ingest (execution outcomes + matrix results)
 
 ```
 ON confirmed matrix result (all cells run):
-  → Record in the run report with tag [runner, matrix, php-X.X, wp-X.X, plugin-slug, pass/fail, <date>]
+  → Ingest to orbit/10-runner with tag [runner, matrix, php-X.X, wp-X.X, plugin-slug, pass/fail, <date>]
 
 ON new conflict discovered:
-  → Record in the run report with tag [runner, conflict, plugin-slug, theme/builder, fatal/warning, <date>]
+  → Ingest to orbit/10-runner with tag [runner, conflict, plugin-slug, theme/builder, fatal/warning, <date>]
 
 ON auto-fix confirmed:
-  → Record in the run report with tag [runner, fix-confirmed, plugin-slug, test-name, patch-summary, <date>]
+  → Ingest to orbit/10-runner with tag [runner, fix-confirmed, plugin-slug, test-name, patch-summary, <date>]
 
-NEVER record:
+NEVER ingest:
   → Individual WP-CLI commands with no QA outcome
   → Intermediate loop attempts
   → Duplicate matrix results already stored
@@ -139,18 +138,55 @@ NEVER record:
 
 ---
 
-## 🔌 Tooling (standalone — no keys required)
+## 🔌 MCP + Connectors
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `gh` CLI | Read repo, fetch artifacts, check CI status | GitHub login |
-| `wp-env` via Bash | Start/stop Docker WP containers for each matrix cell | — (local) |
-| Claude in Chrome | Drive headless browser for conflict/console checks | — (local) |
-| `playwright` | Run E2E suites, capture screenshots on failure | — (local) |
-| `docker` | Run multi-PHP/WP matrix containers | — (local) |
+| `brain-posimyth` | Read orbit/00-cto (hard rules) + ingest matrix/conflict/fix results | Team |
+| `gplvault-cache-posi` | Fetch premium plugin zips for Pro+Free matrix testing | Team |
+| Local `wp-env` | Start/stop Docker WP containers for each matrix cell | — (local) |
+| Local `bash` / WP-CLI | All command execution — no remote execution | — (local) |
 
 ---
 
-## 🧠 Memory (optional)
+## 🧠 Brain
 
-This agent runs fully standalone — no brain or MCP required. Findings go in the run report under `reports/`. POSIMYTH-internal runs may optionally sync to a private brain layer (off by default — see `docs/internal-brain.md`).
+### Collection
+
+```
+orbit/10-runner   ← Runner owns this.
+                    Stores: wp-env matrix results, conflict maps, auto-fix confirmations,
+                    known-good config hashes, execution patterns that worked.
+                    Other agents READ this to know what's been tested and what's confirmed green.
+```
+
+### Recall
+```
+ALWAYS read before any execution task:
+  orbit/00-cto           — hard rules (PHP floor, banned flags, WP standards)
+  orbit/10-runner        — own execution history, known matrix results, known conflicts
+
+READ on topic:
+  orbit/07-security      — if running security test suite
+  orbit/06-performance   — if running Lighthouse or query-count tests
+```
+
+### Ingest
+```
+Matrix result (all cells run):
+  [runner, matrix, <plugin-slug>, php-<ver>, wp-<ver>, pass|fail, <date>]
+
+Conflict detected:
+  [runner, conflict, <plugin-slug>, <theme-or-builder>, fatal|warning, <error-summary>, <date>]
+
+Auto-fix confirmed:
+  [runner, fix-confirmed, <plugin-slug>, <test-name>, <patch-summary>, <date>]
+
+Known-good wp-env config:
+  [runner, wp-env-config, <plugin-slug>, <config-hash>, php-<ver>, wp-<ver>, <date>]
+
+NEVER ingest:
+  Individual CLI commands with no QA outcome
+  Intermediate loop attempts
+  Duplicate results already stored
+```

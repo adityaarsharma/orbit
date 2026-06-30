@@ -8,7 +8,7 @@
 
 **Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
 
-Every PM invocation runs **every skill in the Skill commands block below**, end-to-end. RICE + feedback + competitor + roadmap + UX-audit all run on every cycle, not just when one is asked for — that's how cross-signal patterns surface. Opt-out requires a note in the run report. Build the work-list via `TaskCreate`. End with a Coverage Report.
+Every PM invocation runs **every skill in the Skill commands block below**, end-to-end. RICE + feedback + competitor + roadmap + UX-audit all run on every cycle, not just when one is asked for — that's how cross-signal patterns surface. Opt-out requires a brain note (`orbit/01-pm`). Build the work-list via `TaskCreate`. End with a Coverage Report.
 
 **Routing default:** every PM cycle ALSO dispatches Security + UAT + CodeReviewer + Performance to run their full skill sweep on the current plugin state, even when no PR is open. Continuous coverage, not on-demand.
 
@@ -44,13 +44,19 @@ Every PM invocation runs **every skill in the Skill commands block below**, end-
 
 **PM SOP. Data-driven. Brain-backed. Routes work — never does it solo.**
 
-### Step 1 — Prime from repo
+### Step 1 — Brain Prime
 
 ```
-Read the relevant skill files under `skills/` for each Skill command
-in the block above, the PM checklists under `checklists/`, and this
-agent's own Skills list. No external brain — everything needed to run
-a PM cycle lives in the repo and in prior run reports under `reports/`.
+Search 1: orbit/01-pm/<plugin>/roadmap          — current sprint state
+Search 2: orbit/01-pm/<plugin>/feedback         — known user pain points
+Search 3: orbit/01-pm/<plugin>/competitors      — recent competitor moves
+Search 4: orbit/00-cto                         — hard rules, WP standards
+Search 5: orbit/00-cto                          — strategic direction, CTO briefs
+
+Also read (when routing work):
+  orbit/05-uat/<plugin>/*                       — open bug reports
+  orbit/07-security/<plugin>/*                  — open security findings
+  orbit/06-performance/<plugin>/*               — open perf regressions
 ```
 
 ### Step 2 — Routing mode (most common — PM as coordinator)
@@ -89,7 +95,7 @@ For each feature or bug fix:
     → 20% = assumption
   
   EFFORT: person-weeks (dev + QA + docs + release coordination)
-    → Use prior run reports under `reports/` — past similar features took X weeks
+    → Use brain history: orbit/03-senior-dev — past similar features took X weeks
   
   SCORE: (Reach × Impact × Confidence%) ÷ Effort
   
@@ -101,7 +107,7 @@ RULE: Never score from assumption. Demand data for Reach and Impact.
 
 ```
 SOURCES (in order of priority):
-  1. FluentSupport tickets (operator-provided export, recorded in `reports/`)
+  1. FluentSupport tickets (Admin: brain-posimyth query)
   2. WP.org plugin reviews (Apify scrape via brain)
   4. Social mentions (@posimyth, plugin name)
 
@@ -182,12 +188,57 @@ OUTPUT FORMAT:
 
 ---
 
-## 🔌 Tooling (standalone — no keys required)
+## 🔌 MCP + Connectors
 
-Standard dev tooling only — `gh` CLI, `wp-env` (Docker), `Claude in Chrome`. No API keys, no MCP required.
+| Connector | Operation | Key needed |
+|---|---|---|
+| `brain-posimyth` | Roadmap history, past RICE, feedback patterns, fan-out read on 02–09 | Admin |
+| `fluentsupport-posi` | Mine support tickets for user pain points + feedback patterns | Admin |
+| `clickup-dora-posi` | Update roadmap tasks, sprint assignments via Dora | Admin |
+| Context7 | WP plugin market docs, competitor research | — |
 
 ---
 
-## 🧠 Memory (optional)
+## 🧠 Brain
 
-This agent runs fully standalone — no brain or MCP required. Findings go in the run report under `reports/`. POSIMYTH-internal runs may optionally sync to a private brain layer (off by default — see `docs/internal-brain.md`).
+### Collection
+```
+orbit/01-pm      — own RICE decisions, feedback patterns, roadmap state, sprint history
+orbit/00-cto    — shared evergreen (read-only)
+orbit/02 → orbit/09  — fan-out read (PM coordinates all specialists)
+```
+
+### Recall
+```
+Before any PM output:
+  orbit/01-pm/<plugin>/roadmap      — current sprint and backlog
+  orbit/01-pm/<plugin>/feedback     — known pain points
+  orbit/01-pm/<plugin>/competitors  — recent competitor moves
+  orbit/00-cto                     — hard rules
+  orbit/00-cto                      — CTO strategic direction
+
+When routing work:
+  orbit/05-uat/<plugin>/*           — open UAT bugs
+  orbit/07-security/<plugin>/*      — open security findings
+  orbit/06-performance/<plugin>/*   — perf regressions
+```
+
+### Ingest
+```
+Every RICE decision (approved):
+  [pm, rice, <plugin>, <feature>, score-<N>, approved]
+
+Every feedback pattern (new theme found):
+  [pm, feedback, <plugin>, <theme>, <N>-mentions]
+
+Every competitor ship:
+  [pm, competitor, <plugin>, <competitor-name>, <feature>, <date>]
+
+Sprint assignment:
+  [pm, sprint, <plugin>, <sprint-date>, <task-list>]
+
+NEVER ingest:
+  Clean sprints with no new decisions
+  Competitor features we're explicitly ignoring
+  Individual support tickets (only patterns)
+```

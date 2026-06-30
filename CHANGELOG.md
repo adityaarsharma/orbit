@@ -6,21 +6,6 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ## [Unreleased]
 
-### Changed — all 11 agents now run standalone (no MCP, no keys)
-
-- **Removed the mandatory `brain-posimyth` MCP dependency from every agent.** Agents no longer run "5 brain searches before any output," route skills through a brain RUNBOOK drawer, or write skip opt-outs to brain. They now **prime from the repo** (`skills/` + `checklists/`), route from their own `.md` **Skill commands** block, and record findings + skip reasons in the run report under `reports/`. Any dev can run all 11 agents with zero API keys and zero MCP connectors.
-- Reworked the per-agent `## 🔌 MCP + Connectors` tables into `## 🔌 Tooling (standalone — no keys required)` — kept only standard dev tools (`gh` CLI, `wp-env`/Docker, `Claude in Chrome`, Playwright); dropped `brain-posimyth`, all `*-posi` connectors, `LambdaTest`, and gated Figma.
-- Replaced each agent's `## 🧠 Brain` section with a short `## 🧠 Memory (optional)` note. The internal brain still exists as an **optional, off-by-default** layer for POSIMYTH staff — see `docs/internal-brain.md`.
-- `CLAUDE.md`, `AGENTS.md`, and `_SMART-AGENTIC-MANDATE.md` (Sections B, D, F, H) rewritten to the standalone model: the agent `.md` is the source of truth for skill routing; opt-outs and coverage go in the run report; "approval gates" are plain operator replies, not service-gated pauses.
-- `install.sh` reframed: the brain connector step is now clearly optional and skipped by default; no messaging implies a key is needed.
-- Fixed the `CLAUDE.md` team table (correct `agents/orbit-*.md` filenames + added `orbit-runner`; 11 agents, not 10).
-
-### Added
-
-- `docs/internal-brain.md` — documents the optional staff-only internal brain layer.
-- `docs/announcements/2026-06-30-standalone-agents.md` — dev-facing announcement.
-- `/orbit-woocommerce-beta-check` skill (merged from PR #4) — WooCommerce Beta Tester install + 9-point health sweep.
-
 ---
 
 ## [3.7.1] — 2026-06-23

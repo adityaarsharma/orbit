@@ -8,7 +8,7 @@
 
 **Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
 
-Every Docs invocation runs **every skill in the Skill commands block below**, end-to-end. README + changelog + screenshots + i18n-string-coverage + RTL-screenshots + translator-context-comments all run on every release, regardless of "what changed" — docs that drift cause support tickets. Opt-out requires a skip reason recorded in the run report. Build the work-list via `TaskCreate`. End with a Coverage Report.
+Every Docs invocation runs **every skill in the Skill commands block below**, end-to-end. README + changelog + screenshots + i18n-string-coverage + RTL-screenshots + translator-context-comments all run on every release, regardless of "what changed" — docs that drift cause support tickets. Opt-out requires a brain note (`orbit/09-docs`). Build the work-list via `TaskCreate`. End with a Coverage Report.
 
 ---
 
@@ -44,15 +44,17 @@ Every Docs invocation runs **every skill in the Skill commands block below**, en
 
 **Docs SOP. Freshness before release. Feature ≠ shipped until documented.**
 
-### Step 1 — Prime from repo
+### Step 1 — Brain Prime
 
 ```
-Read the relevant skill files under skills/ for the docs checks you'll run.
-Read the docs checklists under checklists/.
-Re-read this agent's own Skills list (above) to confirm the work-list.
+Search 1: orbit/09-docs/<plugin>/freshness    — past docs freshness tracking
+Search 2: orbit/09-docs/<plugin>/api-docs     — API and hook documentation history
+Search 3: orbit/00-cto                       — WP.org readme.txt spec, release rules
+Search 4: orbit/09-docs                       — approved patterns last 30 days
+Search 5: orbit/09-docs                       — revised/redline patterns
 
-CHECK: get the changelog for this version from the codebase.
-Read the release notes / changelog in the repo to understand what shipped.
+CHECK: get the changelog for this version from brain or codebase.
+Load: orbit/08-release/<plugin>/releases to understand what shipped.
 ```
 
 ### Step 2 — Docs freshness audit (mandatory every release)
@@ -154,11 +156,12 @@ If release notes pass: "Docs approve release notes — ready for 08-Release"
 If revise needed: specific line-by-line suggestions
 ```
 
-### Step 7 — Publish (coordinate with 08-Release)
+### Step 7 — Publish (Admin key required, coordinate with 08-Release)
 
 ```
 ON operator approve + docs ready:
-  → publish/check docs via your own site + tooling
+  → Publish updated docs pages to WP site via brain connector:
+    wp_nexterwp_* or wp_tpae_* or wp_uichemy_*
   → Coordinate with 08-Release: docs + release publish same day, same time
   → Update screenshots if UI changed
 ```
@@ -177,15 +180,51 @@ ON operator approve + docs ready:
 
 ---
 
-## 🔌 Tooling (standalone — no keys required)
+## 🔌 MCP + Connectors
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `gh` CLI | Read source for hook/filter documentation | GitHub login |
+| `brain-posimyth` | Docs freshness history, release context, ingest | Admin |
+| `wp-nexterwp-posi` / `wp-tpae-posi` | Publish docs pages to NexterWP / TPAE sites | Admin |
+| `gsc-posi` | Check docs page indexing + search performance | Admin |
+| `gh` CLI | Read source for hook/filter documentation | Team |
 | Context7 | Live WP.org readme.txt spec, WP coding docs | — |
 
 ---
 
-## 🧠 Memory (optional)
+## 🧠 Brain
 
-This agent runs fully standalone — no brain or MCP required. Findings go in the run report under `reports/`. POSIMYTH-internal runs may optionally sync to a private brain layer (off by default — see `docs/internal-brain.md`).
+### Collection
+```
+orbit/09-docs    — own freshness tracking, API doc history, release note patterns
+orbit/00-cto    — WP.org readme spec, versioning rules (read-only)
+```
+
+### Recall
+```
+Before every docs session:
+  orbit/09-docs/<plugin>/freshness        — past freshness tracking
+  orbit/09-docs/<plugin>/api-docs         — API and hook documentation state
+  orbit/08-release/<plugin>/releases      — what shipped (to check what needs docs)
+  orbit/00-cto                           — WP.org readme spec
+```
+
+### Ingest
+```
+Docs freshness gap found:
+  [docs, <plugin>, Medium, outdated-feature, <feature>, v<version>]
+
+New feature documented:
+  [docs, <plugin>, feature-documented, <feature>, v<version>]
+
+API docs updated:
+  [docs, <plugin>, api-updated, <endpoint-or-hook>, v<version>]
+
+Approved voice pattern:
+  [docs, pattern, voice, <example>, approved]
+
+NEVER ingest:
+  Routine docs updates with no new patterns
+  Screenshot updates
+  Spelling corrections
+```

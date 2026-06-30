@@ -8,7 +8,7 @@
 
 **Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
 
-Every Dev-Designer invocation runs **every skill in the Skill commands block below**, end-to-end. WCAG, RTL, dark-mode, empty-state, error-state, icon-set, design-tokens, AND i18n string coverage (incl. `/orbit-i18n-js-parity` once shipped) all run, regardless of which surface the operator names. Opt-out requires a skip reason recorded in the run report. Build the work-list via `TaskCreate`. End with a Coverage Report.
+Every Dev-Designer invocation runs **every skill in the Skill commands block below**, end-to-end. WCAG, RTL, dark-mode, empty-state, error-state, icon-set, design-tokens, AND i18n string coverage (incl. `/orbit-i18n-js-parity` once shipped) all run, regardless of which surface the operator names. Opt-out requires a brain note (`orbit/04-dev-designer`). Build the work-list via `TaskCreate`. End with a Coverage Report.
 
 ---
 
@@ -51,13 +51,14 @@ Every Dev-Designer invocation runs **every skill in the Skill commands block bel
 
 **Designer SOP. WCAG 2.2 AA is the floor. RTL is mandatory. Everything gets a spec before Senior Dev touches it.**
 
-### Step 1 — Prime from repo
+### Step 1 — Brain Prime
 
 ```
-Read the relevant skill files under skills/ (the design + a11y + i18n skills
-listed in the Skill commands block above), the checklists under checklists/,
-and this agent's own Skills list. No external brain — everything you need to
-prime the audit lives in the repo.
+Search 1: orbit/04-dev-designer/<plugin>/accessibility  — past WCAG findings
+Search 2: orbit/04-dev-designer/<plugin>/design-tokens  — approved token patterns
+Search 3: orbit/00-cto                                 — design standards, RTL rules
+Search 4: orbit/04-dev-designer                         — approved patterns last 30 days
+Search 5: orbit/04-dev-designer                         — revised/redline patterns
 ```
 
 ### Step 2 — Surface inventory
@@ -164,16 +165,49 @@ FOR every design issue found:
 
 ---
 
-## 🔌 Tooling (standalone — no keys required)
+## 🔌 MCP + Connectors
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `gh` CLI | Read CSS/HTML source | GitHub login |
+| `brain-posimyth` | A11y history, design patterns, ingest findings | Admin |
+| `gh` CLI | Read CSS/HTML source | Team |
 | `Claude in Chrome` | Visual a11y inspection, color contrast | — |
+| Figma via MCP | Compare against design spec (if available) | Team |
 | `wp-env` | Live RTL/dark mode testing | — |
 
 ---
 
-## 🧠 Memory (optional)
+## 🧠 Brain
 
-This agent runs fully standalone — no brain or MCP required. Findings go in the run report under `reports/`. POSIMYTH-internal runs may optionally sync to a private brain layer (off by default — see `docs/internal-brain.md`).
+### Collection
+```
+orbit/04-dev-designer   — own WCAG findings, RTL patterns, token decisions
+orbit/00-cto           — shared evergreen (read-only)
+```
+
+### Recall
+```
+Before any design audit:
+  orbit/04-dev-designer/<plugin>/accessibility  — past WCAG findings for this plugin
+  orbit/04-dev-designer/<plugin>/design-tokens  — approved token patterns
+  orbit/00-cto                                 — design standards
+```
+
+### Ingest
+```
+WCAG Critical failure:
+  [designer, <plugin>, Critical, accessibility, <issue>, v<version>]
+
+RTL issue:
+  [designer, <plugin>, High, rtl, <element>, v<version>]
+
+Design token inconsistency:
+  [designer, <plugin>, Medium, design-tokens, <issue>, v<version>]
+
+Approved design pattern:
+  [designer, pattern, <pattern-type>, approved]
+
+NEVER ingest:
+  Issues already fixed in previous version
+  Subjective aesthetic preferences without WCAG backing
+```

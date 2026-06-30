@@ -8,7 +8,7 @@
 
 **Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
 
-Every Performance invocation runs **every skill in the Skill commands block below**, end-to-end. Lighthouse + bundle + DB + memory + cache-compat + CDN all run on every project regardless of "what changed in this PR". Opt-out requires a recorded skip reason in the run report. Build the work-list via `TaskCreate`. End with a Coverage Report.
+Every Performance invocation runs **every skill in the Skill commands block below**, end-to-end. Lighthouse + bundle + DB + memory + cache-compat + CDN all run on every project regardless of "what changed in this PR". Opt-out requires a brain note (`orbit/06-performance`). Build the work-list via `TaskCreate`. End with a Coverage Report.
 
 ---
 
@@ -48,18 +48,20 @@ Every Performance invocation runs **every skill in the Skill commands block belo
 
 **Perf SOP. Baseline first. Measure second. Regression is the enemy.**
 
-### Step 1 — Prime from repo
+### Step 1 — Brain Prime
 
 ```
-Read the relevant skill files under skills/ (the Skill commands listed below),
-the checklists under checklists/, and this agent's own Skills list above.
-No external brain — everything needed to run is in the repo.
+Search 1: orbit/06-performance/<plugin>/benchmark  — version baselines
+Search 2: orbit/06-performance/<plugin>            — known slow areas, N+1 history
+Search 3: orbit/00-cto                            — perf rules, regression thresholds
+Search 4: orbit/06-performance                     — approved patterns last 30 days
+Search 5: orbit/06-performance                     — revised/failed approaches
 ```
 
 ### Step 2 — Load baseline
 
 ```
-CHECK the run report (`reports/`) for: <plugin> v<previous-version> baseline
+CHECK brain for: orbit/06-performance/<plugin>/benchmark/v<previous-version>
   → IF exists: load baseline (DB queries, bundle size, Lighthouse score, memory)
   → IF not: establish new baseline. Note: "No baseline — establishing v<version> baseline."
 
@@ -124,7 +126,7 @@ PERF BUDGET (set after first approved measurement):
   Min Lighthouse Perf:    [score]
   Max memory delta/req:   [X]MB
   
-Record in the run report (`reports/`).
+Store in: orbit/06-performance/<plugin>/budget
 Review every release — raise budget only with operator approval.
 ```
 
@@ -140,7 +142,7 @@ CDN audit (if plugin affects assets):
   → Correct cache headers? CDN purging on plugin update?
 ```
 
-### Step 7 — Report
+### Step 7 — Report + ingest
 
 ```
 REPORT FORMAT:
@@ -154,7 +156,7 @@ REPORT FORMAT:
   Memory delta/req   | 6MB          | 5MB      | +1MB  | 🟢 OK
 
 ON approve:
-  → Record in the run report (`reports/`) as the new baseline
+  → Ingest benchmark as new baseline
   [perf, benchmark, <plugin>, v<version>, <all-metrics>]
 ```
 
@@ -172,15 +174,49 @@ ON approve:
 
 ---
 
-## 🔌 Tooling (standalone — no keys required)
+## 🔌 MCP + Connectors
 
 | Connector | Operation | Key needed |
 |---|---|---|
+| `brain-posimyth` | Benchmark history, budgets, ingest new baselines | Admin |
+| `ga4-posi` | Real user performance data (CWV, bounce rate, session time) | Admin |
+| `gsc-posi` | Core Web Vitals field data from Google Search Console | Admin |
 | `wp-env` via Bash | Clean install for measurement | — |
 | `Claude in Chrome` | Lighthouse visual profiling | — |
 
 ---
 
-## 🧠 Memory (optional)
+## 🧠 Brain
 
-This agent runs fully standalone — no brain or MCP required. Findings go in the run report under `reports/`. POSIMYTH-internal runs may optionally sync to a private brain layer (off by default — see `docs/internal-brain.md`).
+### Collection
+```
+orbit/06-performance   — own benchmarks, perf budgets, regression history
+orbit/00-cto          — WP performance rules, N+1 patterns (read-only)
+```
+
+### Recall
+```
+Before every perf run:
+  orbit/06-performance/<plugin>/benchmark  — previous version baseline
+  orbit/06-performance/<plugin>/budget     — perf budget (if set)
+  orbit/00-cto                            — N+1 patterns, hook weight rules
+```
+
+### Ingest
+```
+New benchmark (every version):
+  [perf, benchmark, <plugin>, v<version>, db-queries-<N>, bundle-<KB>, lighthouse-<score>, memory-<MB>]
+
+Regression found:
+  [perf, regression, <plugin>, v<version>, <metric>, <delta>]
+
+Perf budget set/updated:
+  [perf, budget, <plugin>, <metric>, <threshold>]
+
+Approved pattern:
+  [perf, pattern, <area>, <description>, approved]
+
+NEVER ingest:
+  Measurements without a baseline comparison
+  Regressions already in brain from previous audit
+```

@@ -8,7 +8,7 @@
 
 **Before reading the rest of this file, read [`_SMART-AGENTIC-MANDATE.md`](./_SMART-AGENTIC-MANDATE.md).**
 
-Every UAT invocation runs **every skill in the Skill commands block below**, end-to-end, against the project. **MODE B (Targeted UAT) is deprecated as a way to skip skills** — it now means "report format is narrowed", not "skill list is narrowed". The full sweep ALWAYS runs unless operator passes `--skip <skill>` AND the reason is recorded in the run report. Build the work-list via `TaskCreate` on spawn. End with a Coverage Report.
+Every UAT invocation runs **every skill in the Skill commands block below**, end-to-end, against the project. **MODE B (Targeted UAT) is deprecated as a way to skip skills** — it now means "report format is narrowed", not "skill list is narrowed". The full sweep ALWAYS runs unless operator passes `--skip <skill>` AND a brain note records the reason in `orbit/05-uat`. Build the work-list via `TaskCreate` on spawn. End with a Coverage Report.
 
 **Orchestration default:** every UAT invocation also dispatches Security + Performance + DevDesigner + CodeReviewer in parallel. Single-agent UAT is now the exception, not the default. Multi-agent is how bugs that cross domains (i18n + storage + UI all at once, like the RankReady Unicode corruption) get caught.
 
@@ -61,14 +61,14 @@ Every UAT invocation runs **every skill in the Skill commands block below**, end
 
 **UAT SOP. Docker. Clean install. Real flows. Clear bugs.**
 
-### Step 1 — Prime from repo
+### Step 1 — Brain Prime
 
 ```
-Read the relevant skill files under skills/ — especially the UAT templates
-(orbit-uat-*) for the detected plugin type.
-Read the checklists under checklists/ for severity rules and UAT flow standards.
-Read this agent's own Skills list (above) to confirm the skill commands to run.
-No external brain — everything needed to prime is in the repo.
+Search 1: orbit/05-uat/<plugin>             — past UAT results, known flows, bug history
+Search 2: orbit/05-uat/<plugin>/flaky       — known flaky tests, stabilization notes
+Search 3: orbit/00-cto                     — WP standards, severity rules
+Search 4: orbit/05-uat                      — approved UAT patterns last 30 days
+Search 5: orbit/05-uat                      — revised/failed UAT approaches
 ```
 
 ### Step 2 — Determine mode
@@ -179,7 +179,7 @@ FOR EVERY BUG FOUND — file with full detail:
   Screenshot / console error: [if applicable]
   File:line: [if code-level cause visible]
   
-→ Record in the run report (`reports/<plugin>-<date>.md`)
+→ Ingest to brain: orbit/05-uat/<plugin>/<bug-id>
 → If Critical: escalate immediately to 01-PM
 ```
 
@@ -196,7 +196,7 @@ STABILIZATION ORDER:
 
 QUARANTINE RULE:
   Fails > 3/10 runs → quarantine (don't block release, fix ASAP)
-  Move to tests/quarantine/ + log in the run report
+  Move to tests/quarantine/ + log in brain
   NEVER delete a failing test — understand it first
 ```
 
@@ -209,22 +209,64 @@ QUARANTINE RULE:
 🚫 NEVER downgrade Critical to High without operator direction
 ✅ ALWAYS cite file:line for every Critical and High code finding
 ✅ ALWAYS capture a visual baseline before any regression run
-✅ ALWAYS log flaky tests in the run report with the selector + stability fix
+✅ ALWAYS log flaky tests in brain with the selector + stability fix
 ✅ ALWAYS dispatch sub-agents in parallel, not sequentially
 ```
 
 ---
 
-## 🔌 Tooling (standalone — no keys required)
+## 🔌 MCP + Connectors
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `gh` CLI | Open GitHub issues for Critical findings | GitHub login |
+| `brain-posimyth` | UAT history, visual baselines, flaky selectors, bug ingest | Admin |
+| `gh` CLI | Open GitHub issues for Critical findings | Admin |
 | `wp-env` via Bash | Clean WP installs for UAT | — |
 | `Claude in Chrome` | Visual inspection, screenshot comparison | — |
+| LambdaTest | Cross-browser test execution | Team |
 
 ---
 
-## 🧠 Memory (optional)
+## 🧠 Brain
 
-This agent runs fully standalone — no brain or MCP required. Findings go in the run report under `reports/`. POSIMYTH-internal runs may optionally sync to a private brain layer (off by default — see `docs/internal-brain.md`).
+### Collection
+```
+orbit/05-uat     — own bug reports, UAT results, flaky test registry, visual baselines
+orbit/00-cto    — shared evergreen (read-only)
+```
+
+### Recall
+```
+Before every UAT session:
+  orbit/05-uat/<plugin>          — past UAT results, known flows
+  orbit/05-uat/<plugin>/flaky    — known flaky tests and their fixes
+  orbit/00-cto                  — WP severity rules
+
+Before full audit orchestration:
+  orbit/07-security/<plugin>/*   — recent security findings (context for severity triage)
+  orbit/06-performance/<plugin>  — recent perf baselines
+```
+
+### Ingest
+```
+Bug found (new):
+  [uat, bug, <plugin>, <severity>, <bug-title>, v<version>]
+  → Full bug report stored at orbit/05-uat/<plugin>/<bug-id>
+
+Flaky test found:
+  [uat, flaky, <plugin>, <test-name>, <selector>, <stability-fix>]
+
+Visual regression flag:
+  [uat, visual-regression, <plugin>, <component>, <diff-percent>, v<version>]
+
+Coverage baseline:
+  [uat, coverage, <plugin>, <percent>, v<version>]
+
+Full audit approved (CLEAR):
+  [uat, audit-approved, <plugin>, v<version>, <date>]
+
+NEVER ingest:
+  Clean audit with no new findings
+  Issues already fixed in a previous version
+  Individual Playwright passes
+```

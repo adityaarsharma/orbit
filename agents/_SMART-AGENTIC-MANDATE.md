@@ -13,19 +13,23 @@ Every agent has a **Skill commands** list. When the agent is invoked on a projec
 **Why:** Orbit missed five RankReady i18n bugs (`JSON_UNESCAPED_UNICODE` corruption, JS↔PHP label parity, Polylang `.md` endpoint, stale .po translator file) because the conservative "only run the check that obviously applies" pattern lets entire bug classes slip through. The runtime traps in `orbit-code-reviewer` §10 exist precisely because static review keeps missing things. Run everything. Be aggressive. Time spent running a skill that returns CLEAR is cheap. Time spent shipping a bug is not.
 
 **How to apply:**
-1. On agent spawn, after priming from the repo (Step 1), build a **work-list** = every skill in your **Skill commands** block.
+1. On agent spawn, after Brain Prime (Step 1), build a **work-list** = every skill in your **Skill commands** block.
 2. For each skill, run it. If it returns CLEAR with zero findings, log it and move on. Never silently skip.
 3. The Process section's conditional branches (e.g. "if plugin has payments → run payment audit") are **escalation cues, not gates** — they mean "run this with EXTRA depth", not "run this only here". The baseline scan still runs.
 4. Parallel by default. Independent skills fire in one batch (multiple tool calls in one message).
 5. Sequential only when output of A feeds B (e.g. `/orbit-docker-site` must finish before `/orbit-uat-agent`).
 
-## B. Opt-out requires a recorded reason
+## B. Opt-out requires a brain-recorded reason
 
-The ONLY way to skip a skill on a given run is to record the reason in the run report.
+The ONLY way to skip a skill on a given run is to record the reason to your own brain collection.
 
-**Format (one line in the run report under `reports/`):**
+**Format:**
 ```
-SKIP <skill-name> on <plugin> v<version> — Reason: <why>
+posimyth_brain_add_note(
+  wing="orbit/<NN-role>",
+  text="SKIP <skill-name> on <plugin> v<version> — Reason: <why>",
+  tags=["skip", "<plugin>", "<skill-name>", "<date>"]
+)
 ```
 
 **Acceptable reasons:**
@@ -53,9 +57,9 @@ Every agent ends with a **Coverage Report** before the findings report:
 COVERAGE — <agent> on <plugin> v<version>
 Skills in list: <N>
 Skills run:     <M>     (M should equal N)
-Skills skipped: <N - M> (each with a reason recorded in the run report)
+Skills skipped: <N - M> (each with a brain-recorded reason — link the note ID)
 
-If M < N and no skip reason exists for a skipped skill → THIS RUN IS INVALID.
+If M < N and no skip note exists for a skipped skill → THIS RUN IS INVALID.
 Restart and run the missing skills.
 ```
 
@@ -77,19 +81,27 @@ When a skill seems redundant with a finding you already made:
 
 - This rule (Rule 0) sits ABOVE every per-agent Process. It is the execution base.
 - §10 (Code Reviewer runtime traps) is the documented list of bug classes that escaped Rule 0 in the past — every new escape adds an entry.
-- This file wins on execution policy. Per-agent `.md` Process sections elaborate; they never override Sections A–E.
+- Brain runbook drawer per agent overrides this on opt-outs ONLY (Section B). Otherwise this file wins.
 
 ## G. Verification
 
 Before reporting `STATUS: CLEAR` to the operator, the agent must include the Coverage Report (Section D). An agent that returns CLEAR without coverage data has not actually done the work.
 
-## H. The agent `.md` is the source of truth for skill routing
+## H. Brain RUNBOOK is the source of truth for skill routing (Rule -2)
 
-Each agent's **Skill commands** block in its own `.md` file is the canonical skill set + run order. Build the work-list (Section A) directly from that block — no external service, no brain, no network call.
+Every agent has a canonical **RUNBOOK drawer** in its own brain collection — `orbit/00-cto`, `orbit/01-pm`, `orbit/02-code-reviewer`, `orbit/03-senior-dev`, `orbit/04-dev-designer`, `orbit/05-uat`, `orbit/06-performance`, `orbit/07-security`, `orbit/08-release`, `orbit/09-docs`, `orbit/10-runner` — tagged `RUNBOOK`. That drawer lists the agent's **skill set + run order**, and it is the **source of truth**, not this file or the agent's `.md`.
 
-**To give an agent a new skill — or move one between agents — edit the agent's `.md` Skill commands block and commit.** It goes live on the next `install.sh --update` (skills are symlinked, so text changes apply immediately). The repo is the single source of truth; there is no separate live-state service to keep in sync.
+**On spawn, the FIRST brain read is your RUNBOOK drawer.** The brain API uses **`wing` + `room`** (no slashes) — so the shorthand `orbit/<NN-role>` used throughout the agents means **`wing="orbit", room="<NN-role>"`** in every actual call:
+```
+posimyth_brain_search(wing="orbit", room="<NN-role>", query="RUNBOOK skill-routing")
+# e.g. security: wing="orbit", room="07-security"   ·   release: wing="orbit", room="08-release"
+```
+All Orbit drawers live in the dedicated **`orbit`** wing (rooms `00-cto` … `10-runner`, plus `knowledge`), physically isolated from the general / Golden-Circle brain.
+Build the work-list (Section A) from that drawer. The agent `.md` **Skill commands** block is the **bootstrap copy** — what's installed before the first brain read. When the drawer and the `.md` disagree, **the drawer wins** (Rule -2: brain is the live runbook).
+
+**This is how new skills route automatically.** To give an agent a new skill — or move one between agents — re-seed its RUNBOOK drawer (`brain/seed-runbooks.sh`). It goes live on the next spawn with **no git pull and no `.md` edit**. The repo is bootstrap; brain is live state. All 100+ skills route through brain this way.
 
 ---
 
-**Last updated:** 2026-06-30
+**Last updated:** 2026-06-23
 **Operator approval:** required for any change to Sections A, B, D, E, or H

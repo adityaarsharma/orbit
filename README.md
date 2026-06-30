@@ -4,9 +4,9 @@
 
 ### **Complete UAT for WordPress Plugins — Now Agentic**
 
-*A Claude Code plugin · **116 runtime-evergreen `/orbit-*` skills** · **11-agent QA team** · CTO → PM → Dev → QA → Security → Release*
+*A Claude Code plugin · **116 runtime-evergreen `/orbit-*` skills** · **10-agent QA team** · CTO → PM → Dev → QA → Security → Release*
 
-**v3.0 — Orbit Agentic.** Orbit is an 11-agent WordPress QA team — each agent has a defined role, written SOPs, and runs fully standalone (no MCP, no API keys). POSIMYTH staff can optionally layer a private brain for cross-run memory (see [docs/internal-brain.md](docs/internal-brain.md)).
+**v3.0 — Orbit Agentic.** Orbit is no longer just a skill suite. It's a 10-agent QA team connected to a shared brain (`brain-posimyth`). CTO's brain is the team's constitution — every agent reads it first. Approved patterns get remembered. Cold starts become warm starts.
 
 **The one-command audit:**
 
@@ -57,7 +57,7 @@ YOU
  │  "UAT audit NexterWP v2.5"          ← natural language in Claude Code
  ▼
 AGENT  (05-uat.md)
- │  Step 1: Prime from repo             ← reads the relevant skills + checklists
+ │  Step 1: Brain Prime                 ← 5 searches on brain-posimyth
  │    "What did the last UAT find?"
  │    "Are there known flaky tests?"
  │    "What WP standards apply here?"
@@ -65,7 +65,7 @@ AGENT  (05-uat.md)
  │  Step 3: Playwright E2E
  │  Step 4: Dispatch 07-Security + 06-Perf + 04-Designer in parallel
  │  Step 5: Severity triage → CLEAR or BLOCKED
- │  Step 6: Write findings to the run report (reports/)
+ │  Step 6: Ingest findings to brain   ← [uat, bug, nexterwp, High, ...]
  ▼
 SKILLS  invoked by the agent automatically
  │  /orbit-playwright      → runs E2E browser tests
@@ -73,30 +73,30 @@ SKILLS  invoked by the agent automatically
  │  /orbit-wp-security     → XSS/CSRF/SQLi scan (via 07-Security)
  │  /orbit-lighthouse      → Lighthouse score (via 06-Performance)
  ▼
-STANDARD DEV TOOLS  that skills use
-    gh / wp-env / Chrome / Playwright ← standard dev tools, no keys
+MCP + TOOLS  that skills use
+    brain-posimyth          ← read history, write findings
     wp-env (Docker)         ← clean WP install for testing
     Playwright + Chrome     ← real browser, real flows
     gh CLI                  ← open issues, create PRs
 ```
 
-**The written SOPs are what make it a team, not just a tool.** Every finding lands in the run report. Every approved pattern is captured in the agent's checklist. The team runs the same disciplined process every sprint — standalone, no keys required.
+**The brain is what makes it a team, not just a tool.** Every finding is ingested. Every approved pattern is remembered. Every redline is surfaced the next time the same task runs. The agents get smarter every sprint — without you changing any files.
 
 ---
 
 ## Orbit Agentic — v3.0
 
-> "Skills are easy. Process is harder. A QA team is like onboarding a new person who's however smart, but still needs to learn YOUR products — so the process is written down, not improvised."
+> "Skills are easy. Process is harder. Brain is evergrowing — like onboarding a new person who's however smart, but still needs to learn YOUR products."
 
-**v3.0 turns Orbit into an 11-agent QA team** where each agent has a defined role, written SOPs, and standard dev tooling (gh, wp-env, Chrome, Playwright) to act on what they find — no MCP, no API keys. POSIMYTH staff can optionally layer a private brain for cross-run memory (see [docs/internal-brain.md](docs/internal-brain.md)); it is off by default and never required.
+**v3.0 turns Orbit into a 10-agent QA team** where each agent has a defined role, written SOPs, a dedicated brain collection, and the MCP access to act on what they find. The more you use it, the smarter the whole team gets.
 
 ---
 
-### The 11-Agent Team
+### The 10-Agent Team
 
 | # | Agent | Role in one line |
 |---|---|---|
-| **00** | **CTO** | Strategic advisor. Reads the team's checklists. Sets direction — never executes. |
+| **00** | **CTO** | Strategic advisor. Reads all 10 brains. Sets direction — never executes. Sole writer to the shared brain. |
 | **01** | **PM** | Daily coordinator. RICE scoring, feedback mining, sprint health. Routes every task to the right specialist. |
 | **02** | **Code Reviewer** | Senior + skeptical. PHP, Gutenberg, Elementor, compat. APPROVE / REQUEST CHANGES / NITPICK — with file:line. |
 | **03** | **Senior Dev** | Builds features, fixes UAT bugs. Runs WP standards before done. Never self-merges. |
@@ -106,15 +106,12 @@ STANDARD DEV TOOLS  that skills use
 | **07** | **Security** | XSS, SQLi, CSRF, supply chain, CVE, Stripe/EDD/Freemius, GDPR, PCI, premium gating. NEVER tests production. |
 | **08** | **Release** | 7-step gate, WP.org Plugin Check, zip hygiene, release notes (POSIMYTH voice), cross-channel announce. |
 | **09** | **Docs** | README, feature docs, hook reference, in-code comments, changelog language. Ships with release — never after. |
-| **10** | **Runner** | Orchestrates the pipeline end-to-end (`/orbit-do-it`). Dispatches the specialists, collects findings, writes the report. |
 
 ---
 
-### Optional: internal brain (POSIMYTH staff only)
+### The shared brain — CTO is the head
 
-> **Optional layer — off by default, never required.** Every agent runs fully standalone. POSIMYTH staff can optionally turn on a private brain (`brain-posimyth`) for cross-run memory. Setup, keys, and seeding all live in [docs/internal-brain.md](docs/internal-brain.md) — external users can ignore this whole section.
-
-When the optional brain is enabled, `orbit/00-cto` acts as the team's shared collection. The CTO agent is the only one that writes to it. What lives there:
+`orbit/00-cto` is the team's constitution. Every agent reads it **first** — before their own collection. The CTO agent is the only one that writes to it. What lives there:
 
 ```
 brain-posimyth
@@ -138,37 +135,38 @@ brain-posimyth
 ```
 
 ```bash
-# POSIMYTH staff only — seed 40 knowledge drawers into orbit/00-cto/hard-rules/
-# Not required to run Orbit. Full instructions: docs/internal-brain.md
+# First install — seed 40 knowledge drawers into orbit/00-cto/hard-rules/
 bash brain/seed-brain.sh --key <your-orbit-admin-key>
 ```
 
-When seeded, the brain carries day-one context: WP escaping rules, block.json required fields, WCAG 2.2 AA checklist, Stripe webhook security, readme.txt rejection patterns, N+1 DB query patterns, and 34 more. Keys and access tiers are documented in [docs/internal-brain.md](docs/internal-brain.md).
+Day-one intelligence in the CTO brain: WP escaping rules, block.json required fields, WCAG 2.2 AA checklist, Stripe webhook security, readme.txt rejection patterns, N+1 DB query patterns, and 34 more. No cold starts for any agent.
+
+**Two keys:**
+- **Team key** — read `orbit/00-cto` + own collection. Agents recall past findings, approved patterns, known issues.
+- **Admin key** — full read + write. Ingest findings, promote patterns, announce cross-channel. EDD ops: Admin only.
 
 ---
 
-### Prime from repo — what every agent does first
+### Brain Prime — what every agent does first
 
-Before touching any code or producing any output, every agent reads the repo's relevant skills + checklists and writes a **Prime block**:
+Before touching any code or producing any output, every agent runs 5 brain searches and writes a **Brain Prime block**:
 
 ```
-PRIME — NexterWP v2.5 (UAT)
-• Standards:   Never ship unescaped output. RTL mandatory. Lighthouse target ≥ 85.
-• Checklist:   UAT SOP — Docker WP env, Playwright E2E, visual regression, severity gate.
+BRAIN PRIME — NexterWP v2.5 (UAT)
+• CTO rules:   Never ship unescaped output. RTL mandatory. Lighthouse target ≥ 85.
+• Bug history: v2.4 block reorder crash (orbit/05-uat/nexterwp). Fixed in v2.4.1.
 • Patterns that worked: Docker WP 6.8 + Gutenberg 18.x env. Playwright --project=chromium first.
-• Patterns to avoid: waitForTimeout() — flaky. Use explicit waits.
-• Open question:  Is scroll-animation block new in v2.5? (will check changelog)
+• Patterns to avoid: waitForTimeout() — caused 3 flaky tests in v2.3 audit.
+• Open question:  Is scroll-animation block new in v2.5? (brain silent — will check changelog)
 ```
 
-This block is pinned before any skill invocation, drawn entirely from the repo's skills and checklists — no external lookups, no keys.
+This block is pinned before any skill invocation. The agent never re-asks for context that's already in brain.
 
 ---
 
-### Optional: the approval loop (internal brain only)
+### The approval loop
 
-> Applies only when POSIMYTH staff enable the optional brain (see [docs/internal-brain.md](docs/internal-brain.md)). With the brain off, agents still run their SOPs end-to-end — they just don't persist learnings between runs.
-
-When the brain is on, every `approve` and `revise` from the operator teaches it:
+Every `approve` and `revise` from the operator teaches the brain:
 
 ```
 you: approve              → agent asks "Save as approved pattern?" → ingests to own collection
@@ -176,13 +174,16 @@ you: revise: <why>        → agent auto-ingests redline → surfaces this FIRST
 you: skip                 → ingests as deprioritised — agent won't suggest it again
 ```
 
-**CTO promotes team-wide:** When a pattern is strong enough for the whole team (not just one agent), an admin promotes it to the shared collection so every agent picks it up on its next run. See [docs/internal-brain.md](docs/internal-brain.md).
+**CTO promotes team-wide:** When a pattern is strong enough for the whole team (not just one agent), Admin runs:
+```bash
+# Example: promote a new nonce pattern to team-wide hard rule
+# Admin ingests to orbit/00-cto with [cto, hard-rule, ...] tag
+# Every agent picks it up on next Brain Prime
+```
 
 ---
 
 ### How agents collaborate — 5 real scenarios
-
-> These flows run standalone. Where a step "ingests" or persists a finding for next time, that's the optional internal brain (POSIMYTH staff only — see [docs/internal-brain.md](docs/internal-brain.md)); with the brain off, the step simply writes to the run report instead.
 
 #### Scenario 1 — New feature, end-to-end
 
@@ -192,20 +193,20 @@ A feature request ("Add scroll animation block to NexterWP") flows through the w
 01-PM        → RICE score: Impact 8 / Confidence 7 / Effort 5 → score 112 → APPROVED
                Routes to: 03-SrDev (build) + 04-DevDesigner (spec first)
 
-04-DevDesigner → Prime: loads WCAG rules + past RTL findings from its checklist
+04-DevDesigner → Brain Prime: loads WCAG rules from orbit/00-cto, past RTL findings from orbit/04
                → DESIGN SPEC: RTL mirror required. Reduced motion variant required. Touch target ≥ 44px.
                → Routes spec to: 03-SrDev
 
-03-SrDev      → Prime: loads WP standards + build patterns from its checklist
+03-SrDev      → Brain Prime: loads WP standards from orbit/00-cto, past build patterns from orbit/03
                → Builds. Runs /orbit-wp-standards before PR.
                → Handoff brief to: 02-CodeReviewer (via 01-PM)
 
-02-CodeReviewer → Prime: loads PHP hard rules + review checklist
+02-CodeReviewer → Brain Prime: loads PHP hard rules, past TPA redlines from orbit/02
                → Reviews PHP + block.json + Gutenberg + compat
                → REQUEST CHANGES: "save() uses SSR — must declare RenderCallback in block.json"
                → 03-SrDev fixes → re-review → APPROVE
 
-05-UAT        → Prime: loads severity rules + UAT checklist
+05-UAT        → Brain Prime: loads severity rules, v2.4 bug history from orbit/05
                → Playwright E2E + visual regression. Dispatches 07-Security + 06-Perf + 04-Designer in parallel.
                → All pass → UAT CLEAR. Routes to: 08-Release
 
@@ -237,7 +238,7 @@ A feature request ("Add scroll animation block to NexterWP") flows through the w
 05-UAT → 08-Release → 09-Docs  (normal flow resumes)
 ```
 
-#### Scenario 3 — WP.org rejection: the rule sticks forever
+#### Scenario 3 — WP.org rejection: the brain learns forever
 
 ```
 08-Release    → Submitted NexterWP v2.4.0 to WP.org.
@@ -252,7 +253,7 @@ A feature request ("Add scroll animation block to NexterWP") flows through the w
                → Ingests to orbit/00-cto/hard-rules/:
                  [cto, hard-rule, no-scripts-all-admin-pages, wp-org-requirement, 2026-05-20]
 
-From now on:  Every agent reads this rule on Prime.
+From now on:  Every agent reads this rule on Brain Prime.
                02-CodeReviewer blocks any PR that loads scripts on all admin pages.
                08-Release checks for it in the 7-step gate.
                One rejection — zero repeats, across all 3 plugins, forever.
@@ -268,7 +269,7 @@ From now on:  Every agent reads this rule on Prime.
 
 01-PM         → Creates ticket. Routes to 03-SrDev with context from orbit/06.
 
-03-SrDev      → Prime: loads the perf regression context + past performance fixes from its checklist
+03-SrDev      → Brain Prime: loads orbit/06 regression context + orbit/03 past performance fixes
                → Fixes: N+1 in get_posts() loop → single WP_Query with post__in
                → Fixes: tree-shaking config for scroll-animation bundle
                → Routes back to 06-Performance
@@ -342,7 +343,7 @@ curl -fsSL https://raw.githubusercontent.com/adityaarsharma/orbit/main/install.s
 That installs:
 
 1. Orbit cloned to `~/Claude/orbit`
-2. **11 AI agents** symlinked into `~/.claude/agents/` — available in every Claude Code session
+2. **10 AI agents** symlinked into `~/.claude/agents/` — available in every Claude Code session
 3. **116 `/orbit-*` skills** symlinked into `~/.claude/skills/` — agents invoke these automatically
 4. **WordPress/agent-skills** via `npx openskills install WordPress/agent-skills` (WP core's official skills)
 5. Power tools: PHPCS + WPCS + VIP + PHPCompatibility, PHPStan, Playwright + Chromium/Firefox/WebKit, Lighthouse, axe-core, WP-CLI, wp-env, wp-now, source-map-explorer, PurgeCSS
@@ -352,26 +353,26 @@ After install:
 ```bash
 # 1. Quit Claude Code fully (Cmd+Q) and reopen — agents + skills register
 
-# 2. Talk to an agent (no keys, no setup):
+# 2. Seed the starter brain (one-time, requires Admin key):
+bash brain/seed-brain.sh --key <orbit-admin-key>
+
+# 3. Talk to an agent:
 "UAT audit ~/plugins/my-plugin for v2.5"
 "Security scan the new AJAX handler in settings.php"
 "Run release gate for my-plugin v2.5"
 
-# Or use skills directly:
+# Or use skills directly (no brain key needed):
 /orbit-do-it ~/plugins/my-plugin
-
-# (Optional, POSIMYTH staff only) seed the internal brain — see docs/internal-brain.md
-# bash brain/seed-brain.sh --key <orbit-admin-key>
 ```
 
 ### What's the difference — agents vs skills?
 
 | | Agents | Skills |
 |---|---|---|
-| **What they are** | SOP-driven specialists. Prime from the repo, follow process, write findings to the report. | Markdown instructions — Claude runs bash/PHP/Playwright |
+| **What they are** | SOP-driven specialists. Read brain, follow process, ingest findings. | Markdown instructions — Claude runs bash/PHP/Playwright |
 | **How you invoke** | Natural language: "UAT audit this plugin" | Slash command: `/orbit-playwright` |
 | **Skills vs agents** | Agents invoke skills automatically | Skills are tools — you or an agent calls them |
-| **Standalone** | Yes — no MCP, no API keys (optional brain for POSIMYTH staff only) | Yes — stateless per invocation |
+| **Brain access** | Yes — reads history, ingests findings | No — stateless per invocation |
 | **When to use** | When you want the full workflow done right | When you want one specific check |
 
 **Use agents for releases.** Use skills for quick one-off checks during development.

@@ -1,9 +1,8 @@
 # Orbit — Agent Instructions
 
-> **Agentic system is live.** See `CLAUDE.md` for the full routing layer and 11-agent team.
+> **Agentic system is live.** See `CLAUDE.md` for the full routing layer and 12-agent team.
 > This file retains the core skill rules and deduplication reference (still applies).
-> For intent → agent routing and operator replies, use CLAUDE.md.
-> Agents run standalone — no MCP, no API keys. Optional internal brain: `docs/internal-brain.md`.
+> For intent → agent routing, approval gates, and brain integration, use CLAUDE.md.
 
 ---
 

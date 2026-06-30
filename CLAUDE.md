@@ -1,39 +1,80 @@
 # Orbit — WordPress QA & Dev Agent Team v3.0
 
-> 11 AI specialists. One operator. Describe the work. Right agent picks it up.
-> Every agent = **Skills + Process**. Runs fully standalone — no MCP, no API keys, no brain required.
+> 10 AI specialists. One operator who approves. Describe the work. Right agent picks it up.
+> Every agent = **Skills + Process + MCP + Brain**. Not just a skill runner — a team member.
 
 ---
 
-## Standalone by default — no MCP, no keys
+## Brain Connector — auto-active in every Orbit session
 
-Every Orbit agent runs out of the box with nothing but the repo and standard dev tools
-(`gh` CLI, `wp-env`/Docker, `Claude in Chrome`, Playwright). There is **no required MCP
-connector and no API key**. Clone, run `install.sh`, talk to an agent — that's it.
+| Connector | URL | Tier |
+|---|---|---|
+| **brain-posimyth** | `https://brain.posimyth.com/connectors` | Admin (write) or Team (read) |
 
-Each agent primes from the **repo itself** — its own `skills/`, the `checklists/`, and the
-shared docs — not from an external service. Findings are written to the run report under
-`reports/`.
+### Key model
 
-### Optional internal brain (POSIMYTH staff only — off by default)
+| Capability | POSIMYTH-Admin key | Customer-Team key |
+|---|---|---|
+| Read `orbit/general` | ✅ | ✅ |
+| Read own agent brain (`orbit/{agent}`) | ✅ | ✅ |
+| Write new findings to brain | ✅ | ❌ (stays in local session) |
+| Promote pattern to `orbit/general` | ✅ | ❌ |
+| Publish to WP sites | ✅ | ❌ |
+| GitHub write / merge PRs | ✅ | ❌ |
+| Slack / Discord notifications | ✅ | ❌ |
+| EDD store operations | ✅ (Admin only) | ❌ |
 
-POSIMYTH-internal runs can optionally layer a private memory/brain on top for cross-run
-history and pattern reuse. It is **not part of the default path** and is never required to
-run any agent. See [`docs/internal-brain.md`](docs/internal-brain.md) if you have keys.
-Community users can ignore it entirely.
+**Customer-Team keys:** read-only on `orbit/general` and own session. Approved patterns stay local.
+Optional `--contribute` flag sends anonymized patterns to evergreen review queue.
+
+**Setup:** See `docs/team-access.md` for key provisioning guide.
+
+### Brain collections (Chroma — one per agent)
+
+Each agent has its own vector collection. Not just a folder — a distinct reasoning context.
+
+```
+orbit/00-cto              ← THE SHARED BRAIN. CTO writes all hard rules, WP standards,
+                            approved patterns, strategic decisions here.
+                            Every agent reads orbit/00-cto before their own collection.
+                            CTO is the head — their brain is the general knowledge.
+orbit/01-pm               ← roadmap, RICE decisions, feedback patterns (PM reads 02–09)
+orbit/02-code-reviewer    ← review patterns, approved/rejected code approaches
+orbit/03-senior-dev       ← build patterns, fix history, approved implementations
+orbit/04-dev-designer     ← WCAG findings, RTL patterns, design token decisions
+orbit/05-uat              ← bug reports, UAT results, flaky tests, visual baselines
+orbit/06-performance      ← benchmarks, perf budgets, regression history
+orbit/07-security         ← CVE findings, vuln patterns, payment/GDPR history
+orbit/08-release          ← release history, WP.org rejections, announce templates
+orbit/09-docs             ← freshness tracking, API doc history, voice patterns
+```
+
+**Read/write rules:**
+- Every agent **reads `orbit/00-cto` FIRST** — it is the shared knowledge head
+- Then each agent reads their **own collection** for domain-specific history
+- **CTO (00) reads all 10 collections** — fan-out (CTO privilege only)
+- **PM (01) reads orbit/01 through orbit/09** — fan-out (PM coordinator privilege)
+- Specialists **don't read each other's collections** — handoffs go through PM
+- **All writes scoped to own collection** on `approve` / `revise`
+- **CTO writes to orbit/00-cto** for hard rules, WP evergreen, approved patterns — the only agent that does
+- **POSIMYTH-Admin can also write to orbit/00-cto** for maintenance, no other key can
 
 ---
 
 ## Hard rules for every agent
 
-1. **Prime from the repo first.** Read the relevant `skills/`, `checklists/`, and your own Skills list before output. Never start from zero — but never depend on an external service either.
-2. **Process has guardrails.** Critical = flag immediately. Production = never touch. File:line = always cite.
-3. **Skills are tools, not agents.** Agent invokes skills in sequence. Skills don't run autonomously.
-4. **Don't self-merge.** Agents report findings and propose changes; a human approves merges and releases. `approve` / `revise: <reason>` / `skip` are operator replies, not service-gated pauses.
-5. **Orbit skills are evergreen.** They fetch canonical sources at runtime. Trust their live-source logic.
-6. **Quality gate before output.** No LLM-isms, no jargon, no vague findings.
+1. **Brain first.** 5 searches before any output. Never start from zero.
+2. **CTO brain first → own collection second.** Read `orbit/00-cto` before your own collection — CTO's brain is the shared intelligence head.
+3. **Process has guardrails.** Critical = immediate escalate. Production = never touch. File:line = always cite.
+4. **Skills are tools, not agents.** Agent invokes skills in sequence. Skills don't run autonomously.
+5. **Approval gates are real.** Every deliverable pauses. `approve` / `revise: <reason>` / `skip` / `escalate`.
+6. **Brain compounds.** Every `approve` = new drawer. Every `revise` = redline. Never ingest routine work.
+7. **Orbit skills are evergreen.** They fetch canonical sources at runtime. Trust their live-source logic.
+8. **Quality gate before output.** No LLM-isms, no jargon, no vague findings.
 
 Agent workflow spec: `memory/agent-workflow-pattern.md`
+Brain architecture: `brain/orbit-brain-spec.md`
+Cross-agent handoffs: `memory/cross-agent-handoffs.md`
 
 ---
 
@@ -84,7 +125,7 @@ Unclear → ask one question, then route.
 operator: "full audit NexterWP 2.3"
 
 05 UAT
-  PRIME → read the UAT skills + checklists in the repo for this plugin type
+  BRAIN PRIME → 5 searches on NexterWP history in orbit/05-uat
   DISPATCH (parallel):
     ├── 07 Security     PHP source scan + CVE + payment/GDPR (if applicable)
     ├── 06 Performance  Hook weight + Lighthouse + baseline comparison
@@ -104,18 +145,16 @@ operator: "full audit NexterWP 2.3"
 
 ---
 
-## Operator replies
-
-These are plain replies you type to an agent — nothing is service-gated.
+## Approval protocol
 
 | You say | What happens |
 |---|---|
-| `approve` | Agent continues to the next step / proceeds with the proposed change |
+| `approve` | Agent continues / ingests as approved pattern (with your confirmation) |
 | `approve all` | Approve all pending items in this report |
-| `revise: <reason>` | Agent redrafts using your reason |
+| `revise: <reason>` | Agent redrafts + auto-ingests redline to own brain collection |
 | `skip` | Drop this item, move to next |
 | `pause` | Hold everything, resume later |
-| `escalate` | Bump to orbit-pm for cross-agent coordination |
+| `escalate` | Bump to 01-PM for cross-agent coordination |
 
 ---
 
@@ -129,20 +168,19 @@ Agent files are compatible with both. When Phase 2 activates, no file changes ne
 
 ---
 
-## The Team (11 agents)
+## The Team (10 agents)
 
-| Agent | File | Charter |
-|---|---|---|
-| CTO | `agents/orbit-cto.md` | Strategy, competitor intel, tech direction — advises, never executes |
-| PM | `agents/orbit-pm.md` | Daily coordinator, RICE, feedback mining, routes work |
-| Code Reviewer | `agents/orbit-code-reviewer.md` | Senior + skeptical — reviews PRs, blocks bad code, demands tests |
-| Senior Dev | `agents/orbit-senior-dev.md` | Builds features + fixes bugs — never self-merges |
-| Dev Designer | `agents/orbit-dev-designer.md` | Plugin UI/UX consistency, WCAG 2.2 AA, RTL, design tokens |
-| UAT | `agents/orbit-uat.md` | Docker UAT, flow testing, bug filing, full audit orchestration |
-| Performance | `agents/orbit-perf.md` | Hook weight, N+1, bundle, Lighthouse, perf budgets |
-| Security | `agents/orbit-security.md` | SAST, WP vulns, CVE, payment/GDPR/compliance |
-| Release | `agents/orbit-release.md` | 7-gate release, WP.org submit, cross-channel announce |
-| Docs | `agents/orbit-docs.md` | README, feature docs, API docs, screenshots, release notes |
-| Runner | `agents/orbit-runner.md` | Automated shell runner — WP-CLI, Docker matrix, auto-fix |
+| # | Agent | File | Charter |
+|---|---|---|---|
+| 00 | CTO | `agents/00-cto.md` | Strategy, competitor intel, tech direction — advises, never executes |
+| 01 | PM | `agents/01-pm.md` | Daily coordinator, RICE, feedback mining, routes work to 02–09 |
+| 02 | Code Reviewer | `agents/02-code-reviewer.md` | Senior + skeptical — reviews PRs, blocks bad code, demands tests |
+| 03 | Senior Dev | `agents/03-senior-dev.md` | Builds features + fixes bugs — never self-merges |
+| 04 | Dev Designer | `agents/04-dev-designer.md` | Plugin UI/UX consistency, WCAG 2.2 AA, RTL, design tokens |
+| 05 | UAT | `agents/05-uat.md` | Docker UAT, flow testing, bug filing, full audit orchestration |
+| 06 | Performance | `agents/06-performance.md` | Hook weight, N+1, bundle, Lighthouse, perf budgets |
+| 07 | Security | `agents/07-security.md` | SAST, WP vulns, CVE, payment/GDPR/compliance |
+| 08 | Release | `agents/08-release.md` | 7-gate release, WP.org submit, cross-channel announce |
+| 09 | Docs | `agents/09-docs.md` | README, feature docs, API docs, screenshots, release notes |
 
 **Archive:** Previous 12-agent structure (v3.0 initial) is at `agents/_archive/`. Logic preserved in relevant new agents per the consolidation map in `ORBIT-MEGA-RELEASE-HANDOFF.md`.

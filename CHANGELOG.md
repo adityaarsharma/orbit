@@ -6,6 +6,14 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ## [Unreleased]
 
+### Added — open-source knowledge base + agent reasoning standard
+
+- **`knowledge/bug-signatures.md`** — 40+ general WordPress bug signatures (Category A security, B core-compat 6.5→7.0, C WooCommerce HPOS/blocks, D i18n, E perf/DB, F PHP 8.0–8.3), each with a detection hint + edge/backward cases, sourced from Patchstack/WPScan/WP-core/PHP-manual 2025–26. No vendor-specific content.
+- **`knowledge/eval-fixtures.md`** — 20 known-buggy fixtures with ground-truth findings + a regression-gate protocol.
+- **`knowledge/agent-standard.md`** — industry-grounded reasoning standard: load-signatures-first, bounded reflection (check = external verifier), parallel-vs-coupled fan-out, Docker-live-by-default, self-eval, ever-evolving.
+- Positions this repo as the **general open-source Orbit**; a specialized build layers product-specific intelligence separately (general WordPress patterns only live here).
+
+
 ---
 
 ## [3.7.1] — 2026-06-23

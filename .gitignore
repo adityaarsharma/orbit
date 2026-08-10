@@ -20,4 +20,3 @@ example-plugin/
 .clean-room/
 # Private brain seeders carry org-internal policy (escalation contacts, vendor decisions) — never commit
 *.private.sh
-brain/seed-ip-cleanroom.private.sh

@@ -273,66 +273,12 @@ else
   echo "⏳ [3/4] Skipping power tools ($SKIP_REASON)"
 fi
 
-# ── Brain connector install (via install-connectors.sh) ─────────
-echo ""
-echo "⏳ [3c] Checking brain connectors..."
-
-BRAIN_CONFIGURED=0
-BRAIN_JUST_INSTALLED=0
-
-# Try to get key from ~/.orbit/keys.env
-ORBIT_KEY=""
-if [ -f "$ORBIT_KEYS_FILE" ]; then
-  ORBIT_KEY=$(grep -E "^ORBIT_ADMIN_KEY=" "$ORBIT_KEYS_FILE" 2>/dev/null | head -1 | cut -d= -f2 | tr -d '"')
-  [ -z "$ORBIT_KEY" ] && \
-    ORBIT_KEY=$(grep -E "^ORBIT_TEAM_KEY=" "$ORBIT_KEYS_FILE" 2>/dev/null | head -1 | cut -d= -f2 | tr -d '"')
-fi
-
-# Check if already configured and key hasn't changed
-if python3 -c "
-import json, sys
-try:
-    d = json.load(open('$CLAUDE_SETTINGS'))
-    sys.exit(0 if 'brain' in d.get('mcpServers', {}) else 1)
-except: sys.exit(1)
-" 2>/dev/null && [ -z "$ORBIT_KEY" ]; then
-  echo "   ✓ brain already configured — skipping (no key in ~/.orbit/keys.env to refresh)"
-  BRAIN_CONFIGURED=1
-elif [ -n "$ORBIT_KEY" ]; then
-  # Run the full connector installer (whitelist cleanup + Claude Desktop + verification)
-  CONNECTOR_SCRIPT="$ORBIT_HOME/install-connectors.sh"
-  if [ -f "$CONNECTOR_SCRIPT" ]; then
-    echo "   Running install-connectors.sh..."
-    bash "$CONNECTOR_SCRIPT" "$ORBIT_KEY" && {
-      BRAIN_CONFIGURED=1
-      BRAIN_JUST_INSTALLED=1
-    } || {
-      echo "   ⚠  Connector install had issues — check output above"
-    }
-  else
-    echo "   ⚠  install-connectors.sh not found at $CONNECTOR_SCRIPT"
-  fi
-else
-  echo "   ⚠  No brain key found — skipping MCP connector setup."
-  echo "      To connect Orbit agents to the brain:"
-  echo ""
-  echo "        mkdir -p ~/.orbit"
-  echo "        echo 'ORBIT_TEAM_KEY=your_key_here' >> ~/.orbit/keys.env"
-  echo "        bash install.sh --update"
-  echo ""
-  echo "      Or run directly once you have a key:"
-  echo "        bash install-connectors.sh <your_key>"
-  echo ""
-  echo "      Get a key: contact Orbit or see docs/team-access.md"
-fi
-
 # ── Restart Claude Code (macOS — picks up new agents + MCP) ────
 # Only auto-restart if we just changed something that needs it:
 # - agents were re-linked (always on update)
 # - brain connector was just added
 NEEDS_RESTART=0
 [ $AGENTS_INSTALLED -gt 0 ] && NEEDS_RESTART=1
-[ $BRAIN_JUST_INSTALLED -eq 1 ] && NEEDS_RESTART=1
 [ $SKILLS_PURGED -gt 0 ] && NEEDS_RESTART=1
 
 # Build restart reason for messaging
@@ -397,14 +343,7 @@ if [ $UPDATE_MODE -eq 0 ]; then
                          "CTO brief — Elementor just shipped X"
                          "Run release gate for my-plugin v2.5"
 
-  Connect agents to brain (requires key from Orbit):
-     bash install-connectors.sh <your-brain-key>
-     (validates key, detects tier, cleans stale MCPs, verifies live)
 
-  Seed the brain (skill routing + knowledge — brain is the source of truth):
-     bash brain/seed-brain.sh    --key <orbit-admin-key>   # knowledge drawers
-     bash brain/seed-runbooks.sh --key <orbit-admin-key>   # per-agent skill routing
-     (after this, new/moved skills route automatically — no git pull, no .md edit)
 
   Or use skills directly (no brain key needed):
      /orbit-setup            Guided wizard for your first plugin

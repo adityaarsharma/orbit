@@ -132,7 +132,6 @@ orbit/00-cto/approved-patterns/ ← patterns promoted to team-wide
 First-time setup — seed the starter brain (one-time, Admin key required):
 
 ```bash
-bash brain/seed-brain.sh --key <orbit-admin-key>
 ```
 
 This seeds 40 knowledge drawers (WP Standards, Block Editor, Elementor, Security, Performance, Release, Accessibility, Compat) directly into `orbit/00-cto/hard-rules/`. Every agent starts day-one informed — not cold.
@@ -145,7 +144,6 @@ This seeds 40 knowledge drawers (WP Standards, Block Editor, Elementor, Security
 
 ```bash
 # Step 1 — (Admin only, one-time) Seed the brain
-bash brain/seed-brain.sh --key <orbit-admin-key>
 
 # Step 2 — Open Claude Code. Talk to PM.
 "I want to audit example-plugin v2.4.1 before the release next week.
@@ -181,7 +179,7 @@ bash brain/seed-brain.sh --key <orbit-admin-key>
 /orbit-lighthouse      score ~/plugins/my-plugin on staging URL
 ```
 
-Brain key → contact Orbit for Team key access, or see `docs/team-access.md`.
+Brain key → contact Orbit for Team key access, or see `the docs`.
 
 ---
 
@@ -199,7 +197,7 @@ Agents need these tools to act. They're set up once.
 
 **Minimum viable setup:** `gh` CLI + `wp-env`. Brain key unlocks the full system.
 
-Full MCP reference: `docs/mcp-library.md`
+Full MCP reference: `the docs`
 
 ---
 
@@ -256,7 +254,6 @@ Approval loop:
 Brain:
   Team key   → read orbit/00-cto + own collection
   Admin key  → read + write all collections (EDD = Admin only)
-  Seed:      bash brain/seed-brain.sh --key <key>
 
 Skills (quick, no brain):
   /orbit-do-it           Full audit, one command
@@ -271,8 +268,8 @@ Skills (quick, no brain):
 ## Related docs
 
 - `README.md` — full architecture, all 5 collaboration scenarios
-- `docs/mcp-library.md` — MCP setup for WordPress developers
-- `docs/team-access.md` — Team key vs Admin key, key rotation
+- `the docs` — MCP setup for WordPress developers
+- `the docs` — Team key vs Admin key, key rotation
 - `docs/24-use-cases.md` — 6 agentic scenarios + 25 skill scenarios
 - `brain/orbit-brain-spec.md` — full brain architecture spec
 - `SKILLS.md` — all 116 skills listed with categories

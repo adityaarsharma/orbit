@@ -136,7 +136,6 @@ brain
 
 ```bash
 # First install — seed 40 knowledge drawers into orbit/00-cto/hard-rules/
-bash brain/seed-brain.sh --key <your-orbit-admin-key>
 ```
 
 Day-one intelligence in the CTO brain: WP escaping rules, block.json required fields, WCAG 2.2 AA checklist, Stripe webhook security, readme.txt rejection patterns, N+1 DB query patterns, and 34 more. No cold starts for any agent.
@@ -354,7 +353,6 @@ After install:
 # 1. Quit Claude Code fully (Cmd+Q) and reopen — agents + skills register
 
 # 2. Seed the starter brain (one-time, requires Admin key):
-bash brain/seed-brain.sh --key <orbit-admin-key>
 
 # 3. Talk to an agent:
 "UAT audit ~/plugins/my-plugin for v2.5"

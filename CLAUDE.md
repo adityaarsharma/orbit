@@ -27,7 +27,7 @@
 **Customer-Team keys:** read-only on `orbit/general` and own session. Approved patterns stay local.
 Optional `--contribute` flag sends anonymized patterns to evergreen review queue.
 
-**Setup:** See `docs/team-access.md` for key provisioning guide.
+**Setup:** the brain/memory layer is optional; agents run standalone without it.
 
 ### Brain collections (Chroma — one per agent)
 
@@ -183,4 +183,4 @@ Agent files are compatible with both. When Phase 2 activates, no file changes ne
 | 08 | Release | `agents/08-release.md` | 7-gate release, WP.org submit, cross-channel announce |
 | 09 | Docs | `agents/09-docs.md` | README, feature docs, API docs, screenshots, release notes |
 
-**Archive:** Previous 12-agent structure (v3.0 initial) is at `agents/_archive/`. Logic preserved in relevant new agents per the consolidation map in `ORBIT-MEGA-RELEASE-HANDOFF.md`.
+**Archive:** Previous 12-agent structure (v3.0 initial) is at prior versions. Logic preserved in relevant new agents per the consolidation map in `ORBIT-MEGA-RELEASE-HANDOFF.md`.

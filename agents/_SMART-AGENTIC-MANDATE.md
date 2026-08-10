@@ -99,7 +99,7 @@ brain_search(wing="orbit", room="<NN-role>", query="RUNBOOK skill-routing")
 All Orbit drawers live in the dedicated **`orbit`** wing (rooms `00-cto` … `10-runner`, plus `knowledge`), physically isolated from the general / Golden-Circle brain.
 Build the work-list (Section A) from that drawer. The agent `.md` **Skill commands** block is the **bootstrap copy** — what's installed before the first brain read. When the drawer and the `.md` disagree, **the drawer wins** (Rule -2: brain is the live runbook).
 
-**This is how new skills route automatically.** To give an agent a new skill — or move one between agents — re-seed its RUNBOOK drawer (`brain/seed-runbooks.sh`). It goes live on the next spawn with **no git pull and no `.md` edit**. The repo is bootstrap; brain is live state. All 100+ skills route through brain this way.
+**This is how new skills route automatically.** To give an agent a new skill — or move one between agents — re-seed its RUNBOOK drawer (the brain seeder). It goes live on the next spawn with **no git pull and no `.md` edit**. The repo is bootstrap; brain is live state. All 100+ skills route through brain this way.
 
 ---
 

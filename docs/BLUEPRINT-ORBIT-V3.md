@@ -155,7 +155,7 @@ No change to agent files needed between modes. The 5-step WAKE/ANALYSE/PLAN/EXEC
 
 ## MCP library — WordPress dev essentials
 
-See full spec at `docs/mcp-library.md`.
+See full spec at `the docs`.
 
 **Must-have for any WP dev using Orbit:**
 1. `brain` (orbit namespace) — memory
@@ -179,8 +179,8 @@ See full spec at `docs/mcp-library.md`.
 - [ ] 12 agent files — 4-part structure (Skills/Process/MCP/Brain)
 - [ ] `brain/orbit-brain-spec.md` — Brain architecture
 - [ ] `brain/starter-brain.md` — 40 pre-loaded drawers
-- [ ] `docs/mcp-library.md` — MCP audit for WP devs
-- [ ] `docs/team-access.md` — Team vs Admin key setup guide
+- [ ] `the docs` — MCP audit for WP devs
+- [ ] `the docs` — Team vs Admin key setup guide
 - [ ] `memory/agent-workflow-pattern.md` — Updated 5-step workflow
 - [ ] `routes/routes.yaml` — Full skill source map
 - [ ] CHANGELOG.md v3.0 entry

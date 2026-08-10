@@ -97,26 +97,6 @@ echo ""
 echo "⏳ Refreshing skill symlinks..."
 bash "$ORBIT_HOME/install.sh" --update
 
-# ── Re-seed brain RUNBOOKs (brain is the source of truth for skill routing) ──
-# New/moved skills route via the per-agent RUNBOOK drawers, not the repo. Re-seed
-# so the routing goes live. Needs the orbit-admin-key (orbit tenant).
-echo ""
-echo "⏳ Refreshing brain skill-routing (per-agent RUNBOOKs)..."
-ORBIT_KEYS="$HOME/.orbit/keys.env"
-ADMIN_KEY=""
-[ -f "$ORBIT_KEYS" ] && ADMIN_KEY="$(grep -m1 -E '^ORBIT_ADMIN_KEY=' "$ORBIT_KEYS" 2>/dev/null | cut -d= -f2- | tr -d '"'"'"'"' || true)"
-if [ -n "$ADMIN_KEY" ]; then
-  bash "$ORBIT_HOME/brain/seed-brain.sh"    --key "$ADMIN_KEY" || echo "   ⚠  seed-brain.sh failed — re-run manually."
-  bash "$ORBIT_HOME/brain/seed-runbooks.sh" --key "$ADMIN_KEY" || echo "   ⚠  seed-runbooks.sh failed — re-run manually."
-  echo "   ✓ Brain RUNBOOKs refreshed — new skill routing is live (no .md edit needed)."
-else
-  echo "   ⚠  No orbit-admin-key in $ORBIT_KEYS — brain routing NOT refreshed."
-  echo "      To make new/moved skills route automatically, run with your orbit-admin-key:"
-  echo "        bash $ORBIT_HOME/brain/seed-brain.sh    --key <orbit-admin-key>"
-  echo "        bash $ORBIT_HOME/brain/seed-runbooks.sh --key <orbit-admin-key>"
-  echo "      (org-internal IP policy, once: bash brain/seed-ip-cleanroom.private.sh --key <key>)"
-fi
-
 # ── Final ───────────────────────────────────────────────────────
 echo ""
 echo "════════════════════════════════════════════════════"

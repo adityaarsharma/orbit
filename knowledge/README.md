@@ -4,7 +4,7 @@ The general, open-source brain of Orbit — shipped as plain files so the tool r
 
 | File | What it is |
 |---|---|
-| [`bug-signatures.md`](bug-signatures.md) | 52 WordPress bug signatures (security · core-compat · WooCommerce · i18n · perf/DB · PHP 8 · cache/drop-in) — pattern → detection hint → edge cases. Sourced from Patchstack/WPScan/WP-core/PHP-manual 2025–26. |
+| [`bug-signatures.md`](bug-signatures.md) | 53 WordPress bug signatures (security · core-compat · WooCommerce · i18n · perf/DB · PHP 8 · cache/drop-in) — pattern → detection hint → edge cases. Sourced from Patchstack/WPScan/WP-core/PHP-manual 2025–26. |
 | [`eval-fixtures.md`](eval-fixtures.md) | 20 known-buggy fixtures with ground-truth findings — the regression gate. |
 | [`agent-standard.md`](agent-standard.md) | How agents reason: load-signatures-first, bounded reflection, Docker-live, self-eval. |
 

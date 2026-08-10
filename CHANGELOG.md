@@ -4,6 +4,16 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [4.1.1] — Bulk Admin Action Signature
+
+### Added
+- **`knowledge/bug-signatures.md` — E7 (bulk admin action at scale):** WordPress admin bulk actions (Comments/Posts/Users → select many → Trash/Delete/Edit) fire per-item hooks N times in one request. Plugin callbacks must survive a null parent object, batch/defer expensive work (cache purge, remote API, DB writes), and not exhaust memory/time. The classic fatal is calling a method on a null `WP_Post`/`WP_Comment` during a bulk trash — invisible on single-item CI, only reproduces at 50–200 items. Cross-refs G4/G6 (cache plugins purge on comment/post events, so they trip this most).
+- **`knowledge/eval-fixtures.md` — E-04:** bulk-comment-trash fatal fixture (select-all → Move to Trash), reproduced at scale, not single-item.
+- Sourced from a real support ticket: a cache plugin fataling on bulk comment deletion in wp-admin. Signature count now **53**.
+
+### Why
+- Bulk admin actions are a blind spot for single-item test suites: the per-item hook path passes on one item and fatals on a hundred. Any plugin hooked on comment/post lifecycle events needs testing at batch scale.
+
 ## [4.1.0] — Cache & Drop-in Plugin Signatures
 
 ### Added

@@ -24,6 +24,7 @@
 - **E-01 N+1:** `foreach($ids as $id){ get_post_meta($id,'x',true); }` → EXPECT N+1 meta in loop (E2).
 - **E-02 uninstall:** no `uninstall.php`, leaves prefixed options → EXPECT uninstall cleanup missing (E4).
 - **E-03 assets:** `add_action('wp_enqueue_scripts', fn()=>wp_enqueue_script('big',...));` → EXPECT over-eager asset load (E5).
+- **E-04 bulk-action fatal:** `add_action('trashed_comment', fn($id)=>purge(get_post(get_comment($id)->comment_post_ID)->ID));` then bulk-trash 100 comments (one whose post is already gone) → EXPECT fatal/timeout at scale on null parent (E7). Reproduce via WP-admin → Comments → select-all → Move to Trash, not a single delete.
 - **F-01 create_function:** `create_function('$a','return $a;');` → EXPECT removed PHP 8.0 = FATAL (F1).
 - **F-02 null-string:** `trim(get_option('maybe_missing'));` → EXPECT null-to-string deprecation (F4).
 - **F-03 dyn-prop:** `class X{ function f(){ $this->foo=1; } }` → EXPECT dynamic property deprecated 8.2 (F5).

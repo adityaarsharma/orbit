@@ -645,7 +645,7 @@ github.com/adityaarsharma/orbit
 ## 📚 Knowledge base (open-source)
 
 Orbit ships a general WordPress QA knowledge base as plain files in [`knowledge/`](knowledge/):
-- [`bug-signatures.md`](knowledge/bug-signatures.md) — 40+ WP bug signatures (security · core-compat · WooCommerce · i18n · perf/DB · PHP 8)
+- [`bug-signatures.md`](knowledge/bug-signatures.md) — 52 WP bug signatures (security · core-compat · WooCommerce · i18n · perf/DB · PHP 8 · cache/drop-in)
 - [`eval-fixtures.md`](knowledge/eval-fixtures.md) — 20 regression fixtures with ground-truth findings
 - [`agent-standard.md`](knowledge/agent-standard.md) — how agents reason (load-signatures-first, bounded reflection, Docker-live, self-eval)
 

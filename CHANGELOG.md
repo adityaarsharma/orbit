@@ -4,6 +4,16 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [4.1.0] — Cache & Drop-in Plugin Signatures
+
+### Added
+- **`knowledge/bug-signatures.md` — Category G (Full-Page Cache & Drop-in Plugins):** 12 new general signatures (G1–G12) for the class of plugins that run code before WordPress loads (`advanced-cache.php`/`object-cache.php`), edit `wp-config.php`, and write request-influenced paths to disk. Covers: programmatic wp-config edits (backup/restore/anchored-regex), pre-WP drop-in path traversal, 200-gate + bypass-constant handling, logged-in/private-content cache bleed, cached-nonce breakage, orphaned-drop-in WSOD, object-cache `unserialize` object-injection, cache-dir web-exposure, write atomicity, cache-file/inode explosion, WP_Filesystem in runtime, and gzip double-compression.
+- **`knowledge/eval-fixtures.md` — Set G:** 8 new regression fixtures (G-01…G-08) with ground-truth findings for the above.
+- Signature count is now **52 across 7 categories** (added cache/drop-in).
+
+### Why
+- Full-page cache plugins are among the highest-blast-radius WordPress plugins — a single drop-in or wp-config mistake white-screens every page or serves one visitor's private page to another. These are the exact patterns that get cache plugins rejected from the directory or hit with CVEs, so the tool now pattern-matches them on the first pass.
+
 ## [4.0.1] — General / Brand-Clean
 
 ### Changed

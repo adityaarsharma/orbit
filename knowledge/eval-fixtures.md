@@ -28,5 +28,15 @@
 - **F-02 null-string:** `trim(get_option('maybe_missing'));` → EXPECT null-to-string deprecation (F4).
 - **F-03 dyn-prop:** `class X{ function f(){ $this->foo=1; } }` → EXPECT dynamic property deprecated 8.2 (F5).
 
+## Set G — Cache & Drop-in plugins
+- **G-01 wp-config no-backup:** writes `wp-config.php` without a backup/restore path → EXPECT unsafe config write (G1).
+- **G-02 drop-in traversal:** cache path = `CACHE_DIR . $_SERVER['REQUEST_URI']` with no `..` collapse / allowlist passes `.`/`/` → EXPECT pre-WP path traversal (G2).
+- **G-03 cache non-200:** output-buffer cache write without an `http_response_code()===200` gate → EXPECT caches error/redirect responses (G3).
+- **G-04 auth bleed:** cache key omits the logged-in cookie → EXPECT private-content bleed / cache poisoning (G4).
+- **G-05 nonce cached:** caches HTML containing `wp_nonce_field` with TTL ≫ nonce lifetime → EXPECT cached-nonce form breakage (G5).
+- **G-06 orphan drop-in:** no `uninstall.php`/deactivation removal of `advanced-cache.php`/`object-cache.php`/`WP_CACHE` → EXPECT orphaned drop-in WSOD risk (G6).
+- **G-07 unserialize backend:** `unserialize($redis_value)` with no `allowed_classes` → EXPECT object injection on cache read (G7).
+- **G-08 exposed cache dir:** cache dir written with no `index.php`/`.htaccess` deny → EXPECT web-readable cached private HTML (G8).
+
 ## Gate protocol
 Before shipping any skill/agent change: run each fixture through the relevant check, assert the EXPECT finding is produced. One miss = regression = block. Grow the set on every escaped real-world bug.

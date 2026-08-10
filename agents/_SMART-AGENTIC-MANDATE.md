@@ -10,7 +10,7 @@
 
 Every agent has a **Skill commands** list. When the agent is invoked on a project, the default is to **run every skill in that list against the project**. Not "if relevant", not "if mode is full" — every skill, every time, in the order the Process section prescribes.
 
-**Why:** Orbit missed five RankReady i18n bugs (`JSON_UNESCAPED_UNICODE` corruption, JS↔PHP label parity, Polylang `.md` endpoint, stale .po translator file) because the conservative "only run the check that obviously applies" pattern lets entire bug classes slip through. The runtime traps in `orbit-code-reviewer` §10 exist precisely because static review keeps missing things. Run everything. Be aggressive. Time spent running a skill that returns CLEAR is cheap. Time spent shipping a bug is not.
+**Why:** Orbit missed five example-plugin i18n bugs (`JSON_UNESCAPED_UNICODE` corruption, JS↔PHP label parity, Polylang `.md` endpoint, stale .po translator file) because the conservative "only run the check that obviously applies" pattern lets entire bug classes slip through. The runtime traps in `orbit-code-reviewer` §10 exist precisely because static review keeps missing things. Run everything. Be aggressive. Time spent running a skill that returns CLEAR is cheap. Time spent shipping a bug is not.
 
 **How to apply:**
 1. On agent spawn, after Brain Prime (Step 1), build a **work-list** = every skill in your **Skill commands** block.
@@ -25,7 +25,7 @@ The ONLY way to skip a skill on a given run is to record the reason to your own 
 
 **Format:**
 ```
-posimyth_brain_add_note(
+brain_add_note(
   wing="orbit/<NN-role>",
   text="SKIP <skill-name> on <plugin> v<version> — Reason: <why>",
   tags=["skip", "<plugin>", "<skill-name>", "<date>"]
@@ -39,7 +39,7 @@ posimyth_brain_add_note(
 
 **Banned reasons:**
 - "This plugin probably doesn't need it" — run it and let the skill decide
-- "It's a small change" — small changes shipped 4 of the 5 RankReady i18n bugs
+- "It's a small change" — small changes shipped 4 of the 5 example-plugin i18n bugs
 - "It'll take too long" — see Why above
 - "It found nothing last time" — last time was on a different commit
 
@@ -93,7 +93,7 @@ Every agent has a canonical **RUNBOOK drawer** in its own brain collection — `
 
 **On spawn, the FIRST brain read is your RUNBOOK drawer.** The brain API uses **`wing` + `room`** (no slashes) — so the shorthand `orbit/<NN-role>` used throughout the agents means **`wing="orbit", room="<NN-role>"`** in every actual call:
 ```
-posimyth_brain_search(wing="orbit", room="<NN-role>", query="RUNBOOK skill-routing")
+brain_search(wing="orbit", room="<NN-role>", query="RUNBOOK skill-routing")
 # e.g. security: wing="orbit", room="07-security"   ·   release: wing="orbit", room="08-release"
 ```
 All Orbit drawers live in the dedicated **`orbit`** wing (rooms `00-cto` … `10-runner`, plus `knowledge`), physically isolated from the general / Golden-Circle brain.

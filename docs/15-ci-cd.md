@@ -1021,7 +1021,7 @@ jobs:
 
       - name: Notify Slack on failure
         if: failure()
-        # Notify ClickUp via brain-posimyth instead
+        # Notify ClickUp via brain instead
         with:
           status: failure
           text: "Nightly audit FAILED on `${{ github.repository }}`. Check reports: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

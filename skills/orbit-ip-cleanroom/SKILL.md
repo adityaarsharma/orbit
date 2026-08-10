@@ -11,8 +11,8 @@ The check for the everyday situation: a plugin is built in the same niche as a c
 
 > **Rule -2 — brain is the live runbook.** Before running, read your IP clean-room runbook from brain FIRST:
 > ```
-> posimyth_brain_search(wing="orbit/07-security", query="ip-cleanroom RUNBOOK")
-> posimyth_brain_search(wing="orbit/00-cto",      query="ip clean-room hard-rule STOP conditions")
+> brain_search(wing="orbit/07-security", query="ip-cleanroom RUNBOOK")
+> brain_search(wing="orbit/00-cto",      query="ip clean-room hard-rule STOP conditions")
 > ```
 > The brain drawer holds the current escalation contact, the authorization/EULA checklist, and any org-specific policy. The repo ships the mechanics; brain ships the policy. Brain wins when they disagree.
 

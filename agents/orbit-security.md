@@ -207,7 +207,7 @@ NEVER run active tests on production. Not even GET requests.
 ```
 → orbit-vdp
 ✓ Plugin page links to a disclosure policy?
-✓ Security contact (security@posimyth.com)?
+✓ Security contact (security@Orbit.com)?
 ✓ Response timeline documented?
 ✓ CVE attribution process defined?
 ```
@@ -256,7 +256,7 @@ Engineering risk-reduction, NOT legal advice. Hand the gate result to 08-Release
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | CVE history, security patterns, ingest findings | Admin |
+| `brain` | CVE history, security patterns, ingest findings | Admin |
 | `gh` CLI | Read plugin source code | Team |
 | `wp-env` via Bash | Clean install for active testing | — |
 | Apify via brain | Scrape CVE databases (NVD, WPScan DB) | Admin |

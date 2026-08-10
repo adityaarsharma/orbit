@@ -158,6 +158,6 @@ Auto-generates `build/index.asset.php` for cache-busting + dependency manifest.
 - Block Bindings API — WP 6.5 introduced, replaces custom render filters
 
 ### Last reviewed
-- 2026-04-29 — by [Aditya Sharma](https://github.com/adityaarsharma)
+- 2026-04-29 — by [the maintainers](https://github.com/adityaarsharma)
 - Re-review trigger: any of (WP minor release · `wp-scripts` major bump · 90-day rolling)
 - Stale rule? Open issue: [github.com/adityaarsharma/orbit/issues](https://github.com/adityaarsharma/orbit/issues)

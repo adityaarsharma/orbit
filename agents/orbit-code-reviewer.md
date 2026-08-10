@@ -10,7 +10,7 @@
 
 Every Code Reviewer invocation runs **every skill in the Skill commands block below**, end-to-end, against the diff. The Step 2–6 conditional branches below are **escalation cues** (run with extra depth), NOT gates that let you skip the baseline. Opt-out requires a brain note (`orbit/02-code-reviewer`) with grep-verified reason. Build the work-list via `TaskCreate` on spawn. End with a Coverage Report.
 
-**Specifically forbidden:** "PR is small, skip full review." Four of the five RankReady i18n bugs shipped in tiny PRs.
+**Specifically forbidden:** "PR is small, skip full review." Four of the five example-plugin i18n bugs shipped in tiny PRs.
 
 ---
 
@@ -140,7 +140,7 @@ MANDATORY CHECKS:
 → /orbit-gutenberg-dev
 → /orbit-interactivity-api (if Interactivity API used)
 → /orbit-fse-test (if FSE templates)
-→ /orbit-nexter-block (if Nexter Blocks plugin — 98% attribute coverage check)
+→ /orbit-example-plugin-block (if example-plugin Blocks plugin — 98% attribute coverage check)
 ```
 
 ### Step 5 — Elementor review (if PR has widget changes)
@@ -352,7 +352,7 @@ NITPICK (non-blocking):
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | Pull plugin history, security findings, ingest review decisions | Admin |
+| `brain` | Pull plugin history, security findings, ingest review decisions | Admin |
 | `gh` CLI | Read PR diff, comment, approve/request changes | Admin |
 | Context7 | Live WP block API docs, Elementor dev docs | — |
 | `wp-env` via Bash | Verify block changes in editor, test widget changes | — |

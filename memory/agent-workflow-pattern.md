@@ -11,11 +11,11 @@
 Before writing a single line of analysis, the agent searches brain aggressively.
 
 ```
-Search 1: posimyth_brain_search("<plugin name> audit history") — top 10
-Search 2: posimyth_brain_search("<task type> findings <plugin type>") — top 5
-Search 3: posimyth_brain_search("<domain area> known issues patterns") — top 5
-Search 4 (self-history): posimyth_brain_search("<task type> approved last 30 days") — approved patterns to REUSE
-Search 5 (negative-history): posimyth_brain_search("<task type> revised OR failed OR flagged") — patterns to AVOID
+Search 1: brain_search("<plugin name> audit history") — top 10
+Search 2: brain_search("<task type> findings <plugin type>") — top 5
+Search 3: brain_search("<domain area> known issues patterns") — top 5
+Search 4 (self-history): brain_search("<task type> approved last 30 days") — approved patterns to REUSE
+Search 5 (negative-history): brain_search("<task type> revised OR failed OR flagged") — patterns to AVOID
 ```
 
 Then produce a **Brain Prime block** (internal, before any skill invocation):
@@ -75,8 +75,8 @@ After every task, ingest operator feedback into brain. This is what makes Orbit 
 
 | Operator says | Agent does |
 |---|---|
-| `approve` / `perfect` / `ship it` | Ask: "Save as approved pattern for future `<task-type>`?" → on yes: `posimyth_brain_add_note` with tag `[approved-pattern, orbit, <task-type>]` |
-| `revise: <reason>` | Auto-ingest redline: `posimyth_brain_add_note` with tag `[revised, orbit, redline, <reason>]`. Next same task → brain surfaces this first |
+| `approve` / `perfect` / `ship it` | Ask: "Save as approved pattern for future `<task-type>`?" → on yes: `brain_add_note` with tag `[approved-pattern, orbit, <task-type>]` |
+| `revise: <reason>` | Auto-ingest redline: `brain_add_note` with tag `[revised, orbit, redline, <reason>]`. Next same task → brain surfaces this first |
 | `skip` / `drop` | Ingest as `[deprioritised, orbit, <task-type>]` |
 | Routine continue | NO ingest — only operator-feedback-driven signals |
 

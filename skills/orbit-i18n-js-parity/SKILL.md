@@ -7,7 +7,7 @@ description: PHP↔JS label parity audit — verifies every label key consumed b
 
 The skill that catches the bug `orbit-i18n` cannot see: **the PHP side wraps every string in `__()` correctly, but the JS side reads a key the PHP never localizes.** Result: JS falls back to English (or `undefined`), and no warning, no error, no test fails. The string just silently never translates.
 
-**Why this skill exists:** RankReady's Elementor editor showed an English "Generate FAQ" button in every language because `class-rnrd-elementor.php` localized `rnrdElEditor.generateSummary` but not `rnrdElEditor.generateFaq` — the JS read the missing key, defaulted to a hardcoded English fallback, and shipped to production. Plugin-agnostic — applies to any plugin with PHP-localized JS labels.
+**Why this skill exists:** example-plugin's Elementor editor showed an English "Generate FAQ" button in every language because `class-rnrd-elementor.php` localized `rnrdElEditor.generateSummary` but not `rnrdElEditor.generateFaq` — the JS read the missing key, defaulted to a hardcoded English fallback, and shipped to production. Plugin-agnostic — applies to any plugin with PHP-localized JS labels.
 
 ---
 

@@ -71,7 +71,7 @@ Output: 4 files in `reports/release-notes/`:
 ```markdown
 # My Plugin 2.5 — Faster, Cleaner, Now with Block Bindings
 
-April 29, 2026 · POSIMYTH Team
+April 29, 2026 · Orbit Team
 
 We just shipped 2.5 with three focuses: speed, the new Block Bindings API,
 and a refresh of the settings UI.
@@ -102,7 +102,7 @@ messages that actually help, dark mode that respects your admin colour scheme.
 ## Plus 12 bug fixes
 [bullet list]
 
-— POSIMYTH Team
+— Orbit Team
 ```
 
 ---

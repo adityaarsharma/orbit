@@ -7,7 +7,7 @@ description: Translator .po file currency audit — for every shipped /languages
 
 `orbit-i18n` checks the POT file is fresh vs the source code. This skill checks the .po files (one per locale) are fresh vs the POT. **POT can be 100% current AND translations can still be silently broken** — because the translator delivered against an older POT and new strings have shipped since.
 
-**Why this skill exists:** RankReady received a 100% Turkish translation from Tolga, anchored to the v1.0.x POT. Between Tolga's delivery and ship, 30+ new strings were added to the codebase. The .po file was missing every new string — so the Turkish site silently fell back to English for ~30% of UI labels, with no warning. Plugin-agnostic — applies to any plugin shipping translated .po files.
+**Why this skill exists:** example-plugin received a 100% Turkish translation from Tolga, anchored to the v1.0.x POT. Between Tolga's delivery and ship, 30+ new strings were added to the codebase. The .po file was missing every new string — so the Turkish site silently fell back to English for ~30% of UI labels, with no warning. Plugin-agnostic — applies to any plugin shipping translated .po files.
 
 ---
 

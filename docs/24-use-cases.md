@@ -6,11 +6,11 @@
 
 ## Agentic Use Cases (v3.0 — 10-agent team)
 
-These scenarios show how Orbit's agents collaborate through `brain-posimyth`. Each agent reads the shared CTO brain first, does its specialized work, ingests findings, and hands off to the next agent.
+These scenarios show how Orbit's agents collaborate through `brain`. Each agent reads the shared CTO brain first, does its specialized work, ingests findings, and hands off to the next agent.
 
 **How to invoke an agent in Claude Code:**
 ```
-You:  "Run a UAT audit on ~/plugins/nexterwp for v2.5 RC"
+You:  "Run a UAT audit on ~/plugins/example-plugin for v2.5 RC"
       → 05-UAT agent activates, runs Brain Prime, dispatches 07+06+04 in parallel
       → Returns severity-triaged bug report + CLEAR/BLOCKED verdict
 
@@ -23,13 +23,13 @@ You:  "CTO brief on Elementor's new AI features — should we respond?"
 
 ---
 
-### A1. Full release pipeline — NexterWP v2.5
+### A1. Full release pipeline — example-plugin v2.5
 
 **Situation:** v2.5 is feature-complete. Time to gate, test, and ship.
 
 **Agent sequence:**
 ```
-you → 01-PM    "NexterWP v2.5 is dev-complete. Run release prep."
+you → 01-PM    "example-plugin v2.5 is dev-complete. Run release prep."
 01-PM          Checks open RICE items. Confirms v2.5 scope. Routes work:
                → 05-UAT: full audit
                → 09-Docs: freshness check (parallel)
@@ -41,12 +41,12 @@ you → 01-PM    "NexterWP v2.5 is dev-complete. Run release prep."
                → 04-DevDesigner: accessibility + RTL check
                All pass → UAT CLEAR for v2.5
 
-08-Release     you → "Run release gate for NexterWP v2.5"
+08-Release     you → "Run release gate for example-plugin v2.5"
                7 checks in order. All pass:
                ✓ pre-commit  ✓ metadata  ✓ plugin-check
                ✓ changelog   ✓ version   ✓ zip  ✓ i18n
                → Release gate PASSED
-               → Release notes drafted (POSIMYTH voice)
+               → Release notes drafted (Orbit voice)
                → you: approve → cross-channel announce (blog + email + social + Discord)
 
 09-Docs        Freshness audit done during UAT.
@@ -103,7 +103,7 @@ you → 08-Release  "Emergency patch release — TPA v6.3.1"
                Routes to 00-CTO: "This may be a pattern across all plugins."
 
 00-CTO         Brain Prime fan-out: checks orbit/02-code-reviewer for same pattern.
-               Found: NexterWP has same issue in enqueue.php.
+               Found: example-plugin has same issue in enqueue.php.
                Decision: promote to hard rule.
                Ingests to orbit/00-cto/hard-rules/:
                [cto, hard-rule, enqueue-on-specific-pages-only, wp-org-requirement, 2026-05-20]
@@ -121,22 +121,22 @@ Outcome:       One rejection → zero repeats across all 3 plugins, indefinitely
 
 ### A4. Performance regression caught before users notice
 
-**Situation:** NexterWP v2.5 shows DB query spike in benchmark.
+**Situation:** example-plugin v2.5 shows DB query spike in benchmark.
 
 ```
-you → 06-Performance  "Benchmark NexterWP v2.5 vs v2.4 baseline"
+you → 06-Performance  "Benchmark example-plugin v2.5 vs v2.4 baseline"
 
-06-Performance  Brain Prime: loads v2.4 baseline from orbit/06/nexterwp/budget
+06-Performance  Brain Prime: loads v2.4 baseline from orbit/06/example-plugin/budget
                 Benchmarks v2.5:
                 → REGRESSION HIGH: DB queries 11 (baseline: 4) — exceeds 5-query threshold
                 → REGRESSION MEDIUM: Bundle +38KB (baseline: +12KB allowed)
                 → REGRESSION HIGH: Lighthouse 71 (baseline: 83) — 12pt drop
-                Ingests: [perf, regression, nexterwp, v2.5, db-queries-11, lighthouse-71]
+                Ingests: [perf, regression, example-plugin, v2.5, db-queries-11, lighthouse-71]
                 Routes to 01-PM with report.
 
 01-PM           Creates fix ticket. Routes to 03-SrDev with orbit/06 context attached.
 
-you → 03-SrDev  "Fix the performance regressions in NexterWP v2.5. Perf report attached."
+you → 03-SrDev  "Fix the performance regressions in example-plugin v2.5. Perf report attached."
 
 03-SrDev        Brain Prime: loads orbit/06 regression + orbit/03 past perf fixes
                 Diagnoses: N+1 in scroll-animation block → WP_Query post__in[]
@@ -144,7 +144,7 @@ you → 03-SrDev  "Fix the performance regressions in NexterWP v2.5. Perf report
                 Routes to 06-Performance for validation.
 
 06-Performance  Re-benchmark: DB queries 3, bundle +4KB, Lighthouse 85. All pass.
-                Updates orbit/06/nexterwp/budget for v2.5.
+                Updates orbit/06/example-plugin/budget for v2.5.
                 Clears for 05-UAT.
 ```
 
@@ -152,7 +152,7 @@ you → 03-SrDev  "Fix the performance regressions in NexterWP v2.5. Perf report
 
 ### A5. Competitor intelligence → product decision
 
-**Situation:** Elementor Kit ships AI Copilot. Should POSIMYTH respond?
+**Situation:** Elementor Kit ships AI Copilot. Should Orbit respond?
 
 ```
 you → 00-CTO  "Elementor Kit just shipped an AI block generator. CTO brief."
@@ -165,7 +165,7 @@ you → 00-CTO  "Elementor Kit just shipped an AI block generator. CTO brief."
 CTO BRIEF — Elementor Kit AI Copilot
 Date: 2026-05-20
 Signal:         Kit shipped in-editor AI block generation. WP.org reviews up 320 this week.
-                NexterWP support board: 14 requests for "AI block help" in last 30 days.
+                example-plugin support board: 14 requests for "AI block help" in last 30 days.
 Assessment:     Medium threat. High opportunity.
 Recommendation: Differentiate — not copy. Our angle: AI block configuration assistant
                 (help users configure existing blocks, not generate new ones). Lower effort,
@@ -195,7 +195,7 @@ Developer types:  "What are the WP coding standards for this team?"
 00-CTO brain:     Immediately surfaces: escaping rules, nonce patterns, capability checks,
                   approved patterns from past reviews, WP.org hard rules.
 
-Developer types:  "What bugs does NexterWP v2.4 have that I should know about?"
+Developer types:  "What bugs does example-plugin v2.4 have that I should know about?"
 05-UAT brain:     Surfaces v2.4 bug history, known flaky tests, severity-triaged open issues.
 
 Developer types:  "Show me how code review works here."

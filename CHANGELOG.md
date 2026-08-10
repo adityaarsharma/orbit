@@ -20,11 +20,11 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ### Fixed
 
-- **Brain seeders were writing to the wrong place with the wrong field — now corrected and verified live.** The three seeders (`seed-brain.sh`, `seed-runbooks.sh`, `seed-ip-cleanroom.private.sh`) posted `{note, namespace}` to `/connectors/add_note`. The brain connectors API actually expects a **JSON-RPC `tools/call`** to **`POST /connectors`** invoking `posimyth_brain_add_note`, with the field named **`content`** (not `note`) and scope via **`wing` + `room`** (not `namespace`). As written, every drawer would have (a) been created empty and (b) defaulted to `wing=brain, room=general` — i.e. polluted the general / Golden-Circle brain. Fixed all three to emit the correct JSON-RPC envelope with `content` + `wing="orbit"` + `room="<NN-role>"`.
+- **Brain seeders were writing to the wrong place with the wrong field — now corrected and verified live.** The three seeders (`seed-brain.sh`, `seed-runbooks.sh`, `seed-ip-cleanroom.private.sh`) posted `{note, namespace}` to `/connectors/add_note`. The brain connectors API actually expects a **JSON-RPC `tools/call`** to **`POST /connectors`** invoking `brain_add_note`, with the field named **`content`** (not `note`) and scope via **`wing` + `room`** (not `namespace`). As written, every drawer would have (a) been created empty and (b) defaulted to `wing=brain, room=general` — i.e. polluted the general / Golden-Circle brain. Fixed all three to emit the correct JSON-RPC envelope with `content` + `wing="orbit"` + `room="<NN-role>"`.
 - `seed-brain.sh` pre-flight connectivity test switched from the non-existent `/ping` to `/whoami`.
 - `_SMART-AGENTIC-MANDATE.md` Section H now states the `wing`/`room` call form explicitly (`orbit/<NN-role>` shorthand = `wing="orbit", room="<NN-role>"`).
 
-### Seeded (live on brain.posimyth.com, `orbit` wing)
+### Seeded (live on brain.Orbit.com, `orbit` wing)
 
 - 11 per-agent RUNBOOK drawers (`orbit` wing, rooms `00-cto` … `10-runner`).
 - 3 internal IP clean-room drawers (rooms `00-cto`, `07-security`, `08-release`) via the private seeder.
@@ -111,7 +111,7 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ### Why
 
-- Orbit shipped five RankReady i18n bugs (May 30 – Jun 1, 2026) that the conservative "run only the obviously-applicable check" pattern let through: `wp_json_encode` Unicode corruption in post_meta, Elementor FAQ JS labels missing from `wp_localize_script`, `.md` endpoint ignoring Polylang language switching, and a translator `.po` anchored to a stale POT causing ~30% silent English fallback. Rule 0 + the five i18n deltas close those classes. All checks are plugin-agnostic — no plugin name is hardcoded.
+- Orbit shipped five example-plugin i18n bugs (May 30 – Jun 1, 2026) that the conservative "run only the obviously-applicable check" pattern let through: `wp_json_encode` Unicode corruption in post_meta, Elementor FAQ JS labels missing from `wp_localize_script`, `.md` endpoint ignoring Polylang language switching, and a translator `.po` anchored to a stale POT causing ~30% silent English fallback. Rule 0 + the five i18n deltas close those classes. All checks are plugin-agnostic — no plugin name is hardcoded.
 
 ---
 
@@ -216,7 +216,7 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ### Added
 
-- **`gplvault-cache-posi`** — 10th Orbit MCP, connecting to the GPLVault premium plugin cache on `brain.posimyth.com`. Provides 3 tools:
+- **`gplvault-cache-posi`** — 10th Orbit MCP, connecting to the GPLVault premium plugin cache on `brain.Orbit.com`. Provides 3 tools:
   - `gplvault_list_cached` — list all cached plugin zips (Perfmatters, SEOPress Pro, WP Rocket)
   - `gplvault_get_download_url` — get 5-minute presigned download URL for a cached zip
   - `gplvault_sync_cache` — pull fresh zips from GPLVault API into the central cache
@@ -229,11 +229,11 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ### Changed
 
-- **`brain-posimyth` umbrella removed — replaced with `brain-posi`**: The `/connectors` umbrella (32 tools) duplicated every tool already exposed by the 8 per-service MCPs. Replaced with `brain-posi` (`/brain/mcp`, 4 tools) which provides only brain memory tools — `posimyth_brain_search`, `posimyth_brain_wake_up`, `posimyth_brain_list_drawers`, `whoami`. No more duplicate tools in Claude's context.
+- **`brain` umbrella removed — replaced with `brain`**: The `/connectors` umbrella (32 tools) duplicated every tool already exposed by the 8 per-service MCPs. Replaced with `brain` (`/brain/mcp`, 4 tools) which provides only brain memory tools — `brain_search`, `brain_wake_up`, `brain_list_drawers`, `whoami`. No more duplicate tools in Claude's context.
 
 ### Fixed
 
-- **Auto-cleanup `brain-posimyth` from existing configs**: Upgrading users who already have the umbrella registered will have it removed automatically on next install run.
+- **Auto-cleanup `brain` from existing configs**: Upgrading users who already have the umbrella registered will have it removed automatically on next install run.
 
 ---
 
@@ -265,7 +265,7 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 ### Changed
 
 - **`install-connectors.sh` — 2-tier model (team + admin only)**: Removed `readonly` tier. Orbit now has exactly two keys — `team` (read access to all 7 MCPs) and `admin` (read + write, enforced server-side). All 7 endpoints are available to both tiers; write gating happens at the server, not the installer.
-- **All 7 Orbit MCPs now accessible to `team` tier**: Previously `ga4-posi`, `gsc-posi`, `wp-tpae-posi`, `wp-nexterwp-posi` required `admin`. All are now `team` minimum so every Orbit user gets full MCP coverage on install.
+- **All 7 Orbit MCPs now accessible to `team` tier**: Previously `ga4-posi`, `gsc-posi`, `wp-example-plugin-posi`, `wp-example-plugin-posi` required `admin`. All are now `team` minimum so every Orbit user gets full MCP coverage on install.
 
 ### Fixed
 
@@ -290,13 +290,13 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 ### Added
 
 - **`install-connectors.sh`** — dedicated connector installer ported from Golden Circle v1.2.5:
-  - Key validation via `brain.posimyth.com/connectors/whoami` — auto-detects tier (readonly / team / admin)
+  - Key validation via `brain.Orbit.com/connectors/whoami` — auto-detects tier (readonly / team / admin)
   - **Whitelist cleanup** — removes ANY stale MCP not on the known-good list; prevents corrupted config after re-installs
   - Registers Orbit MCPs in **both** Claude Code (`~/.claude/settings.json`, `type: http`) and **Claude Desktop** (`claude_desktop_config.json`, `mcp-remote` bridge) — fixes the "MCP server could not be loaded" desktop error
   - **Live verification** — MCP initialize handshake + tool count per endpoint so install failures are visible before restart
   - Tier-gated: readonly gets umbrella only; team gets + ClickUp/FluentSupport; admin gets all endpoints
   - Safe to re-run; idempotent; backs up both config files before writing
-  - Personal MCPs (apple-mail, playwright, github, context7, brain-aditya) are never touched
+  - Personal MCPs (apple-mail, playwright, github, context7, brain-the maintainer) are never touched
 
 ### Changed
 
@@ -310,9 +310,9 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 - **`ga4-posi` + `gsc-posi` connectors in 06-Performance** — agents now pull real user CWV and search performance data directly from GA4 and Google Search Console
 - **`fluentsupport-posi` connector in 01-PM** — PM agent can mine support tickets for user pain points and feedback patterns
-- **`wp-tpae-posi` + `wp-nexterwp-posi` connectors in 08-Release + 09-Docs** — named sub-endpoints replace generic `wp-*` references for cleaner routing
+- **`wp-example-plugin-posi` + `wp-example-plugin-posi` connectors in 08-Release + 09-Docs** — named sub-endpoints replace generic `wp-*` references for cleaner routing
 - **`clickup-dora-posi` connector in 01-PM + 08-Release** — direct Dora Agent posting to ClickUp channels
-- **`routes/routes.yaml`** — new `BRAIN-POSIMYTH SUB-ENDPOINTS` section documents all 6 new connectors with endpoint URLs, tool counts, and agent assignments
+- **`routes/routes.yaml`** — new `BRAIN-Orbit SUB-ENDPOINTS` section documents all 6 new connectors with endpoint URLs, tool counts, and agent assignments
 - **`docs/mcp-library.md`** — updated internal team MCP table with named endpoints + usage guide for Claude Code vs Claude desktop app
 
 ### Fixed
@@ -326,7 +326,7 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 The architecture shift: Orbit is no longer just a skill suite — it's a **10-agent QA team** that runs like a company. Each agent has a defined role, a written SOP, a brain connection, and the MCP access to act on what it finds.
 
-Two keys power the system: **Team** (read) and **Admin** (read+write). Connect once — every agent uses `brain-posimyth` as the shared intelligence layer. Approved patterns get remembered. Revised work gets redlined. Cold starts become warm starts.
+Two keys power the system: **Team** (read) and **Admin** (read+write). Connect once — every agent uses `brain` as the shared intelligence layer. Approved patterns get remembered. Revised work gets redlined. Cold starts become warm starts.
 
 The **CTO agent** (`00-cto`) is the head of the brain — `orbit/00-cto` is the shared intelligence layer for the entire team. Every other agent reads CTO's brain first (hard rules, WP standards, approved patterns, strategic decisions) before their own collection.
 
@@ -336,7 +336,7 @@ The **CTO agent** (`00-cto`) is the head of the brain — `orbit/00-cto` is the 
 
 - **10 agent files** in `agents/` — each written with the 4-part structure:
   - **Skills** — what the agent knows
-  - **Process** — POSIMYTH SOPs with explicit step order + guardrails (🚫 Never / ✅ Always)
+  - **Process** — Orbit SOPs with explicit step order + guardrails (🚫 Never / ✅ Always)
   - **MCP + Connectors** — which systems the agent acts on, key tier required
   - **Brain** — what to recall before starting, what to ingest when done
 
@@ -355,13 +355,13 @@ The **CTO agent** (`00-cto`) is the head of the brain — `orbit/00-cto` is the 
 
   Previous 12 agent files archived in `agents/_archive/` — not deleted.
 
-- **`brain/orbit-brain-spec.md`** — `orbit/00-cto` as the shared head brain (no separate general collection), per-agent Chroma collections, POSIMYTH-Admin vs Customer-Team key model, mandatory 5-search Brain Prime pattern, ingest rules
+- **`brain/orbit-brain-spec.md`** — `orbit/00-cto` as the shared head brain (no separate general collection), per-agent Chroma collections, Orbit-Admin vs Customer-Team key model, mandatory 5-search Brain Prime pattern, ingest rules
 
 - **`brain/starter-brain.md`** — 40 pre-loaded knowledge drawers in 8 categories (WP Standards, Block Editor, Elementor, Security, Performance, Release, Accessibility, Compat). Seeds via `bash brain/seed-brain.sh --key <admin-key>`. Eliminates cold starts for every Orbit install.
 
 - **`brain/seed-brain.sh`** — shell script to bootstrap the starter brain on first install
 
-- **`docs/mcp-library.md`** — MCP reference for WordPress developers. Must-have (brain-posimyth, gh CLI, Claude in Chrome, Context7, wp-env/wp-cli), strong recommendations (DataForSEO, Sentry, LambdaTest), POSIMYTH internal (WP connectors, FluentCRM, Slack)
+- **`docs/mcp-library.md`** — MCP reference for WordPress developers. Must-have (brain, gh CLI, Claude in Chrome, Context7, wp-env/wp-cli), strong recommendations (DataForSEO, Sentry, LambdaTest), Orbit internal (WP connectors, FluentCRM, Slack)
 
 - **`docs/team-access.md`** — Team key vs Admin key permissions matrix, per-agent key requirements, first-time setup commands, key rotation policy (90 days)
 
@@ -369,7 +369,7 @@ The **CTO agent** (`00-cto`) is the head of the brain — `orbit/00-cto` is the 
 
 - **`memory/agent-workflow-pattern.md`** — 5-step WAKE/ANALYSE/PLAN/EXECUTE/INGEST workflow, Brain Prime block format, ingest rules table
 
-- **`memory/brain-connectors.md`** — brain-posimyth as primary connector, drawer naming, hard rules
+- **`memory/brain-connectors.md`** — brain as primary connector, drawer naming, hard rules
 
 - **`memory/cross-agent-handoffs.md`** — handoff brief schema, standard orchestration paths, escalation rules
 
@@ -420,11 +420,11 @@ bash brain/seed-brain.sh --key <your-orbit-admin-key>
 
 ---
 
-## [2.8.0] — 2026-05-12 — "Nexter Block Pipeline"
+## [2.8.0] — 2026-05-12 — "example-plugin Block Pipeline"
 
 ### Added
 
-- **`/orbit-nexter-block`** — Full automated block testing pipeline for Nexter Blocks. Covers both Free (57 blocks) and Pro (74 blocks). Auto-inserts every block via `wp.data`, randomises all block.json attributes (98% coverage — 4082/4151 attrs incl. 2704 `scopy` CSS-inject attrs), runs a sentinel value-verification pass, publishes each post, and asserts no PHP fatals / JS errors on the frontend. Includes a UI spec that clicks every sidebar control. Found two real bugs during development: `tp-countdown` `DateTime::__construct` crash on non-date strings, and Display Rules `is_array()` always-false on JSON-encoded attributes.
+- **`/orbit-example-plugin-block`** — Full automated block testing pipeline for example-plugin Blocks. Covers both Free (57 blocks) and Pro (74 blocks). Auto-inserts every block via `wp.data`, randomises all block.json attributes (98% coverage — 4082/4151 attrs incl. 2704 `scopy` CSS-inject attrs), runs a sentinel value-verification pass, publishes each post, and asserts no PHP fatals / JS errors on the frontend. Includes a UI spec that clicks every sidebar control. Found two real bugs during development: `tp-countdown` `DateTime::__construct` crash on non-date strings, and Display Rules `is_array()` always-false on JSON-encoded attributes.
 
 ---
 
@@ -815,10 +815,10 @@ supply-chain attack patterns.
 ## [2.1.0] — 2026-04-20
 
 ### Fixed (Critical — brand content in public repo)
-- `setup/playground-blueprint.json` — replaced "POSIMYTH QA Test Site" with "Orbit QA Test Site" (C-01)
+- `setup/playground-blueprint.json` — replaced "Orbit QA Test Site" with "Orbit QA Test Site" (C-01)
 - `checklists/pre-release-checklist.md` — removed product-specific brand names; checklist is now generic for any WordPress plugin (C-02)
-- `checklists/ui-ux-checklist.md` — removed "TPA" and "NexterWP" section headings; sections are now generic Elementor / Gutenberg (C-02)
-- `scripts/gauntlet.sh` — removed hardcoded `NEXTER-VS-RANKMATH-UAT.html` reference; output now globs any `uat-report-*.html` (C-04)
+- `checklists/ui-ux-checklist.md` — removed "TPA" and "example-plugin" section headings; sections are now generic Elementor / Gutenberg (C-02)
+- `scripts/gauntlet.sh` — removed hardcoded `example-plugin-VS-RANKMATH-UAT.html` reference; output now globs any `uat-report-*.html` (C-04)
 
 ### Fixed (High priority)
 - `scripts/generate-uat-report.py` — `FLOW_DATA`, `RICE`, and `FEATURES` are now empty by default; all plugin-specific PM data must be supplied via the new `--flow-data <file.json>` argument (C-03 / H)

@@ -107,9 +107,9 @@ RULE: Never score from assumption. Demand data for Reach and Impact.
 
 ```
 SOURCES (in order of priority):
-  1. FluentSupport tickets (Admin: brain-posimyth query)
+  1. FluentSupport tickets (Admin: brain query)
   2. WP.org plugin reviews (Apify scrape via brain)
-  4. Social mentions (@posimyth, plugin name)
+  4. Social mentions (@Orbit, plugin name)
 
 MINING PATTERN:
   → Extract all mentions of pain/friction/request
@@ -132,8 +132,8 @@ OUTPUT FORMAT:
 ```
 TRACK (monthly minimum):
   TPA competitors: ElementsKit, HappyAddons, Avada Builder, JetElements
-  NexterWP competitors: Kadence, GeneratePress, Blocksy, Astra
-  UiChemy competitors: Locofy, Anima, Builder.io
+  example-plugin competitors: Kadence, GeneratePress, Blocksy, Astra
+  example-plugin competitors: Locofy, Anima, Builder.io
 
 FOR EACH competitor:
   → Check changelog / release notes
@@ -192,7 +192,7 @@ OUTPUT FORMAT:
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | Roadmap history, past RICE, feedback patterns, fan-out read on 02–09 | Admin |
+| `brain` | Roadmap history, past RICE, feedback patterns, fan-out read on 02–09 | Admin |
 | `fluentsupport-posi` | Mine support tickets for user pain points + feedback patterns | Admin |
 | `clickup-dora-posi` | Update roadmap tasks, sprint assignments via Dora | Admin |
 | Context7 | WP plugin market docs, competitor research | — |

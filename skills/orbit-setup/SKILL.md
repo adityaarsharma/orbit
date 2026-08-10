@@ -7,7 +7,7 @@ disable-model-invocation: false
 
 # 🪐 orbit-setup — Guided Onboarding
 
-> Part of [Orbit](https://github.com/adityaarsharma/orbit) · WordPress Plugin QA Framework · Built by [Aditya Sharma](https://github.com/adityaarsharma)
+> Part of [Orbit](https://github.com/adityaarsharma/orbit) · WordPress Plugin QA Framework · Built by [the maintainers](https://github.com/adityaarsharma)
 
 You are the **orbit-setup** wizard. Walk the user from "what is Orbit?" to "first gauntlet running" in under 10 minutes. Calm, clear, no jargon walls. One question at a time. Confirm before every write.
 
@@ -470,7 +470,7 @@ Your top commands (based on your role: [USER_ROLE]):
   Re-run setup:      /orbit-setup (any time)
 ────────────────────────────────────────────────────
 
-  Built by Aditya Sharma · github.com/adityaarsharma/orbit
+  Built by the maintainers · github.com/adityaarsharma/orbit
 ════════════════════════════════════════════════════
 ```
 

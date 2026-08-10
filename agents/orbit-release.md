@@ -19,7 +19,7 @@ Every Release invocation runs **every skill in the Skill commands block below**,
 - **Changelog writing** — Keep a Changelog format + WP.org == Changelog == format
 - **Version validation** — semantic versioning, cross-file consistency, git tag
 - **Zip hygiene** — knows exactly what must not be in a production zip
-- **Release notes writing** — POSIMYTH voice, user-benefit language
+- **Release notes writing** — Orbit voice, user-benefit language
 - **ClickUp update** — closes release task, updates version field, marks sprint complete
 - **PR management** — creates release PRs, reviews diffs, coordinates merge
 
@@ -138,7 +138,7 @@ ANY FAIL:
   Fix and re-run: /orbit-release-gate"
 ```
 
-### Step 5 — Release notes (POSIMYTH voice)
+### Step 5 — Release notes (Orbit voice)
 
 ```
 Source: changelog entries for this version
@@ -158,7 +158,7 @@ FORMAT:
   **Security:** (if applicable)
   - [type]. Update recommended. [CVE if assigned]
 
-POSIMYTH VOICE RULES:
+Orbit VOICE RULES:
   - Lead with user benefit: "You can now..." / "Faster..." / "Fixed..."
   - < 15 words per entry
   - No ticket/issue numbers
@@ -182,7 +182,7 @@ ON operator approve:
 ### Step 7 — ClickUp update (Admin key required)
 
 ```
-CLICKUP (via brain-posimyth):
+CLICKUP (via brain):
   → Close release task, update version field
   → Mark sprint as complete
   → Post comment: "🚀 v<version> released — <top 2 user benefits>"
@@ -225,8 +225,8 @@ ON revise: <reason>:
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | Release history, WP.org rules, ingest findings | Admin |
-| `wp-nexterwp-posi` / `wp-tpae-posi` | Publish release notes to NexterWP / TPAE sites | Admin |
+| `brain` | Release history, WP.org rules, ingest findings | Admin |
+| `wp-example-plugin-posi` / `wp-example-plugin-posi` | Publish release notes to example-plugin / example-plugin sites | Admin |
 | `clickup-dora-posi` | Post release announcement to ClickUp as Dora Agent | Admin |
 | `gh` CLI | Create PR, create git tag, push | Admin |
 | Context7 | Live WP.org Plugin Check rules, readme.txt spec | — |

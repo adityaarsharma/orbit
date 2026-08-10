@@ -14,8 +14,8 @@ plugins/free/*/
 .env.local
 .env.test
 qa.config.json
-rankready/
-nexterwp/
+example-plugin/
+example-plugin/
 # IP clean-room: quarantined competitor references must NEVER ship
 .clean-room/
 # Private brain seeders carry org-internal policy (escalation contacts, vendor decisions) — never commit

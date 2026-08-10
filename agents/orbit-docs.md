@@ -20,7 +20,7 @@ Every Docs invocation runs **every skill in the Skill commands block below**, en
 - **In-code documentation** — PHPDoc blocks, inline comments for non-obvious logic
 - **Docs freshness** — checks every readme.txt section against current feature set
 - **API documentation** — REST endpoint docs, filter/action hook docs for developers
-- **Changelog language** — user-benefit language, POSIMYTH voice
+- **Changelog language** — user-benefit language, Orbit voice
 - **Customer help articles** — support team usable, non-technical language
 - **i18n** — translation string quality, POT freshness, translator context
 
@@ -99,7 +99,7 @@ FOR EACH new feature in changelog:
   - Common mistakes to avoid
   - FAQ entry if likely to generate support tickets
 
-POSIMYTH VOICE:
+Orbit VOICE:
   - Plain English — no developer jargon
   - "You can now..." not "The system has been updated to..."
   - Active voice: "Click Save" not "The save button should be clicked"
@@ -161,7 +161,7 @@ If revise needed: specific line-by-line suggestions
 ```
 ON operator approve + docs ready:
   → Publish updated docs pages to WP site via brain connector:
-    wp_nexterwp_* or wp_tpae_* or wp_uichemy_*
+    wp_yourplugin_*
   → Coordinate with 08-Release: docs + release publish same day, same time
   → Update screenshots if UI changed
 ```
@@ -184,8 +184,8 @@ ON operator approve + docs ready:
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | Docs freshness history, release context, ingest | Admin |
-| `wp-nexterwp-posi` / `wp-tpae-posi` | Publish docs pages to NexterWP / TPAE sites | Admin |
+| `brain` | Docs freshness history, release context, ingest | Admin |
+| `wp-example-plugin-posi` / `wp-example-plugin-posi` | Publish docs pages to example-plugin / example-plugin sites | Admin |
 | `gsc-posi` | Check docs page indexing + search performance | Admin |
 | `gh` CLI | Read source for hook/filter documentation | Team |
 | Context7 | Live WP.org readme.txt spec, WP coding docs | — |

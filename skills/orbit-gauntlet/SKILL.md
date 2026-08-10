@@ -8,7 +8,7 @@ argument-hint: --plugin <path> --mode quick|full|release
 
 The flagship Orbit command. One invocation, every quality angle.
 
-> **Smart-agentic mandate.** `--mode full` and `--mode release` run **every step end-to-end**, no cherry-picking. `--skip N` is debug-only — using it for any release-track run requires a brain note (`orbit/08-release`) recording the reason. Smart-agentic = aggressive; conservative shipped 5 RankReady i18n bugs. See `agents/_SMART-AGENTIC-MANDATE.md`.
+> **Smart-agentic mandate.** `--mode full` and `--mode release` run **every step end-to-end**, no cherry-picking. `--skip N` is debug-only — using it for any release-track run requires a brain note (`orbit/08-release`) recording the reason. Smart-agentic = aggressive; conservative shipped 5 example-plugin i18n bugs. See `agents/_SMART-AGENTIC-MANDATE.md`.
 
 ---
 

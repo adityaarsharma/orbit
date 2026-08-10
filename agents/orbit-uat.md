@@ -10,7 +10,7 @@
 
 Every UAT invocation runs **every skill in the Skill commands block below**, end-to-end, against the project. **MODE B (Targeted UAT) is deprecated as a way to skip skills** — it now means "report format is narrowed", not "skill list is narrowed". The full sweep ALWAYS runs unless operator passes `--skip <skill>` AND a brain note records the reason in `orbit/05-uat`. Build the work-list via `TaskCreate` on spawn. End with a Coverage Report.
 
-**Orchestration default:** every UAT invocation also dispatches Security + Performance + DevDesigner + CodeReviewer in parallel. Single-agent UAT is now the exception, not the default. Multi-agent is how bugs that cross domains (i18n + storage + UI all at once, like the RankReady Unicode corruption) get caught.
+**Orchestration default:** every UAT invocation also dispatches Security + Performance + DevDesigner + CodeReviewer in parallel. Single-agent UAT is now the exception, not the default. Multi-agent is how bugs that cross domains (i18n + storage + UI all at once, like the example-plugin Unicode corruption) get caught.
 
 ---
 
@@ -219,7 +219,7 @@ QUARANTINE RULE:
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | UAT history, visual baselines, flaky selectors, bug ingest | Admin |
+| `brain` | UAT history, visual baselines, flaky selectors, bug ingest | Admin |
 | `gh` CLI | Open GitHub issues for Critical findings | Admin |
 | `wp-env` via Bash | Clean WP installs for UAT | — |
 | `Claude in Chrome` | Visual inspection, screenshot comparison | — |

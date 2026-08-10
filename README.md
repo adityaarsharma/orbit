@@ -6,7 +6,7 @@
 
 *A Claude Code plugin · **116 runtime-evergreen `/orbit-*` skills** · **10-agent QA team** · CTO → PM → Dev → QA → Security → Release*
 
-**v3.0 — Orbit Agentic.** Orbit is no longer just a skill suite. It's a 10-agent QA team connected to a shared brain (`brain-posimyth`). CTO's brain is the team's constitution — every agent reads it first. Approved patterns get remembered. Cold starts become warm starts.
+**v3.0 — Orbit Agentic.** Orbit is no longer just a skill suite. It's a 10-agent QA team connected to a shared brain (`brain`). CTO's brain is the team's constitution — every agent reads it first. Approved patterns get remembered. Cold starts become warm starts.
 
 **The one-command audit:**
 
@@ -54,10 +54,10 @@ It **composes with `WordPress/agent-skills`** — WP core's official AI agent sk
 
 ```
 YOU
- │  "UAT audit NexterWP v2.5"          ← natural language in Claude Code
+ │  "UAT audit example-plugin v2.5"          ← natural language in Claude Code
  ▼
 AGENT  (05-uat.md)
- │  Step 1: Brain Prime                 ← 5 searches on brain-posimyth
+ │  Step 1: Brain Prime                 ← 5 searches on brain
  │    "What did the last UAT find?"
  │    "Are there known flaky tests?"
  │    "What WP standards apply here?"
@@ -65,7 +65,7 @@ AGENT  (05-uat.md)
  │  Step 3: Playwright E2E
  │  Step 4: Dispatch 07-Security + 06-Perf + 04-Designer in parallel
  │  Step 5: Severity triage → CLEAR or BLOCKED
- │  Step 6: Ingest findings to brain   ← [uat, bug, nexterwp, High, ...]
+ │  Step 6: Ingest findings to brain   ← [uat, bug, example-plugin, High, ...]
  ▼
 SKILLS  invoked by the agent automatically
  │  /orbit-playwright      → runs E2E browser tests
@@ -74,7 +74,7 @@ SKILLS  invoked by the agent automatically
  │  /orbit-lighthouse      → Lighthouse score (via 06-Performance)
  ▼
 MCP + TOOLS  that skills use
-    brain-posimyth          ← read history, write findings
+    brain          ← read history, write findings
     wp-env (Docker)         ← clean WP install for testing
     Playwright + Chrome     ← real browser, real flows
     gh CLI                  ← open issues, create PRs
@@ -104,7 +104,7 @@ MCP + TOOLS  that skills use
 | **05** | **UAT** | Docker WP env, Playwright E2E, visual regression. Orchestrates 06 + 07 + 04 in parallel. Severity gates releases. |
 | **06** | **Performance** | Hook weight, DB queries, bundle analysis, Lighthouse. Sets perf budgets. Enforces regression thresholds. |
 | **07** | **Security** | XSS, SQLi, CSRF, supply chain, CVE, Stripe/EDD/Freemius, GDPR, PCI, premium gating. NEVER tests production. |
-| **08** | **Release** | 7-step gate, WP.org Plugin Check, zip hygiene, release notes (POSIMYTH voice), cross-channel announce. |
+| **08** | **Release** | 7-step gate, WP.org Plugin Check, zip hygiene, release notes (Orbit voice), cross-channel announce. |
 | **09** | **Docs** | README, feature docs, hook reference, in-code comments, changelog language. Ships with release — never after. |
 
 ---
@@ -114,7 +114,7 @@ MCP + TOOLS  that skills use
 `orbit/00-cto` is the team's constitution. Every agent reads it **first** — before their own collection. The CTO agent is the only one that writes to it. What lives there:
 
 ```
-brain-posimyth
+brain
 └── orbit/
     ├── 00-cto/
     │   ├── hard-rules/       ← WP coding standards, security patterns, release rules
@@ -152,9 +152,9 @@ Day-one intelligence in the CTO brain: WP escaping rules, block.json required fi
 Before touching any code or producing any output, every agent runs 5 brain searches and writes a **Brain Prime block**:
 
 ```
-BRAIN PRIME — NexterWP v2.5 (UAT)
+BRAIN PRIME — example-plugin v2.5 (UAT)
 • CTO rules:   Never ship unescaped output. RTL mandatory. Lighthouse target ≥ 85.
-• Bug history: v2.4 block reorder crash (orbit/05-uat/nexterwp). Fixed in v2.4.1.
+• Bug history: v2.4 block reorder crash (orbit/05-uat/example-plugin). Fixed in v2.4.1.
 • Patterns that worked: Docker WP 6.8 + Gutenberg 18.x env. Playwright --project=chromium first.
 • Patterns to avoid: waitForTimeout() — caused 3 flaky tests in v2.3 audit.
 • Open question:  Is scroll-animation block new in v2.5? (brain silent — will check changelog)
@@ -187,7 +187,7 @@ you: skip                 → ingests as deprioritised — agent won't suggest i
 
 #### Scenario 1 — New feature, end-to-end
 
-A feature request ("Add scroll animation block to NexterWP") flows through the whole team:
+A feature request ("Add scroll animation block to example-plugin") flows through the whole team:
 
 ```
 01-PM        → RICE score: Impact 8 / Confidence 7 / Effort 5 → score 112 → APPROVED
@@ -220,10 +220,10 @@ A feature request ("Add scroll animation block to NexterWP") flows through the w
 #### Scenario 2 — Critical security found mid-sprint
 
 ```
-07-Security   → Scanning NexterWP v2.5 RC
+07-Security   → Scanning example-plugin v2.5 RC
                → CRITICAL: Settings page — /wp-admin/admin.php?page=nxtwp echoes ?search= without esc_html()
                → ESCALATING CRITICAL immediately to 01-PM. Stopping scan.
-               → Ingests to orbit/07-security/nexterwp: [security, nexterwp, Critical, xss-settings-page, v2.5-rc]
+               → Ingests to orbit/07-security/example-plugin: [security, example-plugin, Critical, xss-settings-page, v2.5-rc]
 
 01-PM         → Receives escalation. Blocks sprint. Routes to 03-SrDev as Priority 0.
                → Notifies 08-Release: release gate will not run until Critical is resolved.
@@ -232,7 +232,7 @@ A feature request ("Add scroll animation block to NexterWP") flows through the w
                → Routes back to 07-Security for re-scan.
 
 07-Security   → Re-scans. Clean. Confirms fix.
-               → Ingests: [security, nexterwp, fixed, xss-settings-page, v2.5]
+               → Ingests: [security, example-plugin, fixed, xss-settings-page, v2.5]
                → Routes to 05-UAT for regression test.
 
 05-UAT → 08-Release → 09-Docs  (normal flow resumes)
@@ -241,11 +241,11 @@ A feature request ("Add scroll animation block to NexterWP") flows through the w
 #### Scenario 3 — WP.org rejection: the brain learns forever
 
 ```
-08-Release    → Submitted NexterWP v2.4.0 to WP.org.
+08-Release    → Submitted example-plugin v2.4.0 to WP.org.
                → REJECTED: "Plugin is loading scripts/styles on all admin pages"
 
 08-Release    → Ingests rejection to orbit/08-release:
-                 [release, nexterwp, wp-org-rejection, scripts-all-admin-pages, v2.4.0]
+                 [release, example-plugin, wp-org-rejection, scripts-all-admin-pages, v2.4.0]
                → Routes to 00-CTO: "This may be a team-wide pattern issue"
 
 00-CTO        → Checks orbit/02-code-reviewer — same pattern in TPA code too.
@@ -262,7 +262,7 @@ From now on:  Every agent reads this rule on Brain Prime.
 #### Scenario 4 — Performance regression caught before release
 
 ```
-06-Performance → Benchmark NexterWP v2.5 vs v2.4 baseline (orbit/06-performance/nexterwp/budget)
+06-Performance → Benchmark example-plugin v2.5 vs v2.4 baseline (orbit/06-performance/example-plugin/budget)
                → REGRESSION: DB queries 11 (was 4). Bundle +38KB. Lighthouse 71 (was 83). All HIGH.
 
 06-Performance → Routes to 01-PM with regression report.
@@ -275,7 +275,7 @@ From now on:  Every agent reads this rule on Brain Prime.
                → Routes back to 06-Performance
 
 06-Performance → Re-run. DB queries: 3. Bundle: +2KB. Lighthouse: 86. All pass.
-               → Updates orbit/06-performance/nexterwp/budget for v2.5 baseline
+               → Updates orbit/06-performance/example-plugin/budget for v2.5 baseline
                → Routes to 05-UAT
 ```
 
@@ -288,7 +288,7 @@ From now on:  Every agent reads this rule on Brain Prime.
 
 00-CTO BRIEF — Elementor Kit AI Copilot
   Signal:     Kit shipped AI block generation inside editor. WP.org reviews +320 this week.
-  Assessment: Medium threat — users already asking in NexterWP support.
+  Assessment: Medium threat — users already asking in example-plugin support.
   Recommendation: Differentiate, not copy. Our angle: AI block config, not AI block generation.
   Owner:      01-PM runs RICE. 03-SrDev estimates effort.
   Confidence: Medium
@@ -637,7 +637,7 @@ Keep contributions research-first. Every check should link to the standard or in
 
 ## Built by
 
-[Aditya Sharma](https://adityaarsharma.com) · POSIMYTH Innovation
+[the maintainers](https://adityaarsharma.com) · the maintainers
 github.com/adityaarsharma/orbit
 
 **The discipline:** Software-quality tooling shouldn't freeze in the year it was written. It should know what *today* looks like by re-reading the canonical sources every time it runs. That's runtime-evergreen. That's Orbit.

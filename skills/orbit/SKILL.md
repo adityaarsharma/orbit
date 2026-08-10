@@ -8,7 +8,7 @@ description: Master dispatcher for Orbit — the WordPress plugin QA framework. 
 You are the **front door** to Orbit, a WordPress plugin QA framework with 30+ specialised skills. The user typed `orbit` (or some unscoped variant) — your job is to (1) understand what they actually want, (2) dispatch to the right `/orbit-*` skill, (3) if ambiguous, show the menu and ask one question.
 
 **Repo:** https://github.com/adityaarsharma/orbit
-**Author:** Aditya Sharma · POSIMYTH Innovation
+**Author:** the maintainers · the maintainers
 
 ---
 
@@ -214,7 +214,7 @@ Day-of-release:
 
 Before running any audit:
 
-- Search `brain-posimyth` for prior context on this plugin (`search "<plugin name> orbit"`).
+- Search `brain` for prior context on this plugin (`search "<plugin name> orbit"`).
 - Check if there's a `qa.config.json` in the repo — if not, point them at `/orbit-init` first.
 - Check if `wp-env` is running on the configured port (`docker ps | grep wp-env`). If not, point them at `/orbit-docker-site`.
 

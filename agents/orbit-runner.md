@@ -142,7 +142,7 @@ NEVER ingest:
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | Read orbit/00-cto (hard rules) + ingest matrix/conflict/fix results | Team |
+| `brain` | Read orbit/00-cto (hard rules) + ingest matrix/conflict/fix results | Team |
 | `gplvault-cache-posi` | Fetch premium plugin zips for Pro+Free matrix testing | Team |
 | Local `wp-env` | Start/stop Docker WP containers for each matrix cell | — (local) |
 | Local `bash` / WP-CLI | All command execution — no remote execution | — (local) |

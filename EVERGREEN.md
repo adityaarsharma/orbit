@@ -137,7 +137,7 @@ Some skills don't have an external canonical source — purely internal patterns
 
 ## Built by
 
-[Aditya Sharma](https://adityaarsharma.com) · POSIMYTH Innovation
+[the maintainers](https://adityaarsharma.com) · the maintainers
 github.com/adityaarsharma/orbit
 
 **The discipline:** Software-quality tooling shouldn't freeze in the year it was written. It should know what *today* looks like by re-reading the canonical sources every time it runs.

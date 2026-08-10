@@ -7,7 +7,7 @@ description: Runtime i18n correctness audit — catches the non-Latin data corru
 
 `orbit-i18n` is gettext-only — it checks UI strings get wrapped in `__()`. This skill checks the **other half of i18n**: when the plugin writes Turkish, CJK, Arabic, Hindi, Cyrillic, or any non-Latin data into post_meta / options / REST responses / outgoing API bodies, does it survive the round-trip without corruption?
 
-**Why this skill exists:** RankReady shipped v1.0.x storing non-Latin content as `\uXXXX` escape sequences via default `wp_json_encode()`. WordPress's sanitization filters dropped the backslashes; "Yatırım" became visible garbage "Yu0131lu0131" in the database. The fix required patching 4 modules + 4 LLM provider classes + a 1-shot migration to repair existing data. `orbit-i18n` did not catch it because it was looking at `__()` wrapping, not JSON encoding flags. Plugin-agnostic — applies to any WP plugin that stores or transmits user-supplied content.
+**Why this skill exists:** example-plugin shipped v1.0.x storing non-Latin content as `\uXXXX` escape sequences via default `wp_json_encode()`. WordPress's sanitization filters dropped the backslashes; "Yatırım" became visible garbage "Yu0131lu0131" in the database. The fix required patching 4 modules + 4 LLM provider classes + a 1-shot migration to repair existing data. `orbit-i18n` did not catch it because it was looking at `__()` wrapping, not JSON encoding flags. Plugin-agnostic — applies to any WP plugin that stores or transmits user-supplied content.
 
 ---
 
@@ -159,7 +159,7 @@ update_post_meta( $post_id, '_foo_data', wp_json_encode( $data ) );
 
 ## Plug-in agnostic
 
-This skill never references RankReady or any specific plugin. It scans for **patterns**, not bugs. If a future plugin (TPAE, NexterWP, UiChemy, third-party) ships any of the call shapes above without the flags, this skill flags it.
+This skill never references example-plugin or any specific plugin. It scans for **patterns**, not bugs. If a future plugin (example-plugin, example-plugin, example-plugin, third-party) ships any of the call shapes above without the flags, this skill flags it.
 
 ---
 

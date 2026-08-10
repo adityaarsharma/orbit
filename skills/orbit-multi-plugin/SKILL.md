@@ -1,6 +1,6 @@
 ---
 name: orbit-multi-plugin
-description: Batch-test multiple WordPress plugins in parallel with CPU throttling. Run the full gauntlet against 5+ plugins simultaneously, each on its own wp-env site. Use when the user maintains a portfolio (e.g. The Plus Addons + NexterWP + UiChemy) and says "test all my plugins", "batch QA", "audit my whole portfolio".
+description: Batch-test multiple WordPress plugins in parallel with CPU throttling. Run the full gauntlet against 5+ plugins simultaneously, each on its own wp-env site. Use when the user maintains a portfolio (e.g. The Plus Addons + example-plugin + example-plugin) and says "test all my plugins", "batch QA", "audit my whole portfolio".
 ---
 
 # 🪐 orbit-multi-plugin — Parallel batch testing
@@ -17,7 +17,7 @@ bash ~/Claude/orbit/scripts/batch-test.sh --plugins-dir ~/plugins/
 
 # Specific list
 bash scripts/batch-test.sh \
-  --plugins ~/plugins/the-plus-addons,~/plugins/nexterwp,~/plugins/uichemy \
+  --plugins ~/plugins/the-plus-addons,~/plugins/example-plugin,~/plugins/example-plugin \
   --parallel 3
 ```
 
@@ -62,9 +62,9 @@ reports-batch/
 │   ├── playwright-html/
 │   ├── skill-audits/
 │   └── ... (full report set)
-├── nexterwp/
+├── example-plugin/
 │   └── ...
-├── uichemy/
+├── example-plugin/
 │   └── ...
 └── batch-summary.html       ← top-level dashboard
 ```
@@ -98,8 +98,8 @@ Each plugin still has its own `qa.config.json` — batch-test reads them:
 
 ```bash
 ~/plugins/the-plus-addons/qa.config.json
-~/plugins/nexterwp/qa.config.json
-~/plugins/uichemy/qa.config.json
+~/plugins/example-plugin/qa.config.json
+~/plugins/example-plugin/qa.config.json
 ```
 
 If a plugin lacks `qa.config.json`, batch-test skips it with a warning. Run `/orbit-setup` for that plugin first.
@@ -163,7 +163,7 @@ bash scripts/batch-test.sh \
 Add `--slack-webhook` and a summary lands in the channel:
 
 ```
-🪐 Orbit batch test — 5 plugins, 4 passed, 1 failed (uichemy: 2 critical)
+🪐 Orbit batch test — 5 plugins, 4 passed, 1 failed (example-plugin: 2 critical)
 
 Reports: https://reports.example.com/batch-2026-04-29/
 ```

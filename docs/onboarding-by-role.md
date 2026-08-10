@@ -37,7 +37,7 @@ SKILL  /orbit-playwright, /orbit-wp-security, etc.
  │  — fetches live docs (WP changelog, CVE feeds, Elementor deprecations)
  │  — runs bash / PHP / Playwright
  ▼
-BRAIN  brain-posimyth (orbit/00-cto + own collection)
+BRAIN  brain (orbit/00-cto + own collection)
  │  — every agent reads CTO's brain first (hard rules, WP standards)
  │  — reads its own history (past findings on this plugin)
  │  — writes new findings after each session
@@ -67,7 +67,7 @@ With it: the agent starts warm — "last audit found an N+1 in get_posts(), is i
 **You don't need to pick the right agent perfectly.** Start by telling **01-PM** what you want to do — PM routes the work to the right specialist.
 
 ```
-you: "I want to release NexterWP v2.5 this Friday. What needs to happen?"
+you: "I want to release example-plugin v2.5 this Friday. What needs to happen?"
 01-PM: Checks sprint state, routes to 05-UAT + 09-Docs, 
        sets 08-Release as the final gate.
 ```
@@ -80,13 +80,13 @@ Open Claude Code. Type naturally. The agent reads its system prompt from the ins
 
 ```bash
 # Route everything through PM for complex tasks:
-"Route the v2.5 release for NexterWP — UAT is done, need gate + announce"
+"Route the v2.5 release for example-plugin — UAT is done, need gate + announce"
 
 # Or talk directly to the specialist:
 "Security scan ~/plugins/tpa/includes/settings-ajax.php for XSS and nonce issues"
-"Benchmark NexterWP v2.5 DB queries vs v2.4 baseline"
-"Generate release notes for NexterWP v2.5 changelog entries"
-"Check if NexterWP v2.5 docs are fresh for WP.org submission"
+"Benchmark example-plugin v2.5 DB queries vs v2.4 baseline"
+"Generate release notes for example-plugin v2.5 changelog entries"
+"Check if example-plugin v2.5 docs are fresh for WP.org submission"
 ```
 
 The agent will:
@@ -148,14 +148,14 @@ This seeds 40 knowledge drawers (WP Standards, Block Editor, Elementor, Security
 bash brain/seed-brain.sh --key <orbit-admin-key>
 
 # Step 2 — Open Claude Code. Talk to PM.
-"I want to audit NexterWP v2.4.1 before the release next week.
+"I want to audit example-plugin v2.4.1 before the release next week.
  What agents should run, in what order?"
 
 # 01-PM routes: 05-UAT (full audit) → 07-Security + 06-Perf + 04-Designer
 # (parallel) → 08-Release (gate) → 09-Docs (freshness)
 
 # Step 3 — Start the UAT
-"UAT audit ~/plugins/nexterwp for v2.4.1. Full audit."
+"UAT audit ~/plugins/example-plugin for v2.4.1. Full audit."
 
 # Step 4 — When UAT completes, respond to findings:
 # Critical/High → you decide: fix now or defer
@@ -163,7 +163,7 @@ bash brain/seed-brain.sh --key <orbit-admin-key>
 # you: approve        (when the report looks right)
 
 # Step 5 — Run release gate
-"Run release gate for NexterWP v2.4.1"
+"Run release gate for example-plugin v2.4.1"
 
 # Step 6 — Ship
 "approve" → 08-Release drafts release notes + cross-channel announce
@@ -181,7 +181,7 @@ bash brain/seed-brain.sh --key <orbit-admin-key>
 /orbit-lighthouse      score ~/plugins/my-plugin on staging URL
 ```
 
-Brain key → contact POSIMYTH for Team key access, or see `docs/team-access.md`.
+Brain key → contact Orbit for Team key access, or see `docs/team-access.md`.
 
 ---
 
@@ -191,7 +191,7 @@ Agents need these tools to act. They're set up once.
 
 | Tool | What agents use it for | Setup |
 |---|---|---|
-| **`brain-posimyth`** | Brain search + ingest. Required for brain-aware sessions. | Team or Admin key in Claude Code settings |
+| **`brain`** | Brain search + ingest. Required for brain-aware sessions. | Team or Admin key in Claude Code settings |
 | **`gh` CLI** | Read source code, create PRs, open issues, tag releases | `brew install gh && gh auth login` |
 | **`wp-env`** | Docker WP environment for UAT and security testing | `npm install -g @wordpress/env` |
 | **`Claude in Chrome`** | Visual regression, browser UAT, accessibility inspection | Built into Claude Code |

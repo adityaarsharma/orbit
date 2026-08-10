@@ -379,7 +379,7 @@ return [
 ## Output format
 
 ```markdown
-# WooCommerce Beta Check — jigarposimyth.instawp.xyz
+# WooCommerce Beta Check — your-staging-site.example
 Generated: 2026-06-30 09:00 UTC
 
 ## Environment

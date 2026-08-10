@@ -87,7 +87,7 @@ When multiple skills overlap, use these and only these:
 
 ## What Never Goes in This Repo
 
-- Plugin brand names (rankready, nexterwp, tpa, posimyth, nexter)
+- Plugin brand names (example-plugin, example-plugin, tpa, Orbit, example-plugin)
 - Plugin-specific test configs, setup JSONs, .wp-env.json per plugin
 - reports/, .auth/, test-results/ directories
 - Any file referencing a live staging URL or internal credential

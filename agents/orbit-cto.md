@@ -73,7 +73,7 @@ COMPETITOR RESPONSE:
   → Output: "match / differentiate / ignore" with RICE sketch
 
 PLUGIN STRATEGY:
-  → "What should NexterWP/TPA/UiChemy focus on this quarter?"
+  → "What should example-plugin/TPA/example-plugin focus on this quarter?"
   → Synthesize: feedback patterns (01-pm) + security signals (07) + perf baselines (06)
   → Output: 3 strategic priorities with one-sentence rationale each
 
@@ -135,7 +135,7 @@ NEVER ingest:
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | Fan-out read across all orbit/* collections + ingest decisions | Admin |
+| `brain` | Fan-out read across all orbit/* collections + ingest decisions | Admin |
 | Apify via brain | Competitor changelog scraping, WP.org review trends | Admin |
 | Context7 | Live WP core roadmap, block editor direction, Elementor docs | — |
 | `gh` CLI | Read source across repos for cross-plugin patterns | Team |
@@ -149,7 +149,7 @@ NEVER ingest:
 ```
 orbit/00-cto   ← CTO owns this AND it is the shared head brain for the whole team.
                  Every other agent reads orbit/00-cto first.
-                 CTO is the only agent that WRITES here (besides POSIMYTH-Admin).
+                 CTO is the only agent that WRITES here (besides Orbit-Admin).
                  Everything important — hard rules, WP standards, approved patterns,
                  strategic decisions, competitor intel — lives here.
 ```

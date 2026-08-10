@@ -43,7 +43,7 @@ ORBIT_HOME_DEFAULT="$HOME/Claude/orbit"
 ORBIT_KEYS_FILE="$HOME/.orbit/keys.env"
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 REPO_URL="https://github.com/adityaarsharma/orbit.git"
-BRAIN_URL="https://brain.posimyth.com/connectors"
+BRAIN_URL="https://brain.Orbit.com/connectors"
 
 # ── Header ──────────────────────────────────────────────────────
 if [ $UPDATE_MODE -eq 0 ]; then
@@ -76,7 +76,7 @@ if [ $UPDATE_MODE -eq 0 ]; then
 
   Repo:    github.com/adityaarsharma/orbit
   License: GPL-2.0+ (open source)
-  Author:  Aditya Sharma · POSIMYTH Innovation
+  Author:  the maintainers
 
 ════════════════════════════════════════════════════
 
@@ -275,7 +275,7 @@ fi
 
 # ── Brain connector install (via install-connectors.sh) ─────────
 echo ""
-echo "⏳ [3c] Checking brain-posimyth connectors..."
+echo "⏳ [3c] Checking brain connectors..."
 
 BRAIN_CONFIGURED=0
 BRAIN_JUST_INSTALLED=0
@@ -293,10 +293,10 @@ if python3 -c "
 import json, sys
 try:
     d = json.load(open('$CLAUDE_SETTINGS'))
-    sys.exit(0 if 'brain-posimyth' in d.get('mcpServers', {}) else 1)
+    sys.exit(0 if 'brain' in d.get('mcpServers', {}) else 1)
 except: sys.exit(1)
 " 2>/dev/null && [ -z "$ORBIT_KEY" ]; then
-  echo "   ✓ brain-posimyth already configured — skipping (no key in ~/.orbit/keys.env to refresh)"
+  echo "   ✓ brain already configured — skipping (no key in ~/.orbit/keys.env to refresh)"
   BRAIN_CONFIGURED=1
 elif [ -n "$ORBIT_KEY" ]; then
   # Run the full connector installer (whitelist cleanup + Claude Desktop + verification)
@@ -323,7 +323,7 @@ else
   echo "      Or run directly once you have a key:"
   echo "        bash install-connectors.sh <your_key>"
   echo ""
-  echo "      Get a key: contact POSIMYTH or see docs/team-access.md"
+  echo "      Get a key: contact Orbit or see docs/team-access.md"
 fi
 
 # ── Restart Claude Code (macOS — picks up new agents + MCP) ────
@@ -397,7 +397,7 @@ if [ $UPDATE_MODE -eq 0 ]; then
                          "CTO brief — Elementor just shipped X"
                          "Run release gate for my-plugin v2.5"
 
-  Connect agents to brain (requires key from POSIMYTH):
+  Connect agents to brain (requires key from Orbit):
      bash install-connectors.sh <your-brain-key>
      (validates key, detects tier, cleans stale MCPs, verifies live)
 
@@ -435,7 +435,7 @@ fi
 
 cat <<'OUTRO'
 ────────────────────────────────────────────────────
-  🪐  Built by Aditya Sharma · POSIMYTH Innovation
+  🪐  Built by the maintainers
   github.com/adityaarsharma/orbit
 ════════════════════════════════════════════════════
 

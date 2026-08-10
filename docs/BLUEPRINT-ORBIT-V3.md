@@ -15,7 +15,7 @@ Every agent now has 4 parts — like a real hire:
 | Part | What it means | Hard/Easy |
 |---|---|---|
 | **Skills** | What this agent knows and can do | Easy — already existed |
-| **Process** | HOW we do it at POSIMYTH — SOPs, guardrails, order of ops | Hard — this is the real work |
+| **Process** | HOW we do it at Orbit — SOPs, guardrails, order of ops | Hard — this is the real work |
 | **MCP** | The connectors/systems where work happens | Easy — we have them |
 | **Brain** | The intelligence layer — recalls past, learns from every approval | Evergrowing — never done |
 
@@ -28,7 +28,7 @@ The Brain is the hardest because it's like onboarding a new person. However smar
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │                         OPERATOR                                      │
-│  Plain language: "Audit NexterWP 2.3" / "RICE score backlog"         │
+│  Plain language: "Audit example-plugin 2.3" / "RICE score backlog"         │
 └───────────────────────────┬──────────────────────────────────────────┘
                             │
                             ▼
@@ -50,9 +50,9 @@ The Brain is the hardest because it's like onboarding a new person. However smar
             ▼                                       ▼
 ┌────────────────────────┐          ┌───────────────────────────────────┐
 │   MCP LAYER            │          │   BRAIN LAYER                     │
-│   (where work happens) │          │   (brain-posimyth orbit namespace)│
+│   (where work happens) │          │   (brain orbit namespace)│
 │                        │          │                                   │
-│  brain-posimyth        │          │  Team key:  READ orbit/*          │
+│  brain        │          │  Team key:  READ orbit/*          │
 │  GitHub (gh CLI)       │          │  Admin key: WRITE orbit/*         │
 │  wp-env / wp-cli       │          │                                   │
 │  Claude in Chrome      │          │  orbit/plugins/<name>             │
@@ -79,7 +79,7 @@ The discrete capabilities the agent has. What it can analyse, detect, generate, 
 ### 📋 Process
 > "The process is: upload draft to FluentCRM, set the segment, preview, then send."
 
-The POSIMYTH-specific SOP. Step-by-step order of operations. This is what makes an agent feel like your team member, not a generic Claude instance.
+The Orbit-specific SOP. Step-by-step order of operations. This is what makes an agent feel like your team member, not a generic Claude instance.
 
 **The hard part:** Process has guardrails. Every step that could go wrong has a rule:
 - Critical finding → stop and escalate (don't batch)
@@ -96,8 +96,8 @@ The POSIMYTH-specific SOP. Step-by-step order of operations. This is what makes 
 
 | Tier | Tools available |
 |---|---|
-| **Team (read-only)** | brain-posimyth read, GitHub read, Claude in Chrome, DataForSEO |
-| **Admin (write)** | brain-posimyth write, GitHub write, WP sites publish, Slack, n8n, Apify, FluentCRM |
+| **Team (read-only)** | brain read, GitHub read, Claude in Chrome, DataForSEO |
+| **Admin (write)** | brain write, GitHub write, WP sites publish, Slack, n8n, Apify, FluentCRM |
 
 Each agent file specifies exactly which connectors it uses and at what tier.
 
@@ -119,12 +119,12 @@ The intelligence layer. Two jobs:
 ## Brain — Team vs Admin key model
 
 ```
-brain-posimyth
+brain
 └── orbit/              ← Orbit namespace (separated from other namespaces)
     ├── plugins/
-    │   ├── nexterwp/   ← per-plugin findings history
+    │   ├── example-plugin/   ← per-plugin findings history
     │   ├── tpa/
-    │   └── uichemy/
+    │   └── example-plugin/
     ├── patterns/
     │   ├── approved/   ← "do this again" — approved by operator
     │   └── revised/    ← "don't do this again" — revised/rejected
@@ -158,15 +158,15 @@ No change to agent files needed between modes. The 5-step WAKE/ANALYSE/PLAN/EXEC
 See full spec at `docs/mcp-library.md`.
 
 **Must-have for any WP dev using Orbit:**
-1. `brain-posimyth` (orbit namespace) — memory
+1. `brain` (orbit namespace) — memory
 2. GitHub via `gh` CLI — code, PRs, issues
 3. `Claude in Chrome` — visual browser testing
 4. Context7 — live WP/React/PHP docs at runtime
-5. Apify (via brain-posimyth) — WP.org scraping, CVE mining
+5. Apify (via brain) — WP.org scraping, CVE mining
 6. DataForSEO — PageSpeed, SERP, performance data
 
-**POSIMYTH team additionally:**
-7. `wp-nexterwp` / `wp-theplusaddons` / `wp-posimyth` — WP publish
+**Orbit team additionally:**
+7. `wp-example-plugin` / `wp-example-plugin` / `wp-Orbit` — WP publish
 8. `n8n-mcp` — workflow automation
 10. `fluentcrm` — release email drafts
 

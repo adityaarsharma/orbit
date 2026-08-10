@@ -9,7 +9,7 @@
 > Or `/orbit` for the master menu.
 
 **Repo:** https://github.com/adityaarsharma/orbit
-**Author:** [Aditya Sharma](https://github.com/adityaarsharma) · POSIMYTH Innovation
+**Author:** [the maintainers](https://github.com/adityaarsharma) · the maintainers
 **Whitepaper / runtime-evergreen pattern:** [EVERGREEN.md](EVERGREEN.md)
 **How to add a new skill:** [skills/orbit-skill-add/SKILL.md](skills/orbit-skill-add/SKILL.md)
 **How to keep skills current:** [skills/orbit-skill-improver/SKILL.md](skills/orbit-skill-improver/SKILL.md)
@@ -96,7 +96,7 @@ Full pattern: [EVERGREEN.md](EVERGREEN.md).
 | `/orbit-block-bindings` | Block Bindings API (WP 6.5+) — modern data-source binding |
 | `/orbit-interactivity-api` | Interactivity API — modern client-side block behaviour |
 | `/orbit-block-variations` | Block variations + transforms — vs separate blocks |
-| `/orbit-nexter-block` | **Nexter Blocks smoke + value-verify pipeline — 98% attr coverage, both Free (57) and Pro (74) blocks, scopy CSS-inject attrs** |
+| `/orbit-example-plugin-block` | **example-plugin Blocks smoke + value-verify pipeline — 98% attr coverage, both Free (57) and Pro (74) blocks, scopy CSS-inject attrs** |
 
 ### 🎨 Elementor Dev (6) — **NEW v2.6**
 | Skill | What it does |
@@ -311,5 +311,5 @@ Full pattern + philosophy: [EVERGREEN.md](EVERGREEN.md).
 
 ## Built by
 
-**[Aditya Sharma](https://adityaarsharma.com)** · POSIMYTH Innovation
+**[the maintainers](https://adityaarsharma.com)** · the maintainers
 github.com/adityaarsharma/orbit

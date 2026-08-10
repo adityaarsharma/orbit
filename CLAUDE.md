@@ -9,11 +9,11 @@
 
 | Connector | URL | Tier |
 |---|---|---|
-| **brain-posimyth** | `https://brain.posimyth.com/connectors` | Admin (write) or Team (read) |
+| **brain** | `https://brain.Orbit.com/connectors` | Admin (write) or Team (read) |
 
 ### Key model
 
-| Capability | POSIMYTH-Admin key | Customer-Team key |
+| Capability | Orbit-Admin key | Customer-Team key |
 |---|---|---|
 | Read `orbit/general` | ✅ | ✅ |
 | Read own agent brain (`orbit/{agent}`) | ✅ | ✅ |
@@ -57,7 +57,7 @@ orbit/09-docs             ← freshness tracking, API doc history, voice pattern
 - Specialists **don't read each other's collections** — handoffs go through PM
 - **All writes scoped to own collection** on `approve` / `revise`
 - **CTO writes to orbit/00-cto** for hard rules, WP evergreen, approved patterns — the only agent that does
-- **POSIMYTH-Admin can also write to orbit/00-cto** for maintenance, no other key can
+- **Orbit-Admin can also write to orbit/00-cto** for maintenance, no other key can
 
 ---
 
@@ -83,12 +83,12 @@ Cross-agent handoffs: `memory/cross-agent-handoffs.md`
 **Don't call skills. Don't name agents. Say what you want.**
 
 ```
-"Audit NexterWP 2.3 before release"
+"Audit example-plugin 2.3 before release"
 "Security scan TPA — anything critical?"
 "All Gutenberg blocks passing JSON validation?"
 "RICE score these 5 features for the backlog"
 "Run UAT on the new membership module"
-"Generate release notes for NexterWP 2.3"
+"Generate release notes for example-plugin 2.3"
 "Is our payment flow GDPR compliant?"
 "What did competitors ship this month?"
 "Fix the bug UAT filed on the checkout widget"
@@ -122,10 +122,10 @@ Unclear → ask one question, then route.
 ## Full audit orchestration (05 — UAT coordinates)
 
 ```
-operator: "full audit NexterWP 2.3"
+operator: "full audit example-plugin 2.3"
 
 05 UAT
-  BRAIN PRIME → 5 searches on NexterWP history in orbit/05-uat
+  BRAIN PRIME → 5 searches on example-plugin history in orbit/05-uat
   DISPATCH (parallel):
     ├── 07 Security     PHP source scan + CVE + payment/GDPR (if applicable)
     ├── 06 Performance  Hook weight + Lighthouse + baseline comparison

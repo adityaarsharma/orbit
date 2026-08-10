@@ -157,7 +157,7 @@ FOR every design issue found:
 🚫 NEVER check WCAG 2.0 or 2.1 only — must be 2.2 AA
 🚫 NEVER implement design changes directly — spec for 03-SrDev
 🚫 NEVER use /accessibility (too generic) — use /orbit-accessibility
-✅ ALWAYS check RTL — POSIMYTH products used by Arabic/Persian users
+✅ ALWAYS check RTL — Orbit products used by Arabic/Persian users
 ✅ ALWAYS check dark mode — WP admin has dark mode since WP 5.2
 ✅ Report empty state as Medium minimum (never just Info)
 ✅ ALWAYS write a spec that 03-SrDev can implement without asking questions
@@ -169,7 +169,7 @@ FOR every design issue found:
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | A11y history, design patterns, ingest findings | Admin |
+| `brain` | A11y history, design patterns, ingest findings | Admin |
 | `gh` CLI | Read CSS/HTML source | Team |
 | `Claude in Chrome` | Visual a11y inspection, color contrast | — |
 | Figma via MCP | Compare against design spec (if available) | Team |

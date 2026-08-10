@@ -170,7 +170,7 @@ ON Code Reviewer revise: <reason>:
 
 | Connector | Operation | Key needed |
 |---|---|---|
-| `brain-posimyth` | Pull task context, ingest approved patterns | Admin |
+| `brain` | Pull task context, ingest approved patterns | Admin |
 | `gh` CLI | Read + write plugin source, create PRs | Admin |
 | `wp-env` via Bash | Local WP dev environment, test changes | — |
 | Context7 | Live WP API docs (functions, hooks, block API) | — |

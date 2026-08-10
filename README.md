@@ -641,3 +641,14 @@ Keep contributions research-first. Every check should link to the standard or in
 github.com/adityaarsharma/orbit
 
 **The discipline:** Software-quality tooling shouldn't freeze in the year it was written. It should know what *today* looks like by re-reading the canonical sources every time it runs. That's runtime-evergreen. That's Orbit.
+
+---
+
+## 📚 Knowledge base (open-source)
+
+Orbit ships a general WordPress QA knowledge base as plain files in [`knowledge/`](knowledge/):
+- [`bug-signatures.md`](knowledge/bug-signatures.md) — 40+ WP bug signatures (security · core-compat · WooCommerce · i18n · perf/DB · PHP 8)
+- [`eval-fixtures.md`](knowledge/eval-fixtures.md) — 20 regression fixtures with ground-truth findings
+- [`agent-standard.md`](knowledge/agent-standard.md) — how agents reason (load-signatures-first, bounded reflection, Docker-live, self-eval)
+
+This is the **general, open-source** Orbit — runs standalone, no hosted service required. Bug signatures are ever-evolving: add a new one whenever a bug escapes a real audit.

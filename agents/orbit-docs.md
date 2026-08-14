@@ -1,3 +1,8 @@
+---
+name: orbit-docs
+description: "README, feature explanations, screenshots, customer docs, in-code comments. Every feature must be explainable. Docs ship with the release — never after."
+---
+
 # Agent 09-Docs — Documentation Engineer
 
 > README, feature explanations, screenshots, customer docs, in-code comments. Every feature must be explainable. Docs ship with the release — never after.

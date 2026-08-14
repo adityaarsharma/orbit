@@ -4,6 +4,16 @@ All notable changes to Orbit follow [Keep a Changelog](https://keepachangelog.co
 
 ---
 
+## [4.1.2] — Fresh-Install Fixes
+
+### Fixed
+- **Agents now register on a fresh install.** Every `agents/orbit-*.md` was missing YAML frontmatter after the `orbit-*-agent.md` → `orbit-*.md` rename, so Claude Code silently did not recognise them as agents. Added `name:` + `description:` to all 11. (Upgraders kept their old labelled files, so the break was invisible to them.)
+- **Updater no longer sabotages itself.** `.orbit_version` was git-tracked but rewritten by the installer every run, leaving the tree permanently dirty so the next `git pull --rebase` failed forever. It is now untracked (`.gitignore`) and removed from version control.
+- **Stale agents are cleaned up on upgrade.** `OLD_ORBIT_AGENTS` in `install.sh` covered only the v2.x and v3.x-numeric names; the `orbit-*-agent.md` names were never removed, leaving every agent duplicated. Added them.
+- **Dead addresses removed.** Stripped the non-existent `/orbit-example-plugin-block` command (routes, code-reviewer, SKILLS) and the mangled `brain.Orbit.com` sub-endpoints block + dead `BRAIN_URL` (routes, install.sh) left behind by the open-source find-and-replace.
+
+---
+
 ## [4.1.1] — Bulk Admin Action Signature
 
 ### Added

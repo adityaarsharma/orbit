@@ -43,7 +43,6 @@ ORBIT_HOME_DEFAULT="$HOME/Claude/orbit"
 ORBIT_KEYS_FILE="$HOME/.orbit/keys.env"
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 REPO_URL="https://github.com/adityaarsharma/orbit.git"
-BRAIN_URL="https://brain.Orbit.com/connectors"
 
 # ── Header ──────────────────────────────────────────────────────
 if [ $UPDATE_MODE -eq 0 ]; then
@@ -195,6 +194,11 @@ OLD_ORBIT_AGENTS=(
   "03-senior-dev.md" "04-dev-designer.md" "05-uat.md"
   "06-performance.md" "07-security.md"  "08-release.md"
   "09-docs.md"
+  # orbit-*-agent.md names (renamed to orbit-*.md in the general release)
+  "orbit-cto-agent.md"        "orbit-pm-agent.md"        "orbit-code-reviewer-agent.md"
+  "orbit-senior-dev-agent.md" "orbit-dev-designer-agent.md" "orbit-uat-agent.md"
+  "orbit-perf-agent.md"       "orbit-security-agent.md"  "orbit-release-agent.md"
+  "orbit-docs-agent.md"       "orbit-runner-agent.md"
 )
 AGENTS_REMOVED=0
 for old_agent in "${OLD_ORBIT_AGENTS[@]}"; do

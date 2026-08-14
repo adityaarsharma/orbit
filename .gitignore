@@ -20,3 +20,6 @@ example-plugin/
 .clean-room/
 # Private brain seeders carry org-internal policy (escalation contacts, vendor decisions) — never commit
 *.private.sh
+
+# runtime version stamp — rewritten by update.sh, must stay untracked
+.orbit_version

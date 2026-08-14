@@ -1,3 +1,8 @@
+---
+name: orbit-uat
+description: "Real-world testing in Docker WP environments. Spins up clean installs, runs flows, files bugs. Orchestrates full audits. The final human-perspective check before release."
+---
+
 # Agent 05-UAT — UAT Engineer
 
 > Real-world testing in Docker WP environments. Spins up clean installs, runs flows, files bugs. Orchestrates full audits. The final human-perspective check before release.

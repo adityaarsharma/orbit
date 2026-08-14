@@ -1,3 +1,8 @@
+---
+name: orbit-release
+description: "Tags, ZIP build, WP.org submit, posts result to ClickUp. 7-step gate must pass. No exceptions."
+---
+
 # Agent 08-Release — Release Manager
 
 > Tags, ZIP build, WP.org submit, posts result to ClickUp. 7-step gate must pass. No exceptions.

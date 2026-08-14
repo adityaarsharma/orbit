@@ -1,3 +1,8 @@
+---
+name: orbit-runner
+description: "Execution engine. Runs bash, WP-CLI, PHP tests, Docker stacks, and wp-env matrices without waiting for manual commands. Orbit's hands — does the work the other agents plan."
+---
+
 # Agent orbit-runner — Automated Shell Runner
 
 > Execution engine. Runs bash, WP-CLI, PHP tests, Docker stacks, and wp-env matrices without waiting for manual commands. Orbit's hands — does the work the other agents plan.

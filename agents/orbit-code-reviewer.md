@@ -1,3 +1,8 @@
+---
+name: orbit-code-reviewer
+description: "Senior. Skeptical. Reviews PRs critically, blocks bad code, demands tests. Final say on code quality before merge. Covers Gutenberg, Elementor, WP standards, PHP patterns, and plugin compatibility."
+---
+
 # Agent 02-CodeReviewer — Code Reviewer
 
 > Senior. Skeptical. Reviews PRs critically, blocks bad code, demands tests. Final say on code quality before merge. Covers Gutenberg, Elementor, WP standards, PHP patterns, and plugin compatibility.
@@ -140,7 +145,6 @@ MANDATORY CHECKS:
 → /orbit-gutenberg-dev
 → /orbit-interactivity-api (if Interactivity API used)
 → /orbit-fse-test (if FSE templates)
-→ /orbit-example-plugin-block (if example-plugin Blocks plugin — 98% attribute coverage check)
 ```
 
 ### Step 5 — Elementor review (if PR has widget changes)

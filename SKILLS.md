@@ -96,7 +96,6 @@ Full pattern: [EVERGREEN.md](EVERGREEN.md).
 | `/orbit-block-bindings` | Block Bindings API (WP 6.5+) — modern data-source binding |
 | `/orbit-interactivity-api` | Interactivity API — modern client-side block behaviour |
 | `/orbit-block-variations` | Block variations + transforms — vs separate blocks |
-| `/orbit-example-plugin-block` | **example-plugin Blocks smoke + value-verify pipeline — 98% attr coverage, both Free (57) and Pro (74) blocks, scopy CSS-inject attrs** |
 
 ### 🎨 Elementor Dev (6) — **NEW v2.6**
 | Skill | What it does |

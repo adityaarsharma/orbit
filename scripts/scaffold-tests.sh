@@ -35,8 +35,8 @@ echo ""
 # ─── 1. Main plugin file + version + prefix ──────────────────────────────────
 MAIN_FILE=$(grep -lE "^\s*\*?\s*Plugin Name:" "$PLUGIN_PATH"/*.php 2>/dev/null | head -1 || echo "")
 if [ -n "$MAIN_FILE" ]; then
-  VERSION=$(grep -E "^\s*\*?\s*Version:" "$MAIN_FILE" | head -1 | sed -E 's/.*Version:\s*//' | tr -d ' \r')
-  TEXT_DOMAIN=$(grep -iE "^\s*\*?\s*Text Domain:" "$MAIN_FILE" | head -1 | sed -E 's/.*Text Domain:\s*//' | tr -d ' \r')
+  VERSION=$(grep -E "^[[:space:]]*\*?[[:space:]]*Version:" "$MAIN_FILE" | head -1 | sed -E 's/.*Version:[[:space:]]*//' | tr -d ' \r')
+  TEXT_DOMAIN=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Text Domain:" "$MAIN_FILE" | head -1 | sed -E 's/.*Text Domain:[[:space:]]*//' | tr -d ' \r')
 else
   VERSION=""
   TEXT_DOMAIN="$PLUGIN_SLUG"
@@ -56,13 +56,13 @@ ADMIN_SLUGS_JSON=$(echo "$ADMIN_PAGES" | awk 'NF{print "    \""$0"\""}' | paste 
 echo "→ Shortcodes"
 SHORTCODES=$(grep -rEh "add_shortcode\s*\(\s*['\"]([^'\"]+)['\"]" "$PLUGIN_PATH" \
   --include="*.php" --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | \
-  sed -E "s/.*add_shortcode\s*\(\s*['\"]([^'\"]+)['\"].*/\1/" | sort -u || true)
+  sed -E "s/.*add_shortcode[[:space:]]*\([[:space:]]*['\"]([^'\"]+)['\"].*/\1/" | sort -u || true)
 
 # ─── 4. REST routes ──────────────────────────────────────────────────────────
 echo "→ REST routes"
 REST_ROUTES=$(grep -rEh "register_rest_route\s*\(\s*['\"]([^'\"]+)['\"]" "$PLUGIN_PATH" \
   --include="*.php" --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | \
-  sed -E "s/.*register_rest_route\s*\(\s*['\"]([^'\"]+)['\"].*/\1/" | sort -u || true)
+  sed -E "s/.*register_rest_route[[:space:]]*\([[:space:]]*['\"]([^'\"]+)['\"].*/\1/" | sort -u || true)
 
 # ─── 5. AJAX actions ─────────────────────────────────────────────────────────
 echo "→ AJAX actions"
@@ -91,7 +91,7 @@ BLOCKS=$(find "$PLUGIN_PATH" -name "block.json" -not -path "*/node_modules/*" -n
 echo "→ Custom post types"
 CPTS=$(grep -rEh "register_post_type\s*\(\s*['\"]([^'\"]+)['\"]" "$PLUGIN_PATH" \
   --include="*.php" --exclude-dir=vendor --exclude-dir=node_modules 2>/dev/null | \
-  sed -E "s/.*register_post_type\s*\(\s*['\"]([^'\"]+)['\"].*/\1/" | sort -u || true)
+  sed -E "s/.*register_post_type[[:space:]]*\([[:space:]]*['\"]([^'\"]+)['\"].*/\1/" | sort -u || true)
 
 # ─── 9. Custom tables (dbDelta) ──────────────────────────────────────────────
 echo "→ Custom tables"

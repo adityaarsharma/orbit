@@ -27,8 +27,8 @@ if [ -z "$MAIN_FILE" ]; then
   exit 0
 fi
 
-TEXT_DOMAIN=$(grep -iE "^\s*\*?\s*Text Domain:" "$MAIN_FILE" | head -1 | sed -E 's/.*Text Domain:\s*//' | tr -d ' \r')
-DOMAIN_PATH=$(grep -iE "^\s*\*?\s*Domain Path:" "$MAIN_FILE" | head -1 | sed -E 's/.*Domain Path:\s*//' | tr -d ' \r')
+TEXT_DOMAIN=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Text Domain:" "$MAIN_FILE" | head -1 | sed -E 's/.*Text Domain:[[:space:]]*//' | tr -d ' \r')
+DOMAIN_PATH=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Domain Path:" "$MAIN_FILE" | head -1 | sed -E 's/.*Domain Path:[[:space:]]*//' | tr -d ' \r')
 
 if [ -z "$TEXT_DOMAIN" ]; then
   echo -e "${RED}✗ Text Domain not declared in plugin header${NC}"
@@ -146,9 +146,10 @@ fi
 
 # ─── Check JS string coverage (WP 5.0+ wp.i18n) ──────────────────────────────
 echo ""
-JS_I18N_USAGE=$(grep -rEn "__\s*\(\s*['\"][^'\"]+['\"]\s*,\s*['\"]${TEXT_DOMAIN}['\"]|_n\s*\(|_x\s*\(|wp\.i18n\.__" \
+JS_I18N_USAGE=$(grep -rEn "__\s*\(\s*['\"][^'\"]+['\"]\s*,\s*['\"]${TEXT_DOMAIN}['\"]|wp\.i18n\.__" \
   "$PLUGIN_PATH" --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" \
-  --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir=build 2>/dev/null | wc -l | tr -d ' ')
+  --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir=build \
+  --exclude="*.min.js" --exclude="*.min.css" 2>/dev/null | wc -l | tr -d ' ')
 
 if [ "$JS_I18N_USAGE" -gt 0 ]; then
   # POT should include JS strings (make-pot handles this since WP-CLI 2.2+)

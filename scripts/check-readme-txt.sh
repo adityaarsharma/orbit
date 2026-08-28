@@ -78,21 +78,21 @@ elif [ "$SHORT_LEN" -gt 150 ]; then
 fi
 
 # Tag count (WP.org allows max 5 in-use tags, up to 12 in field)
-TAGS_LINE=$(grep "^Tags:" "$README" | head -1 | sed 's/^Tags://' | tr ',' '\n' | grep -v '^\s*$' | wc -l | tr -d ' ')
+TAGS_LINE=$(grep "^Tags:" "$README" | head -1 | sed 's/^Tags://' | tr ',' '\n' | grep -v '^[[:space:]]*$' | wc -l | tr -d ' ')
 if [ "$TAGS_LINE" -gt 12 ]; then
   echo -e "${RED}✗ Tags: has $TAGS_LINE entries (WP.org limit: 12)${NC}"
   FAIL=1
 fi
 
 # Stable tag must match plugin version (check against plugin main file if present)
-STABLE_TAG=$(grep "^Stable tag:" "$README" | head -1 | sed 's/^Stable tag:\s*//' | tr -d ' \r')
+STABLE_TAG=$(grep "^Stable tag:" "$README" | head -1 | sed 's/^Stable tag:[[:space:]]*//' | tr -d ' \r')
 if [ -z "$STABLE_TAG" ] || [ "$STABLE_TAG" = "trunk" ]; then
   echo -e "${YELLOW}⚠ Stable tag is empty or 'trunk' (should be a version number like 1.2.3)${NC}"
   WARN=1
 fi
 
 # Tested up to — must be a valid WP version
-TESTED_UP=$(grep "^Tested up to:" "$README" | head -1 | sed 's/^Tested up to:\s*//' | tr -d ' \r')
+TESTED_UP=$(grep "^Tested up to:" "$README" | head -1 | sed 's/^Tested up to:[[:space:]]*//' | tr -d ' \r')
 if [ -n "$TESTED_UP" ]; then
   # Compare with latest stable WP (hardcoded to current state — update periodically)
   LATEST_WP="6.9"

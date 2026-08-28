@@ -35,7 +35,7 @@ REQUIRED=(
 )
 
 # Validate "Requires Plugins" header (WP 6.5+) — comma-separated WP.org slugs only
-REQUIRES_PLUGINS=$(grep -iE "^\s*\*?\s*Requires Plugins:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires Plugins:\s*//' | tr -d '\r' || true)
+REQUIRES_PLUGINS=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Requires Plugins:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires Plugins:[[:space:]]*//' | tr -d '\r' || true)
 if [ -n "$REQUIRES_PLUGINS" ]; then
   # Must be comma-separated lowercase slugs, no .php suffixes, no URLs
   if echo "$REQUIRES_PLUGINS" | grep -qE '[A-Z]'; then
@@ -64,14 +64,14 @@ done
 
 # Text Domain must match plugin folder
 PLUGIN_SLUG=$(basename "$PLUGIN_PATH")
-TEXT_DOMAIN=$(grep -iE "^\s*\*?\s*Text Domain:" "$MAIN_FILE" | head -1 | sed -E 's/.*Text Domain:\s*//' | tr -d ' \r')
+TEXT_DOMAIN=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Text Domain:" "$MAIN_FILE" | head -1 | sed -E 's/.*Text Domain:[[:space:]]*//' | tr -d ' \r')
 if [ -n "$TEXT_DOMAIN" ] && [ "$TEXT_DOMAIN" != "$PLUGIN_SLUG" ]; then
   echo -e "${RED}✗ Text Domain '$TEXT_DOMAIN' must match plugin folder name '$PLUGIN_SLUG'${NC}"
   FAIL=1
 fi
 
 # Requires PHP should be >= 7.4 (WP core requirement)
-REQ_PHP=$(grep -iE "^\s*\*?\s*Requires PHP:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires PHP:\s*//' | tr -d ' \r')
+REQ_PHP=$(grep -iE "^[[:space:]]*\*?[[:space:]]*Requires PHP:" "$MAIN_FILE" | head -1 | sed -E 's/.*Requires PHP:[[:space:]]*//' | tr -d ' \r')
 if [ -n "$REQ_PHP" ]; then
   # Basic check: major.minor format
   if ! echo "$REQ_PHP" | grep -qE '^[0-9]+\.[0-9]+$'; then
@@ -81,7 +81,7 @@ if [ -n "$REQ_PHP" ]; then
 fi
 
 # License should be GPL
-PLUGIN_LICENSE=$(grep -iE "^\s*\*?\s*License:" "$MAIN_FILE" | head -1 | sed -E 's/.*License:\s*//' | tr -d ' \r')
+PLUGIN_LICENSE=$(grep -iE "^[[:space:]]*\*?[[:space:]]*License:" "$MAIN_FILE" | head -1 | sed -E 's/.*License:[[:space:]]*//' | tr -d ' \r')
 if [ -n "$PLUGIN_LICENSE" ] && ! echo "$PLUGIN_LICENSE" | grep -qiE "GPL"; then
   echo -e "${RED}✗ License: $PLUGIN_LICENSE — must be GPL-compatible for WP.org${NC}"
   FAIL=1

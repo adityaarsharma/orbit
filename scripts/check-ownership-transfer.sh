@@ -25,7 +25,7 @@ PLUGIN_PATH="${1:-}"
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'
 
 # Find main plugin file (first .php with "Plugin Name:" header)
-MAIN_FILE_REL=$(cd "$PLUGIN_PATH" && grep -lE "^\s*\*?\s*Plugin Name:" ./*.php 2>/dev/null | head -1 | sed 's|^\./||')
+MAIN_FILE_REL=$(cd "$PLUGIN_PATH" && grep -lE "^[[:space:]]*\*?[[:space:]]*Plugin Name:" ./*.php 2>/dev/null | head -1 | sed 's|^\./||')
 if [ -z "$MAIN_FILE_REL" ]; then
   echo "No main plugin file found — skipping ownership trace"
   exit 0
@@ -52,10 +52,10 @@ fi
 # Note: --follow + --all is undefined per git docs; using --follow alone
 git log --format='%H|%ci|%s' --follow -- "$MAIN_FILE_REL" | while IFS='|' read -r hash date subject; do
   CONTENT=$(git show "$hash:$MAIN_FILE_REL" 2>/dev/null | head -50 || true)
-  AUTHOR=$(echo "$CONTENT" | grep -iE "^\s*\*?\s*Author:" | head -1 | sed -E 's/.*Author:\s*//' | tr -d '\r' | head -c 100)
-  AUTHOR_URI=$(echo "$CONTENT" | grep -iE "^\s*\*?\s*Author URI:" | head -1 | sed -E 's/.*Author URI:\s*//' | tr -d '\r' | head -c 100)
-  NAME=$(echo "$CONTENT" | grep -iE "^\s*\*?\s*Plugin Name:" | head -1 | sed -E 's/.*Plugin Name:\s*//' | tr -d '\r' | head -c 100)
-  VERSION=$(echo "$CONTENT" | grep -iE "^\s*\*?\s*Version:" | head -1 | sed -E 's/.*Version:\s*//' | tr -d ' \r' | head -c 30)
+  AUTHOR=$(echo "$CONTENT" | grep -iE "^[[:space:]]*\*?[[:space:]]*Author:" | head -1 | sed -E 's/.*Author:[[:space:]]*//' | tr -d '\r' | head -c 100)
+  AUTHOR_URI=$(echo "$CONTENT" | grep -iE "^[[:space:]]*\*?[[:space:]]*Author URI:" | head -1 | sed -E 's/.*Author URI:[[:space:]]*//' | tr -d '\r' | head -c 100)
+  NAME=$(echo "$CONTENT" | grep -iE "^[[:space:]]*\*?[[:space:]]*Plugin Name:" | head -1 | sed -E 's/.*Plugin Name:[[:space:]]*//' | tr -d '\r' | head -c 100)
+  VERSION=$(echo "$CONTENT" | grep -iE "^[[:space:]]*\*?[[:space:]]*Version:" | head -1 | sed -E 's/.*Version:[[:space:]]*//' | tr -d ' \r' | head -c 30)
   [ -z "$AUTHOR$NAME" ] && continue
   SHORT_HASH=${hash:0:8}
   echo "$date | v${VERSION:-?} | ${SHORT_HASH} | Author=${AUTHOR:-?} | URI=${AUTHOR_URI:-?} | Name=${NAME:-?}" >> "$HISTORY_FILE"

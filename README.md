@@ -4,6 +4,8 @@
 
 ### **Complete UAT for WordPress Plugins — Now Agentic**
 
+[![Leave a tip](https://img.shields.io/badge/Leave%20a%20tip-Ko--fi-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/adityaarsharma)
+
 *A Claude Code plugin · **116 runtime-evergreen `/orbit-*` skills** · **10-agent QA team** · CTO → PM → Dev → QA → Security → Release*
 
 **v3.0 — Orbit Agentic.** Orbit is no longer just a skill suite. It's a 10-agent QA team connected to a shared brain (`brain`). CTO's brain is the team's constitution — every agent reads it first. Approved patterns get remembered. Cold starts become warm starts.
